@@ -139,5 +139,3 @@ npm run dev
 | POST   | `/api/events`        | Create event     | Admin  |
 | PUT    | `/api/events/:id`    | Update event     | Admin  |
 | DELETE | `/api/events/:id`    | Delete event     | Admin  |
-
-```
