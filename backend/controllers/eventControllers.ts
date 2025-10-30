@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import Event from "../models/Event.model";
 import User from "../models/User.model";
 import EventRegistration from "../models/EventRegistration.model";
-import { createRazorpayOrder } from "../services/paymentService";
+import axios from "axios";
 interface AuthRequest extends Request {
   user?: any;
 }
@@ -159,12 +159,16 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
      await EventRegistration.create({
             event:eventId,
             user:user.id,
-            paymentStatus:"Completed",
+            paymentStatus:"completed",
       });
       res.json({ success: true, message: "Joined free event successfully" });
     }else{
-      const orderData = await createRazorpayOrder(event.price, eventId, user.id)
-      res.json({ success: true, message: "Order created", ...orderData });
+       await EventRegistration.create({
+            event:eventId,
+            user:user.id,
+            paymentStatus:"pending",
+       })
+      res.json({ success: true, message: "Order created" });
     }
   } catch (error : any) {
         console.error("Join event error ", error.message);

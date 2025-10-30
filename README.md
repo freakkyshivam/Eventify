@@ -32,8 +32,8 @@ This project helps users create, manage, and track events efficiently with a cle
 | [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) | JWT authentication for secure routes                           |
 | [bcryptjs](https://www.npmjs.com/package/bcryptjs) | Password hashing for secure storage                                   |
 | [cors](https://www.npmjs.com/package/cors) | Handle cross-origin requests from frontend                                  |
-| [helmet](https://www.npmjs.com/package/helmet) *(optional)* | Security headers for Express                                  |
-| [morgan](https://www.npmjs.com/package/morgan) *(optional)* | HTTP request logging during development                          |
+| [helmet](https://www.npmjs.com/package/helmet)  | Security headers for Express                                  |
+| [morgan](https://www.npmjs.com/package/morgan)  | HTTP request logging during development                          |
 | [TypeScript](https://www.typescriptlang.org/) | Adds static typing to backend code                                        |
 | [ts-node-dev](https://www.npmjs.com/package/ts-node-dev) | Hot reload for backend during development                                |
 | `@types/*` packages      | Type definitions for TypeScript (Express, Node, JWT, etc.)                     |
