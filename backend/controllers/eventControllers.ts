@@ -134,7 +134,10 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
       res.status(401).json({ success: false, message: "Unauthorized" });
       return;
     }
-    const eventId = req.body;
+    const {eventId} = req.body;
+   console.log(eventId);
+   
+    
     if(!eventId){
       res.status(400).json({success:false, message:"Event id is required"});
       return;
@@ -149,27 +152,29 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
     }
 
     const event = await Event.findOne({_id:eventId});
-
+    
+    
       if (!event) {
       res.status(404).json({ success: false, message: "Event not found" });
       return;
     }
 
-    if(event?.paymentType === "Free"){
+    if(event?.paymentType === "free"){
      await EventRegistration.create({
             event:eventId,
             user:user.id,
             paymentStatus:"completed",
       });
       res.json({ success: true, message: "Joined free event successfully" });
-    }else{
-       await EventRegistration.create({
-            event:eventId,
-            user:user.id,
-            paymentStatus:"pending",
-       })
-      res.json({ success: true, message: "Order created" });
+      return;
     }
+     
+    const response = await axios.post(`${process.env.SERVER_URL}/api/payment/order`, {
+      amount: event.price,
+      eventId,
+      userId: user.id,
+    });
+    res.json({ success: true, message: "Order created", order: response.data });
   } catch (error : any) {
         console.error("Join event error ", error.message);
          res.status(500).json({ success: false, message: "Server error" });

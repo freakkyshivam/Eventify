@@ -40,8 +40,8 @@ const EventSchema = new Schema(
     },
     paymentType: {
       type: String,
-      enum: ["Free", "Paid"],
-      default: "Free",
+      enum: ["free", "paid"],
+      default: "free",
     },
     price: {
       type: Number,

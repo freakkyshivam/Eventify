@@ -8,42 +8,29 @@ interface AuthRequest extends Request {
 }
 
 
-export const verifyPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const verifyPayment = (req: Request, res: Response, next: NextFunction) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const user = (req as AuthRequest).user 
+
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
-        message: "Missing payment verification fields",
+        message: "Missing payment fields (order_id, payment_id, signature)",
       });
-      return;
     }
 
-    if (!process.env.RAZORPAY_KEY_SECRET) {
-      throw new Error("Razorpay key secret not configured");
-    }
-
-    
-    const sign = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign)
+    const generatedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_SECRET as string)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
- 
-    if (expectedSign === razorpay_signature) {
-      res.status(200).json({
-        success: true,
-        message: "Payment verified successfully",
-        redirectUrl: "",
+
+    if (generatedSignature !== razorpay_signature) {
+      return res.status(401).json({
+        success: false,
+        message: "Payment verification failed. Invalid signature.",
       });
-      EventRegistrationModel.findByIdAndUpdate(user.id, {
-        paymentStatus:"completed"
-      },{
-        new:true,
-        runValidators:true,
-      })
-    }  
+    }
+
     (req as any).paymentVerified = true;
     (req as any).payment = {
       order_id: razorpay_order_id,
@@ -51,11 +38,11 @@ export const verifyPayment = async (req: Request, res: Response, next: NextFunct
     };
 
     next();
-  } catch (error: any) {
-    console.error("Payment verification failed:", error.message);
-    res.status(500).json({
+  } catch (err) {
+    console.error("Error verifying payment:", err);
+    return res.status(500).json({
       success: false,
-      message: "Server error during payment verification",
+      message: "Server error during payment verification.",
     });
   }
 };
