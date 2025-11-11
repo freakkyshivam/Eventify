@@ -7,7 +7,10 @@ interface AuthRequest extends Request {
 export const createOrder = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { amount, eventId } = req.body;
+      console.log("Amount and event id ", amount, eventId);
     const user = req.user;
+    console.log("User in payment controller ", user);
+    
 
     if (!user) {
       res.status(401).json({ success: false, message: "Unauthorized" });

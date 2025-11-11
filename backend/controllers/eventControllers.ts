@@ -136,7 +136,9 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
     }
     const {eventId} = req.body;
    console.log(eventId);
-   
+   const token = req.cookies?.token
+ 
+
     
     if(!eventId){
       res.status(400).json({success:false, message:"Event id is required"});
@@ -173,6 +175,10 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
       amount: event.price,
       eventId,
       userId: user.id,
+    },{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
     });
     res.json({ success: true, message: "Order created", order: response.data });
   } catch (error : any) {

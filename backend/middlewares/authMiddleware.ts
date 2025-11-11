@@ -8,7 +8,8 @@ interface AuthRequest extends Request {
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   const token =
     req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
-
+  console.log(token);
+  
   if (!token) {
     return res.status(401).json({ success: false, message: "Not authorized" });
   }
