@@ -8,7 +8,7 @@ import { generateToken } from "../utils/generateToken";
 import { sendMail } from "../utils/nodeMailer";
 import axios from 'axios';
 import { generateOtp } from "../utils/generateOtp";
- 
+import  argon2  from "argon2";
  
 
 interface AuthRequest extends Request {
@@ -42,7 +42,13 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
  
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await argon2.hash(password, {
+  type: argon2.argon2id,
+  memoryCost: 15360,  
+  timeCost: 2,        
+  parallelism: 1
+});
+
     let uniqueUserName = await generateUniqueUsername(name, email);
     const newUser = new User({
       name,
@@ -96,6 +102,7 @@ await sendMail(email, subject, text);
 // login
 export const login = async (req : Request, res:Response):Promise<void>=>{
   try {
+    console.time("TOTAL");
     const {identifiers, password} = req.body;
     console.log(identifiers);
     
@@ -104,30 +111,40 @@ export const login = async (req : Request, res:Response):Promise<void>=>{
      return;
     }
 
+    console.time("DB");
     const user = await User.findOne({
       $or: [{email:identifiers}, {username:identifiers}]
-    })
+    }).lean(); // << speeds up response (returns JS object, not mongoose doc)
     
     if(!user){
       res.status(401).json({success:false, messagee:"Invalid credentials"})
       return;
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+   console.time("verify");
+const isMatch = await argon2.verify(user.password, password);
+console.timeEnd("verify");
+
 
     if(!isMatch){
       res.status(401).json({success:false, messagee:"Password is wrong"})
       return;
     }
-   const token = await generateToken(user._id.toString(),user.email,user.role);
+
+    console.time("Token")
+   const token =  generateToken(user._id.toString(),user.email,user.role);
+  console.timeEnd("Token")
   
+   console.time("COOKIE");
    res.cookie("token", token,{
     httpOnly:true,
     secure:process.env.NODE_ENV==="production",
     sameSite:"strict",
-    maxAge: 7 * 24 * 60 * 60
+    maxAge: 7 * 24 * 60 * 60 * 1000
    })
+   console.timeEnd("COOKIE");
 
+   console.time("RESPONSE");
     res.status(200).json({
       success : true,
       message: "Login successfull",
@@ -138,6 +155,8 @@ export const login = async (req : Request, res:Response):Promise<void>=>{
         email: user.email
       }
     })
+    console.timeEnd("RESPONSE");
+    console.timeEnd("TOTAL");
   } catch (error:any) {
     console.error("Login error", error.message)
      res.status(500).json({ success: false, message: "Server error" });
@@ -156,47 +175,50 @@ export const googleRedirect = (req:Request, res:Response)=>{
 }
 
 // google auth
-export const googleAuth = async (req:Request, res : Response):Promise<void>=>{
-  const code = req.query.code as string;
+export const googleAuth = async (req: Request, res: Response): Promise<void> => {
   try {
-    
-    const {data} = await axios.post("https://oauth2.googleapis.com/token", {
-      code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-      grant_type: "authorization_code",
-    });
+    const code = req.query.code as string;
 
-    const {access_token} = data;
+    const { data } = await axios.post(
+      "https://oauth2.googleapis.com/token",
+      {
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        grant_type: "authorization_code",
+      }
+    );
 
-    const userInfo = await axios.get("https://www.googleapis.com/oauth2/v2/userinfo",{
-      headers: { Authorization: `Bearer ${access_token}` },
-    })
+    const { id_token } = data;
 
-    const { id, name, email, picture,given_name } = userInfo.data;
-    const finalName = name || given_name || email.split("@")[0];
-    console.log("✅ User Info:", id,finalName,email,picture);
+    // Decode id_token
+    const payload = JSON.parse(
+      Buffer.from(id_token.split(".")[1], "base64").toString()
+    );
 
-    let user = await User.findOne({email});
+    const { email, name, picture, sub } = payload;
+    const finalName = name || email.split("@")[0];
 
-    if(!user){
+    let user = await User.findOne({ email }).lean();
+
+    if (!user) {
       const uniqueUserName = await generateUniqueUsername(finalName, email);
 
-      const dummyPassword = await bcrypt.hash(id + process.env.JWT_SECRET, 10);
+     const dummyPassword = await argon2.hash("google_user_" + process.env.JWT_SECRET, {
+  type: argon2.argon2id,
+});
 
-      user = new User({
-        name:finalName ,
-        username : uniqueUserName,
+      user = await User.create({
+        name: finalName,
+        username: uniqueUserName,
         email,
         password: dummyPassword,
-        profileImage:picture,
-        isAccountVerified : true
-      })
+        profileImage: picture,
+        isAccountVerified: true
+      });
 
-      await user.save();
-
-    const subject = `🎉 Welcome to ${process.env.APP_NAME || 'Eventify'}!`;
+      const subject = `🎉 Welcome to ${process.env.APP_NAME || 'Eventify'}!`;
     const text = `
   <div style="font-family:Arial, sans-serif; line-height:1.6;">
     <h2 style="color:#333;">Welcome Aboard!</h2>
@@ -209,21 +231,17 @@ export const googleAuth = async (req:Request, res : Response):Promise<void>=>{
   </div>
   `;
 
-await sendMail(email, subject, text);
-
-
+   sendMail(email, subject, text);
     }
 
-    const token = await generateToken(user._id.toString(),email,user.role);
+    const token = generateToken(user._id.toString(), email, user.role);
 
-      
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
 
     res.status(200).json({
       success: true,
@@ -235,12 +253,13 @@ await sendMail(email, subject, text);
         email: user.email,
         profileImage: user.profileImage,
       },
-       });
-  } catch (error : any) {
+    });
+  } catch (error: any) {
     console.error("Google Login Error:", error.response?.data || error.message);
     res.status(500).json({ error: "Authentication failed" });
   }
-}
+};
+
 
 // logout
 export const logout = async (req :Request,res:Response):Promise<void>=>{
@@ -295,7 +314,7 @@ export const updateName = async (req: Request, res: Response): Promise<void> => 
         new: true,
         runValidators: true,
       }
-    );
+    ).lean();
  
     if (!updatedUser) {
       res.status(404).json({ success: false, message: "User not found" });
@@ -328,7 +347,7 @@ export const updateUserName = async (req: Request, res: Response): Promise<void>
       return;
     }
  
-    const existingUser = await User.findOne({ username: updatedUserName });
+    const existingUser = await User.findOne({ username: updatedUserName }).lean();
     if (existingUser) {
       res.status(400).json({ success: false, message: "Username already exists" });
       return;
@@ -341,7 +360,7 @@ export const updateUserName = async (req: Request, res: Response): Promise<void>
         new: true,
         runValidators: true,
       }
-    );
+    ).lean();
  
     if (!updatedUser) {
       res.status(404).json({ success: false, message: "User not found" });
@@ -374,21 +393,30 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    const existingUser = await User.findById(user.id).select("+password"); 
+    const existingUser = await User.findById(user.id).select("+password").lean(); 
 
     if (!existingUser) {
       res.status(404).json({ success: false, message: "User not found" });
       return;
     }
 
-    const isMatch = await bcrypt.compare(previousPassword, existingUser.password);
+   const isMatch = await argon2.verify(existingUser.password, previousPassword);
+
+
 
     if (!isMatch) {
       res.status(400).json({ success: false, message: "Incorrect current password" });
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await argon2.hash(newPassword, {
+  type: argon2.argon2id,
+  memoryCost: 15360,  
+  timeCost: 2,        
+  parallelism: 1
+});
+
+   
     await User.findByIdAndUpdate(user.id, {password:hashedPassword},{
       new:true,
       runValidators:true
@@ -431,7 +459,9 @@ export const passwordResetOtp = async (req: Request, res: Response): Promise<voi
       return;
     }
     const otp = generateOtp();
-    const hashedOtp = await bcrypt.hash(otp,10);
+   const hashedOtp =  await argon2.hash(otp, {
+  type: argon2.argon2id
+});
      user.resetOtp = hashedOtp;
     user.resetOtpExpiredAt = new Date(Date.now() + 10 * 60 * 1000);
   
@@ -487,12 +517,19 @@ export const verifyResetOtpAndUpdatePassword = async (req: Request, res: Respons
       res.status(400).json({success:false, message:"OTP is expired, generate new OTP"})
     }
 
-    const isMatchOtp = await bcrypt.compare(otp, user.resetOtp);
+   const isMatchOtp = await argon2.verify(user.resetOtp, otp);
+
   if(otp === "" || !isMatchOtp){
     res.status(400).json({success:false, message:"Invalid OTP"})
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword,10);
+ const hashedPassword = await argon2.hash(newPassword, {
+  type: argon2.argon2id,
+  memoryCost: 15360,
+  timeCost: 2,        
+  parallelism: 1
+});
+
 
   user.password = hashedPassword;
   user.resetOtp = "",
