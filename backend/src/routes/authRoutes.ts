@@ -1,7 +1,7 @@
 import express from 'express'
 import { register,login,logout,googleAuth,googleRedirect, passwordResetOtp, verifyResetOtpAndUpdatePassword } from "../controllers/authControllers";
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { loginLimiter, otpLimiter, resetPasswordLimiter, updateNameLimiter, updatePasswordLimiter, updateUserNameLimiter } from '../middlewares/rateLimiter';
+import { loginLimiter, otpLimiter, resetPasswordLimiter,} from '../middlewares/rateLimiter';
 const authRouter = express.Router();
 
 authRouter.post('/register', register)

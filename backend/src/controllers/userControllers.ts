@@ -3,7 +3,7 @@ import { CustomJwtPayload } from "../utils/customJwtPayloads";
 import User from "../models/User.model";  
 import { sendMail } from "../utils/nodeMailer";
 import  argon2  from "argon2";
-
+import uploadOnCoudinary from "../config/cloudinary";
 interface AuthRequest extends Request {
   user?: CustomJwtPayload;
 }
@@ -171,3 +171,39 @@ export const updatePassword = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const profileImage = async(req : Request, res:Response) : Promise<void> =>{
+  try {
+     const avtar = req.file;
+     const user = (req as AuthRequest).user;  
+    if (!user?.id) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
+    if (!avtar) {
+      res.status(400).json({ success: false, message: "Profile image are required" });
+      return;
+    }
+
+     
+
+      const existingUser =await User.findById(user.id).lean();
+
+      if(!existingUser){
+         res.status(404).json({ success: false, message: "User not found" });
+      return;
+      }
+     const response = await uploadOnCoudinary(avtar?.path)
+     console.log(response);
+     
+      await User.findByIdAndUpdate(user.id,{profileImage:response},{
+        new:true,
+        runValidators:true
+      })
+
+       res.status(200).json({ success: true, message: "Profile image updated successfully" });
+  } catch (error) {
+    
+  }
+}

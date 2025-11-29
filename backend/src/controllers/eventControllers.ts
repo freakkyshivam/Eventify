@@ -4,6 +4,7 @@ import Event from "../models/Event.model";
 import User from "../models/User.model";
 import EventRegistration from "../models/EventRegistration.model";
 import axios from "axios";
+import uploadOnCoudinary from "../config/cloudinary";
 interface AuthRequest extends Request {
   user?: any;
 }
@@ -14,7 +15,7 @@ export const createEvent = async (
   res: Response
 ): Promise<void> => {
     const user = (req as AuthRequest).user; 
-    if (!user || user?.role !== "admin") {
+    if (!user ) {
       res.status(401).json({ success: false, message: "Invalide credntials" });
       return;
     }
@@ -22,7 +23,6 @@ export const createEvent = async (
     const {
       title,
       description,
-      banner,
       startDate,
       endDate,
       location,
@@ -32,6 +32,8 @@ export const createEvent = async (
       price,
       status,
     } = req.body;
+
+    const bannerFiles = req.files as Express.Multer.File[];
 
     if (!title) {
       res.status(400).json({ success: false, message: "Title is required" });
@@ -43,8 +45,10 @@ export const createEvent = async (
         .json({ success: false, message: "Description is required" });
       return;
     }
-    if (!banner) {
-      res.status(400).json({ success: false, message: "Banner is required" });
+      if (!bannerFiles || bannerFiles.length === 0) {
+      res
+        .status(400)
+        .json({ success: false, message: "At least one banner is required" });
       return;
     }
 
@@ -57,12 +61,17 @@ export const createEvent = async (
         });
       return;
     }
-
+    
+    const uploadedImages = await Promise.all(
+      bannerFiles.map((file) => uploadOnCoudinary(file.path))
+    );
+     
+   
 
     const newEvent = new Event({
       title,
       description,
-      banner,
+      banner : uploadedImages ,
       startDate,
       endDate,
       location,
@@ -112,7 +121,7 @@ export const getEventById = async(req:Request, res:Response):Promise<void>=>{
           res.status(400).json({success:false, message:"Event id is required"})
           return;
          }
-         const event = await Event.findOne({id});
+         const event = await Event.findById(id).lean();
 
          if(!event){
           res.status(400).json({success:false, message:"No event found"});
@@ -121,7 +130,7 @@ export const getEventById = async(req:Request, res:Response):Promise<void>=>{
 
          res.status(200).json({success:true, event});
     } catch (error : any) {
-        console.error("Register event error ", error.message);
+        console.error("event error ", error.message);
          res.status(500).json({ success: false, message: "Server error" });
     }
 }

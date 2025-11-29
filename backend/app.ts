@@ -3,10 +3,10 @@ import 'dotenv/config'
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from 'cookie-parser'
-import authRouter from "./routes/authRoutes";
-import eventRouter from "./routes/eventRoutes";
-import paymentRouter from "./routes/paymentRoutes";
-import userRouter from "./routes/userRoutes";
+import authRouter from "./src/routes/authRoutes";
+import eventRouter from "./src/routes/eventRoutes";
+import paymentRouter from "./src/routes/paymentRoutes";
+import userRouter from "./src/routes/userRoutes";
 const app = express();
 
 // middlewares

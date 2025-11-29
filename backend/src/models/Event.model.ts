@@ -14,8 +14,9 @@ const EventSchema = new Schema(
       trim: true,
     },
     banner: {
-      type: String,
+      type: [String],
       required: true,
+      default : []
     },
     startDate: {
       type: Date,
