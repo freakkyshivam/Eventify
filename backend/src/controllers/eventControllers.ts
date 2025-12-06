@@ -9,91 +9,7 @@ interface AuthRequest extends Request {
   user?: any;
 }
 
-// create event
-export const createEvent = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-    const user = (req as AuthRequest).user; 
-    if (!user ) {
-      res.status(401).json({ success: false, message: "Invalide credntials" });
-      return;
-    }
-  try {
-    const {
-      title,
-      description,
-      startDate,
-      endDate,
-      location,
-      capacity,
-      category,
-      paymentType,
-      price,
-      status,
-    } = req.body;
 
-    const bannerFiles = req.files as Express.Multer.File[];
-
-    if (!title) {
-      res.status(400).json({ success: false, message: "Title is required" });
-      return;
-    }
-    if (!description) {
-      res
-        .status(400)
-        .json({ success: false, message: "Description is required" });
-      return;
-    }
-      if (!bannerFiles || bannerFiles.length === 0) {
-      res
-        .status(400)
-        .json({ success: false, message: "At least one banner is required" });
-      return;
-    }
-
-    if (!startDate || !endDate) {
-      res
-        .status(400)
-        .json({
-          success: false,
-          message: "Start date and end date are required",
-        });
-      return;
-    }
-    
-    const uploadedImages = await Promise.all(
-      bannerFiles.map((file) => uploadOnCoudinary(file.path))
-    );
-     
-   
-
-    const newEvent = new Event({
-      title,
-      description,
-      banner : uploadedImages ,
-      startDate,
-      endDate,
-      location,
-      capacity,
-      category,
-      paymentType,
-      price,
-      status,
-      author: user.id,
-    });
-
-    await newEvent.save();
-     await User.findByIdAndUpdate(user.id, {
-      $push: { createdEvents: newEvent._id },
-    });
-
-    res.status(201).json({ success: true, newEvent });
-  } catch (error: any) {
-    console.error("New Event create error ", error.message);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
 
 // get all events
 export const getEvents = async(req:Request, res:Response):Promise<void>=>{
@@ -144,9 +60,12 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
       return;
     }
     const {eventId} = req.body;
-   console.log(eventId);
-   const token = req.cookies?.token
+
+    console.log(eventId);
+    
+   const token = req.cookies?.token || req.headers['authorization']
  
+console.log(token);
 
     
     if(!eventId){
@@ -189,6 +108,8 @@ export const joinEvent = async(req:Request, res:Response):Promise<void>=>{
         Authorization : `Bearer ${token}`
       }
     });
+    console.log(response);
+    
     res.json({ success: true, message: "Order created", order: response.data });
   } catch (error : any) {
         console.error("Join event error ", error.message);

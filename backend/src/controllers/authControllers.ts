@@ -116,7 +116,7 @@ export const login = async (req : Request, res:Response):Promise<void>=>{
     }).lean(); // << speeds up response (returns JS object, not mongoose doc)
     
     if(!user){
-      res.status(401).json({success:false, messagee:"Invalid credentials"})
+      res.status(401).json({success:false, messagee:`User with this email or username ${identifiers} not found`})
       return;
     }
  

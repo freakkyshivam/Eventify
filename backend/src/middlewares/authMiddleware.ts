@@ -8,7 +8,7 @@ interface AuthRequest extends Request {
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
   const token =
     req.cookies?.token || req.header("Authorization")?.replace("Bearer ", "");
-  console.log(token);
+  // console.log(token);
   
   if (!token) {
     return res.status(401).json({ success: false, message: "Not authorized" });
@@ -16,6 +16,8 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    // console.log(decoded);
+    
     req.user = decoded;  
     next();
   } catch {

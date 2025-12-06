@@ -15,18 +15,18 @@
   <!-- <script>
 document.getElementById("pay").addEventListener('click', 
   async function () {
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZjkwMGRmY2IyZmNjZTY4Yjc2ODgyMCIsImVtYWlsIjoic2hpdmFtMjQzMjkwN0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2Mjg3NzAyNCwiZXhwIjoxNzYzNDgxODI0fQ.f15L9rUTqrCs_smSg_SygBlsRAYl1rbLH4YyUE2A1so"
-  const res = await fetch("http://localhost:3000/api/user/join-event", {
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTVmMzk5ZDE0Zjc5ODg0MzNjZjg0MiIsImVtYWlsIjoic2hpdmFtMjQzMjkwN0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQxNTc2NiwiZXhwIjoxNzY1MDIwNTY2fQ.mnrL-JOV5TPPt_x1Wm5P0GbgeW3K_I-QTBh8cI5Qq38"
+  const res = await fetch("http://localhost:3000/api/event/join", {
     method: "POST",
     headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify({   eventId: "6902ebfaafaa295ebf277aa9" })
+    body: JSON.stringify({ eventId: "69214fd632d4429b04468752" })
   });
-
+  console.log(res);
+  
   const {order} = await res.json();
   console.log("Order:", order);
 console.log(order.key);
 
-  
   var options = {
     key: order.key,
     amount: order.amount,
@@ -35,14 +35,14 @@ console.log(order.key);
     name: "Event Payment",
     description: "Ticket Purchase",
    handler: function (response) {
-  fetch("http://localhost:3000/api/user/verify-payment", {
+  fetch("http://localhost:3000/api/event/verify-payment", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}` // ✅ NOW token is included
+      "Authorization": `Bearer ${token}`  
     },
     body: JSON.stringify({
-      eventId: "6902ebfaafaa295ebf277aa9", // ✅ must include
+      eventId: "69214fd632d4429b04468752",  
       razorpay_payment_id: response.razorpay_payment_id,
       razorpay_order_id: response.razorpay_order_id,
       razorpay_signature: response.razorpay_signature
@@ -60,8 +60,8 @@ console.log(order.key);
 }
 )
 
-</script>
-     -->
+</script> -->
+    
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -4,4 +4,5 @@ import { authMiddleware } from "../middlewares/authMiddleware";
 const paymentRouter = express.Router();
 
 paymentRouter.post('/order',authMiddleware, createOrder);
+
 export default paymentRouter;

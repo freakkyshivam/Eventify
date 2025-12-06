@@ -1,17 +1,17 @@
 import express from 'express'
 import UserModel from '../models/User.model';
 import { Request, Response } from "express";
-import { createEvent,joinEvent,getEvents, getEventById } from '../controllers/eventControllers';
+import {joinEvent,getEvents, getEventById } from '../controllers/eventControllers';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import EventRegistration from '../models/EventRegistration.model';
 import { verifyPayment } from '../middlewares/verifyPayment';
-import {upload} from "../middlewares/multer"
+
 const eventRouter = express.Router();
 
- eventRouter.post('/events',authMiddleware,upload.array("banner", 5), createEvent);
- eventRouter.post('/join-event',authMiddleware,joinEvent)
-eventRouter.get('/events', getEvents);
-eventRouter.get("/events/:id",getEventById)
+
+ eventRouter.post('/join',authMiddleware,joinEvent)
+eventRouter.get('/', getEvents);
+eventRouter.get("/:id",getEventById)
 
 interface AuthRequest extends Request{
   user? : any;
