@@ -11,8 +11,8 @@ import adminRouter from "./src/routes/adminRoutes";
 const app = express();
 
 const allowedOrigins = [
-    'http://localhost:5473',
-    'http://127.0.0.1:3001'
+    'http://localhost:5173',
+    
 ]
 
 // middlewares

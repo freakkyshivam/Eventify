@@ -103,7 +103,6 @@ export const login = async (req : Request, res:Response):Promise<void>=>{
   try {
     
     const {identifiers, password} = req.body;
-    // console.log(identifiers);
     
     if(!identifiers || !password){
      res.status(400).json({success : false, message:"All field are required"});
