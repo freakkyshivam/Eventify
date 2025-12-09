@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    ports:
+      - 5432:5432
+
+    environment:
+       POSTGRES_USER: shivam
+       POSTGRES_PASSWORD: shivam1234
+       POSTGRES_DB: event-management
+      
+    volumes:
+      - db_data:/var/lib/postgresql/db_data
+
+volumes:
+ db_data:

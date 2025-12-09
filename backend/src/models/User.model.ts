@@ -30,10 +30,10 @@ const UserSchema = new Schema(
       minlength: 6,
     },
     role: {
-      type: String,
-      enum: ["user", "admin"],
-      default: "user",
-    },
+   type: String,
+   enum: ["student", "coordinator", "club_admin", "super_admin"],
+   default: "student",
+  },
 
     //  For normal users — which events they registered for
     registeredEvents: [

@@ -8,7 +8,7 @@ import { sendMail } from "../utils/nodeMailer";
 import axios from 'axios';
 import { generateOtp } from "../utils/generateOtp";
 import  argon2  from "argon2";
- 
+import {loginValidation,signupValidation} from '../validation/validation'
 
 interface AuthRequest extends Request {
   user?: CustomJwtPayload;
@@ -20,20 +20,15 @@ const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 // Register
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, name, password } = req.body;
+
+    const validationResult = await signupValidation.safeParseAsync(req.body)
+
+    if(validationResult.error){
+       res.status(400).json({success:false, msg:validationResult.error.format()})
+             return;
+    }
+    const { email, name, password } = validationResult.data;
  
-    if (!email) {
-      res.status(400).json({ success: false, message: "Email is required" });
-      return;
-    }
-    if (!name) {
-      res.status(400).json({ success: false, message: "Name is required" });
-      return;
-    }
-    if (!password) {
-      res.status(400).json({ success: false, message: "Password is required" });
-      return;
-    }
  
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -49,6 +44,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 });
 
     let uniqueUserName = await generateUniqueUsername(name, email);
+
     const newUser = new User({
       name,
       username:uniqueUserName,
@@ -101,14 +97,15 @@ await sendMail(email, subject, text);
 // login
 export const login = async (req : Request, res:Response):Promise<void>=>{
   try {
-    
-    const {identifiers, password} = req.body;
-    
-    if(!identifiers || !password){
-     res.status(400).json({success : false, message:"All field are required"});
-     return;
-    }
 
+    const validationResult = await loginValidation.safeParseAsync(req.body)
+     if(validationResult.error){
+             res.status(400).json({success:false, msg:validationResult.error.format()})
+             return;
+        }
+    
+    const {identifiers, password} = validationResult.data;
+    
     
     const user = await User.findOne({
       $or: [{email:identifiers}, {username:identifiers}]
