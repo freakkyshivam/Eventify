@@ -10,12 +10,22 @@ import { generateOtp } from "../utils/generateOtp";
 import  argon2  from "argon2";
 import {loginValidation,signupValidation} from '../validation/validation'
 
+
+import db from '../db/db';
+import Users from '../db/schema/user.model'
+
+import { findUserByEmail } from "../services/user.service";
+import {hashedPassword} from '../utils/hashedPassword'
+import type { InferModel } from "drizzle-orm"
+import { email } from "zod";
+type UserInsert = InferModel<typeof Users, "insert">;
+
 interface AuthRequest extends Request {
   user?: CustomJwtPayload;
 }
  
 
-const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+// const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
 // Register
 export const register = async (req: Request, res: Response): Promise<void> => {
@@ -27,34 +37,39 @@ export const register = async (req: Request, res: Response): Promise<void> => {
        res.status(400).json({success:false, msg:validationResult.error.format()})
              return;
     }
-    const { email, name, password } = validationResult.data;
+    const { email, name, password,branch,year,rollNumber,phone } = validationResult.data;
  
  
-    const existingUser = await User.findOne({ email });
+    const existingUser = await findUserByEmail(email)
+   
+    
     if (existingUser) {
       res.status(409).json({ success: false, message: "User already registered" });
       return;
     }
  
-    const hashedPassword = await argon2.hash(password, {
-  type: argon2.argon2id,
-  memoryCost: 15360,  
-  timeCost: 2,        
-  parallelism: 1
-});
+    const hash:string = await hashedPassword(password)
 
-    let uniqueUserName = await generateUniqueUsername(name, email);
+    let uniqueUserName:string = await generateUniqueUsername(name, email);
 
-    const newUser = new User({
+    const payload: UserInsert = {
       name,
-      username:uniqueUserName,
       email,
-      password: hashedPassword,
-    });
+      username: uniqueUserName,
+      password: hash,
+      branch,
+      year,
+      rollNumber,
+      phone,
+      isProfileComplete : true
+    };
+    const [newUser] = await db.insert(Users).values(payload).returning({
+      id:Users.id,
+      name : Users.name,
+      role : Users.user_role
+    })
 
-    await newUser.save();
-
-    const subject = `🎉 Welcome to ${process.env.APP_NAME || 'Eventify'}!`;
+      const subject = `🎉 Welcome to ${process.env.APP_NAME || 'Eventify'}!`;
     const text = `
   <div style="font-family:Arial, sans-serif; line-height:1.6;">
     <h2 style="color:#333;">Welcome Aboard!</h2>
@@ -69,7 +84,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
 await sendMail(email, subject, text);
 
-    const token = await generateToken(newUser._id.toString(),email,newUser.role)
+    const token = await generateToken(newUser.id.toString(),email,newUser.role)
     res.cookie("token", token, {
       httpOnly: true,        
       secure: process.env.NODE_ENV === "production",  
@@ -77,19 +92,15 @@ await sendMail(email, subject, text);
       maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-
-    res.status(201)
-    .json({ success: true,
-     message: "Registration successful",
-     user: {
-        id: newUser._id,
-        name: newUser.name,
-        username : newUser.username,
-        email: newUser.email,
-      },
+     res.status(201).json({
+      success: true,
+      message: "Registration successful",
+      user: newUser,
     });
+
+     
   } catch (error: any) {
-    console.error("Registration error:", error.message);
+    console.error("Registration error:", error?.message ??error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -104,26 +115,23 @@ export const login = async (req : Request, res:Response):Promise<void>=>{
              return;
         }
     
-    const {identifiers, password} = validationResult.data;
+    const {email, password} = validationResult.data;
     
     
-    const user = await User.findOne({
-      $or: [{email:identifiers}, {username:identifiers}]
-    }).lean(); // << speeds up response (returns JS object, not mongoose doc)
-    
+    const user = await  findUserByEmail(email)
     if(!user){
-      res.status(401).json({success:false, messagee:`User with this email or username ${identifiers} not found`})
+      res.status(401).json({success:false, messagee:`User with this email or username ${email} not found`})
       return;
     }
  
-const isMatch = await argon2.verify(user.password, password);
+  const isMatch = await argon2.verify(user.password, password);
  
     if(!isMatch){
       res.status(401).json({success:false, messagee:"Password is wrong"})
       return;
     }
  
-   const token = await generateToken(user._id.toString(),user.email,user.role);
+   const token = await generateToken(user.id.toString(),user.email,user.role);
   
    
    res.cookie("token", token,{
@@ -137,9 +145,7 @@ const isMatch = await argon2.verify(user.password, password);
       success : true,
       message: "Login successfull",
       user : {
-        id: user._id,
-        username : user.username,
-        name : user.name,
+        id: user.id,
         email: user.email
       }
     })
@@ -151,101 +157,110 @@ const isMatch = await argon2.verify(user.password, password);
 }
 
 // google redirect url
-export const googleRedirect = (req:Request, res:Response)=>{
-  try {
-    const redirectUrl = `${GOOGLE_AUTH_URL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=openid%20email%20profile%20&access_type=offline&prompt=consent`;
+// export const googleRedirect = (req:Request, res:Response)=>{
+//   try {
+//     const redirectUrl = `${GOOGLE_AUTH_URL}?client_id=${process.env.GOOGLE_CLIENT_ID}&redirect_uri=${process.env.GOOGLE_REDIRECT_URI}&response_type=code&scope=openid%20email%20profile%20&access_type=offline&prompt=consent`;
 
-    res.redirect(redirectUrl);
-  } catch (error : any) {
-    console.error("Error to redirect ", error.message)
-  }
-}
+//     res.redirect(redirectUrl);
+//   } catch (error : any) {
+//     console.error("Error to redirect ", error.message)
+//   }
+// }
 
 // google auth
-export const googleAuth = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const code = req.query.code as string;
+// export const googleAuth = async (req: Request, res: Response): Promise<void> => {
+//   try {
+//     const code = req.query.code as string;
 
-    const { data } = await axios.post(
-      "https://oauth2.googleapis.com/token",
-      {
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET,
-        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-        grant_type: "authorization_code",
-      }
-    );
+//     const { data } = await axios.post(
+//       "https://oauth2.googleapis.com/token",
+//       {
+//         code,
+//         client_id: process.env.GOOGLE_CLIENT_ID,
+//         client_secret: process.env.GOOGLE_CLIENT_SECRET,
+//         redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+//         grant_type: "authorization_code",
+//       }
+//     );
 
-    const { id_token } = data;
+//     const { id_token } = data;
 
-    // Decode id_token
-    const payload = JSON.parse(
-      Buffer.from(id_token.split(".")[1], "base64").toString()
-    );
+//     // Decode id_token
+//     const payload = JSON.parse(
+//       Buffer.from(id_token.split(".")[1], "base64").toString()
+//     );
 
-    const { email, name, picture, sub } = payload;
-    const finalName = name || email.split("@")[0];
+//     const { email, name, picture, sub } = payload;
+//     const finalName = name || email.split("@")[0];
 
-    let user = await User.findOne({ email }).lean();
+//     let user = await findUserByEmail(email)
 
-    if (!user) {
-      const uniqueUserName = await generateUniqueUsername(finalName, email);
+//     if (!user) {
+//       const uniqueUserName = await generateUniqueUsername(finalName, email);
 
-     const dummyPassword = await argon2.hash("google_user_" + process.env.JWT_SECRET, {
-  type: argon2.argon2id,
-});
+//      const dummyPassword = await argon2.hash("google_user_" + process.env.JWT_SECRET, {
+//   type: argon2.argon2id,
+// });
 
-      user = await User.create({
-        name: finalName,
-        username: uniqueUserName,
-        email,
-        password: dummyPassword,
-        profileImage: picture,
-        isAccountVerified: true
-      });
+//       const payload: UserInsert = {
+//       name : finalName,
+//       email,
+//       username: uniqueUserName,
+//       password: dummyPassword,
+//       profileImageUrl:picture ?? null,
+//       isAccountVerified: true,
+//       isProfileComplete: false,
+//         //
 
-      const subject = `🎉 Welcome to ${process.env.APP_NAME || 'Eventify'}!`;
-    const text = `
-  <div style="font-family:Arial, sans-serif; line-height:1.6;">
-    <h2 style="color:#333;">Welcome Aboard!</h2>
-    <p>Hello ${user.name || "User"},</p>
-    <p>Thank you for registering with <strong>${process.env.APP_NAME || "Eventify"}</strong>.</p>
-    <p>Your account has been created successfully, and you can now log in to explore all features.</p>
-    <p>If you didn’t create this account, please ignore this email.</p>
-    <br/>
-    <p>Best regards,<br/><strong>${process.env.APP_NAME || "Eventify"} Team</strong></p>
-  </div>
-  `;
+//       rollNumber: "",   
+//       branch: "",       
+//       year: 1,          
+//       phone: "",
+//     };
 
-   sendMail(email, subject, text);
-    }
+//       const [inserted] = await db.insert(Users).values(payload).returning();
+   
+//       const subject = `🎉 Welcome to ${process.env.APP_NAME || 'Eventify'}!`;
+//     const text = `
+//   <div style="font-family:Arial, sans-serif; line-height:1.6;">
+//     <h2 style="color:#333;">Welcome Aboard!</h2>
+//     <p>Hello ${inserted.name || "User"},</p>
+//     <p>Thank you for registering with <strong>${process.env.APP_NAME || "Eventify"}</strong>.</p>
+//     <p>Your account has been created successfully, and you can now log in to explore all features.</p>
+//     <p>If you didn’t create this account, please ignore this email.</p>
+//     <br/>
+//     <p>Best regards,<br/><strong>${process.env.APP_NAME || "Eventify"} Team</strong></p>
+//   </div>
+//   `;
 
-    const token = generateToken(user._id.toString(), email, user.role);
+//    sendMail(email, subject, text);
+//     }
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+//     // const token = generateToken(user.id.toString(), email, user.role);
 
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        profileImage: user.profileImage,
-      },
-    });
-  } catch (error: any) {
-    console.error("Google Login Error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Authentication failed" });
-  }
-};
+//     // res.cookie("token", token, {
+//     //   httpOnly: true,
+//     //   secure: process.env.NODE_ENV === "production",
+//     //   sameSite: "strict",
+//     //   maxAge: 7 * 24 * 60 * 60 * 1000,
+//     // });
+
+//     // res.status(200).json({
+//     //   success: true,
+//     //   message: "Login successful",
+//     //   user: {
+//     //     id: user.id,
+//     //     name: user.name,
+//     //     username: user.username,
+//     //     email: user.email,
+         
+//     //   },
+//     // });
+//   } catch (error: any) {
+//     console.error("Google Login Error:", error.response?.data || error.message);
+//     res.status(500).json({ error: "Authentication failed" });
+//   }
+// };
 
 
 // logout
@@ -381,5 +396,16 @@ export const verifyResetOtpAndUpdatePassword = async (req: Request, res: Respons
   }  catch (error: any) {
     console.error("Password reset otp error:", error.message);
     res.status(500).json({ success: false, message: "Server error" });
+  }
+}
+
+
+export const userInfo = async (req:Request, res:Response):Promise<void> => {
+  try {
+    const user = (req as AuthRequest).user;
+    res.json(user)
+  } catch (error) {
+    console.error(error);
+    
   }
 }

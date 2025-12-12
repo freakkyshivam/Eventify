@@ -1,19 +1,10 @@
-import * as z from "zod";
-
-const identifierValidation = z
-  .string()
-  .trim()
-  .min(1, { message: "Email or username is required" })
-  .refine((value) => {
-    const isEmail = z.string().email().safeParse(value).success;
-    const isUsername = /^[a-zA-Z0-9_]{3,20}$/.test(value);
-    return isEmail || isUsername;
-  }, {
-    message: "Enter a valid email or username",
-  });
+ import * as z from "zod";
 
 export const loginValidation = z.object({
-  identifiers: identifierValidation,
+    email: z
+    .string()
+    .trim()
+    .email({ message: "Enter a valid email address" }),
   password: z
     .string()
     .trim()
@@ -36,4 +27,28 @@ export const signupValidation = z.object({
     .string()
     .trim()
     .min(6, { message: "Password must be at least 6 characters long" }),
+
+    branch: z
+    .string("Enter a valid branch")
+    .trim().min(3).max(8),
+    
+  year : z.
+  number().min(1).max(4),
+
+  rollNumber : z.
+  string().trim().min(10).max(15),
+
+  phone : z.
+  string().trim().min(10).max(15)
+
+
+});
+
+
+export const CompleteProfileSchema = z.object({
+  token: z.string(),
+  branch: z.string().min(1),
+  year: z.string().min(1),
+  rollNumber: z.string().min(1),
+  phone: z.string().min(7),
 });

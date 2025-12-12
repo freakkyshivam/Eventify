@@ -9,7 +9,7 @@ import { pgTable,
 
 import users from "./user.model";
 
-    export const eventModeEnum = pgEnum("event_mode", [
+    export const eventModeEnum = pgEnum("eventMode", [
         "online",
         "offline"
     ])
@@ -24,19 +24,19 @@ import users from "./user.model";
         'other'
     ])
 
-    export const paymentTypeEnum = pgEnum("payment_type",[
-        "free",
-        "paid"
+    export const paymentTypeEnum = pgEnum("paymentType",[
+        'free',
+        'paid'
     ])
 
-    export const eventStatusEnum = pgEnum("event_status",[
+    export const eventStatusEnum = pgEnum("eventStatus",[
         'upcoming',
         'ongoing',
         'completed',
         'cancelled'
     ])
 
-    export const eventTypeEnum = pgEnum("event_type",[
+    export const eventTypeEnum = pgEnum("eventType",[
         'solo',
         'team'
     ])
@@ -63,7 +63,7 @@ import users from "./user.model";
 
         capacity : integer("capacity").notNull().default(100),
 
-        eventCategory : eventCategoryEnum("event_category").notNull().default("other"), 
+        event_category : eventCategoryEnum("event_category").notNull().default("other"), 
 
         paymentType : paymentTypeEnum("payment_type").notNull().default("free"),
 

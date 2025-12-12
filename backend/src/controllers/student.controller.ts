@@ -4,19 +4,18 @@ import User from "../models/User.model";
 import { sendMail } from "../utils/nodeMailer";
 import  argon2  from "argon2";
 import uploadOnCoudinary from "../config/cloudinary";
+
+
+import db from '../db/db'
+import Users from '../db/schema/user.model'
+import Events from '../db/schema/event.model'
+
+
 interface AuthRequest extends Request {
   user?: CustomJwtPayload;
 }
 
-export const userInfo = async (req:Request, res:Response):Promise<void> => {
-  try {
-    const user = (req as AuthRequest).user;
-    res.json(user)
-  } catch (error) {
-    console.error(error);
-    
-  }
-}
+
 
 // update name
 export const updateName = async (req: Request, res: Response): Promise<void> => {

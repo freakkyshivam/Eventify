@@ -3,7 +3,7 @@ import 'dotenv/config'
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from 'cookie-parser'
-import authRouter from "./src/routes/authRoutes";
+import authRouter from "./src/routes/auth.route";
 import eventRouter from "./src/routes/eventRoutes";
 import paymentRouter from "./src/routes/paymentRoutes";
 import userRouter from "./src/routes/userRoutes";
@@ -29,5 +29,9 @@ app.use('/api/event',eventRouter)
 app.use('/api/user', userRouter)
 app.use('/api/admin',adminRouter)
 app.use('/api/payment',paymentRouter);
+
+app.get("/",(req,res)=>{
+    res.json("Server is running")
+})
 
 export default app;

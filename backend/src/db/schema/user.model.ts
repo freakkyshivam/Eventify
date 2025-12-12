@@ -11,7 +11,7 @@ import { pgTable,
     export const userRoleEnum = pgEnum("user_role",[
         'student',
         "coordinator",
-        "clud_admin",
+        "club_admin",
         "super_admin"
     ])
 
@@ -22,7 +22,7 @@ import { pgTable,
         username : varchar("username", {length:50}).notNull().unique(),
          email : varchar("email", {length:250}).notNull().unique(),
          password : varchar("password", {length:255}).notNull(),
-         role: userRoleEnum("role").notNull().default('student'),
+         user_role: userRoleEnum("user_role").notNull().default('student'),
 
 
          rollNumber : varchar("roll_number", {length:50}).notNull().unique(),
@@ -37,7 +37,7 @@ import { pgTable,
          verifyOtpExpiredAt : timestamp("verify_otp_expired_at", {withTimezone:true}),
 
          isAccountVerified : boolean('is_account_verified').notNull().default(false),
-
+        isProfileComplete : boolean("isProfileComplete").notNull().default(false),
          createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
          updatedAt: timestamp("updated_at", { withTimezone: true })
             .defaultNow()
