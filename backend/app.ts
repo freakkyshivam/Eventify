@@ -4,9 +4,9 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from 'cookie-parser'
 import authRouter from "./src/routes/auth.route";
-import eventRouter from "./src/routes/eventRoutes";
-import paymentRouter from "./src/routes/paymentRoutes";
-import userRouter from "./src/routes/userRoutes";
+import eventRouter from "./src/routes/event.route";
+import paymentRouter from "./src/routes/payment.route";
+import userRouter from "./src/routes/user.route";
 import adminRouter from "./src/routes/adminRoutes";
 const app = express();
 

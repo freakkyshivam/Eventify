@@ -9,10 +9,12 @@ export const findUserByEmail = async (email : string)=>{
         id: Users.id,
         email : Users.email,
         name : Users.name,
-        userName : Users.username,
-        role : Users.user_role,
-        profileImage: Users.profileImageUrl,
-        password : Users.password
+        username : Users.username,
+        role : Users.role,
+        profileImageUrl: Users.profileImageUrl,
+        password : Users.password,
+        resetOtpExpiredAt : Users.resetOtpExpiredAt,
+        resetOtp : Users.resetOtp
     })
     .from(Users)
     .where((table)=> eq(table.email, email))

@@ -26,7 +26,7 @@ export const signupValidation = z.object({
   password: z
     .string()
     .trim()
-    .min(6, { message: "Password must be at least 6 characters long" }),
+    .min(8, { message: "Password must be at least 6 characters long" }),
 
     branch: z
     .string("Enter a valid branch")
@@ -47,8 +47,26 @@ export const signupValidation = z.object({
 
 export const CompleteProfileSchema = z.object({
   token: z.string(),
-  branch: z.string().min(1),
-  year: z.string().min(1),
-  rollNumber: z.string().min(1),
+  branch: z.string(),
+  year: z.string().min(0),
+  rollNumber: z.string().min(10),
   phone: z.string().min(7),
 });
+
+
+export const resetPasswordValidation = z.object({
+  email : z.
+  string()
+  .trim()
+  .email({message: "Enter valid email address"}),
+
+  newPassword : z
+  .string()
+  .trim()
+  .min(8, { message: "Password must be at least 6 characters long" }),
+
+  rawOtp : z
+  .string()
+  .trim()
+  .min(6, { message: "OTP must be at least 6 characters long" })
+})

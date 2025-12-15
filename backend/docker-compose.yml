@@ -2,12 +2,13 @@ services:
   db:
     image: postgres:17
     restart: always
+    container_name: event_management
     ports:
       - 5432:5432
 
     environment:
-       POSTGRES_USER: shivam
-       POSTGRES_PASSWORD: shivam1234
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: Raj@2006
        POSTGRES_DB: event-management
       
     volumes:
