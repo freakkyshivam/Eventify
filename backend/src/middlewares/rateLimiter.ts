@@ -29,7 +29,7 @@ export const resetPasswordLimiter = rateLimit({
  
 export const updateUserNameLimiter = rateLimit({
   windowMs: 60 * 60 * 1000 * 24 * 7,
-  max: 1,
+  max: 5,
   message: "Too many username updates, Try after one week",
   standardHeaders: true,
   legacyHeaders: false,

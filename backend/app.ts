@@ -3,11 +3,9 @@ import 'dotenv/config'
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from 'cookie-parser'
-import authRouter from "./src/routes/auth.route";
-import eventRouter from "./src/routes/event.route";
-import paymentRouter from "./src/routes/payment.route";
-import userRouter from "./src/routes/user.route";
-import adminRouter from "./src/routes/adminRoutes";
+import authRouter from "./src/routes/main/auth.routes";
+import eventRouter from './src/routes/event/events.route'
+ 
 const app = express();
 
 const allowedOrigins = [
@@ -25,10 +23,7 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 app.use('/api/auth',authRouter);
-app.use('/api/event',eventRouter)
-app.use('/api/user', userRouter)
-app.use('/api/admin',adminRouter)
-app.use('/api/payment',paymentRouter);
+ app.use('/api/',eventRouter)
 
 app.get("/",(req,res)=>{
     res.json("Server is running")

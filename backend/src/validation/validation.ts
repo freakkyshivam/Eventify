@@ -1,72 +1,62 @@
- import * as z from "zod";
+import { z } from "zod";
 
-export const loginValidation = z.object({
-    email: z
-    .string()
-    .trim()
-    .email({ message: "Enter a valid email address" }),
-  password: z
-    .string()
-    .trim()
-    .min(6, { message: "Password must be at least 6 characters long" }),
+export const eventsValidation = z.object({
+  title: z.string().min(3).max(100),
+
+  description: z.string().min(10),
+
+  start_time: z.string().datetime(),
+
+  end_time: z.string().datetime(),
+
+  registration_deadline: z.string().datetime(),
+
+  location: z.string().min(3),
+
+  event_mode: z.enum(["online", "offline"]),
+
+  capacity: z.number().int().positive(),
+
+  event_category: z.enum([
+  "conference",
+  "webinar",
+  "workshop",
+  "competition",
+  "technology",
+  "coding",
+  "other",
+]),
+
+  payment_type: z.enum(["free", "paid"]),
+
+  price: z.number().nonnegative(),
+})
+.refine(data => data.end_time > data.start_time, {
+  message: "End time must be after start time",
+  path: ["end_time"],
+})
+.refine(data => data.payment_type === "free" || data.price > 0, {
+  message: "Price must be greater than 0 for paid events",
+  path: ["price"],
 });
 
+export const updateEventValidation = eventsValidation.partial()
 
-export const signupValidation = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, { message: "Name is required" }),
-
-  email: z
-    .string()
-    .trim()
-    .email({ message: "Enter a valid email address" }),
-
-  password: z
-    .string()
-    .trim()
-    .min(8, { message: "Password must be at least 6 characters long" }),
-
-    branch: z
-    .string("Enter a valid branch")
-    .trim().min(3).max(8),
-    
-  year : z.
-  number().min(1).max(4),
-
-  rollNumber : z.
-  string().trim().min(10).max(15),
-
-  phone : z.
-  string().trim().min(10).max(15)
-
-
+ 
+export const updateNameValidation = z.object({
+  updatedName : z.string().nonempty().min(5).max(255)
 });
 
+export const updateusernameValidation = z.object({
+  updatedUsername : z.string().nonempty().trim().min(5).max(255)
+})
 
-export const CompleteProfileSchema = z.object({
-  token: z.string(),
-  branch: z.string(),
-  year: z.string().min(0),
-  rollNumber: z.string().min(10),
-  phone: z.string().min(7),
-});
-
-
-export const resetPasswordValidation = z.object({
+export const magicLinkValidation = z.object({
   email : z.
   string()
   .trim()
   .email({message: "Enter valid email address"}),
-
-  newPassword : z
-  .string()
-  .trim()
-  .min(8, { message: "Password must be at least 6 characters long" }),
-
-  rawOtp : z
-  .string()
-  .trim()
-  .min(6, { message: "OTP must be at least 6 characters long" })
 })
+
+
+ 

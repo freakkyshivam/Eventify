@@ -1,16 +1,20 @@
 import {
   pgTable,
-  serial,
   varchar,
   text,
   timestamp,
   integer,
   pgEnum,
+  uuid
 } from "drizzle-orm/pg-core";
 
 import users from "./user.model";
 
-export const eventModeEnum = pgEnum("event_mode", ["online", "offline"]);
+ 
+export const eventModeEnum = pgEnum("event_mode", [
+  "online",
+  "offline",
+]);
 
 export const eventCategoryEnum = pgEnum("event_category", [
   "conference",
@@ -22,55 +26,55 @@ export const eventCategoryEnum = pgEnum("event_category", [
   "other",
 ]);
 
-export const paymentTypeEnum = pgEnum("payment_type", ["free", "paid"]);
-
 export const eventStatusEnum = pgEnum("event_status", [
   "upcoming",
-  "ongoing",
-  "completed",
   "cancelled",
 ]);
 
-export const eventTypeEnum = pgEnum("event_type", ["solo", "team"]);
+export const paymentTypeEnum = pgEnum("payment_type", [
+  "free",
+  "paid",
+]);
+ 
 
 export const events = pgTable("events", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").defaultRandom().primaryKey(),
 
   title: varchar("title", { length: 200 }).notNull(),
   description: text("description").notNull(),
 
   bannerUrls: text("banner_urls").array().notNull().default([]),
 
-  startTime: timestamp("start_time", { withTimezone: true }).notNull(),
-  endTime: timestamp("end_time", { withTimezone: true }).notNull(),
-  registrationDeadline: timestamp("registration_deadline", { withTimezone: true }).notNull(),
+  start_time: timestamp("start_time", { withTimezone: true }).notNull(),
+  end_time: timestamp("end_time", { withTimezone: true }).notNull(),
+  registration_deadline: timestamp("registration_deadline", {
+    withTimezone: true,
+  }).notNull(),
 
-  location: varchar("location", { length: 200 }).notNull(),
+  location: varchar("location", { length: 200 }),
 
-  eventMode: eventModeEnum("event_mode").notNull().default("online"),
+  event_mode: eventModeEnum("event_mode").notNull(),
 
   capacity: integer("capacity").notNull().default(100),
 
-  eventCategory: eventCategoryEnum("event_category").notNull().default("other"),
+  event_category: eventCategoryEnum("event_category").notNull(),
 
-  paymentType: paymentTypeEnum("payment_type").notNull().default("free"),
-
+  payment_type: paymentTypeEnum("payment_type").notNull(),
   price: integer("price").notNull().default(0),
 
-  eventStatus: eventStatusEnum("event_status").notNull().default("upcoming"),
+  event_status: eventStatusEnum("event_status")
+    .notNull()
+    .default("upcoming"),
 
-  eventType: eventTypeEnum("event_type").notNull().default("solo"),
-  minTeamSize: integer("min_team_size").notNull().default(1),
-  maxTeamSize: integer("max_team_size").notNull().default(1),
 
-  organizingClub: varchar("organizing_club", { length: 100 }).notNull(),
+  authorId: uuid("author_id")
+    .notNull()
+    .references(() => users.id),
 
-  allowedBranches: text("allowed_branches").array().notNull().default([]),
-  allowedYears: integer("allowed_years").array().notNull().default([]),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 
-  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .$onUpdate(() => new Date())
