@@ -5,7 +5,8 @@ import morgan from "morgan";
 import cookieParser from 'cookie-parser'
 import authRouter from "./src/routes/main/auth.routes";
 import eventRouter from './src/routes/event/events.route'
- 
+import userRouter from './src/routes/user/user.route'
+import adminRouter from './src/routes/admin/main.routes';
 const app = express();
 
 const allowedOrigins = [
@@ -23,7 +24,9 @@ app.use(morgan("dev"));
 app.use(cookieParser());
 
 app.use('/api/auth',authRouter);
- app.use('/api/',eventRouter)
+ app.use('/api/events',eventRouter);
+ app.use('/api/user',userRouter)
+ app.use('/api/admin', adminRouter)
 
 app.get("/",(req,res)=>{
     res.json("Server is running")
