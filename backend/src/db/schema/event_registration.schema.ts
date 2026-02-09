@@ -3,10 +3,10 @@ import { pgTable, uuid, boolean, varchar,pgEnum,timestamp } from "drizzle-orm/pg
 import events from "./event.model";
 import users from "./user.model";
 
-export const registration_status_enum = pgEnum('registration_status', ["registered", "cancelled", "attended"])
+export const registration_status_enum = pgEnum('registration_status', ["pending","registered", "cancelled", "attended"])
 
 
-export const payment_status_enum = pgEnum("payment_status",["pending", "completed", "failed"])
+
 
 export const event_registration_table = pgTable('event_registration',{
     id : uuid().primaryKey().defaultRandom(),
@@ -18,9 +18,6 @@ export const event_registration_table = pgTable('event_registration',{
     registration_date : timestamp("registration_date",{withTimezone:true}).defaultNow(),
 
     registration_status : registration_status_enum().default("registered"),
-
-    payment_id : payment_status_enum().default('pending'),
-    razorpay_order_id : varchar("razorpay_order_id",{length : 50}).notNull(),
 
     ticket_code : varchar("ticket_code", {length:50}).notNull(),
 

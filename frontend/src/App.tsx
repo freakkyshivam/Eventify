@@ -1,14 +1,15 @@
   import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login"
-  import  Register  from "./pages/Register"
-  import { ToastContainer } from 'react-toastify';
  
+  import { ToastContainer } from 'react-toastify';
+ import HomePage from "./pages/Home";
+import Navbar from "./components/Navbar";
  const App = () => {
    return (
      <div>
       <ToastContainer/>
-      <Login/>
-      <Register/>
+      <Navbar/>
+      <HomePage/>
+     
       <Dashboard/>
      </div>
    )
