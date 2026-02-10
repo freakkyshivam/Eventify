@@ -17,8 +17,12 @@ const allowedOrigins = [
 
 // middlewares
 app.use(cors({
-    origin : allowedOrigins
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Headers"]
 }));
+
 app.use(express.json());
 app.use(express.urlencoded())
 app.use(morgan("dev"));

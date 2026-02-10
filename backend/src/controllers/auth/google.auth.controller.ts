@@ -82,27 +82,28 @@ export const googleAuth = async (req :Request,  res:Response)=>{
             .cookie("access_token", accessToken,{
                 httpOnly : true,
                 secure : process.env.NODE_ENV === "production",
-                sameSite : "strict",
-                maxAge : 5 * 60 * 1000
+                sameSite : "lax",
+                maxAge : 30* 24 * 60 * 60 * 1000
             })
             .cookie("refresh_token", refreshToken,{
                 httpOnly : true,
                 secure : process.env.NODE_ENV === "production",
-                sameSite : "strict",
+                sameSite : "lax",
                 maxAge : 30* 24 * 60 * 60 * 1000
             })
             .cookie("sid",sid,{
                  httpOnly : true,
                 secure : process.env.NODE_ENV === "production",
-                sameSite : "strict",
+                sameSite : "lax",
                 maxAge : 30* 24 * 60 * 60 * 1000
             })
-            .status(200)
-            .json({
-                success : true,
-                msg : "Login successful",
-                accessToken
-            })
+            // .status(200)
+            // .json({
+            //     success : true,
+            //     msg : "Login successful",
+            //     accessToken
+            // })
+            .redirect('http://localhost:5173')
 
             const userAgent = req.headers['user-agent'];
         

@@ -122,7 +122,7 @@ const [registration] = await db.transaction(async (tx) => {
 const order = await razorpay.orders.create({
   amount: event.price * 100,
   currency: "INR",
-  receipt: `event_${eventId}_${Date.now()}`,
+  receipt: `order_${Date.now()}`,
 });
 
  

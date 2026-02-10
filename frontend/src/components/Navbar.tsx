@@ -1,21 +1,34 @@
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { magicLinkAPI } from "@/api/axiosInstance";
+import axios from "axios";
 
 const Navbar = () => {
 
     const [showAuthModal, setShowAuthModal] = useState(false);
   const [email, setEmail] = useState("");
 
-  const handleMagicLink = () => {
-    // Handle magic link authentication
-    console.log("Sending magic link to:", email);
+  const handleMagicLink = async (email : string) => {
+     try {
+      console.log(email);
+      
+      const res = await magicLinkAPI(email)
+
+      if(!res){
+        return;
+      }
+
+      if(res.success){
+        console.log(res);
+      }
+     } catch (error) {
+      console.log(error);
+      
+     }
   };
 
-  const handleGoogleLogin = () => {
-    // Handle Google authentication
-    console.log("Logging in with Google");
-  };
+   
 
   return (
     <div className="bg-black sticky">
@@ -47,7 +60,7 @@ const Navbar = () => {
               </div>
               
               <Button 
-                onClick={handleMagicLink} 
+                onClick={()=>handleMagicLink(email)} 
                 className="w-full bg-black text-white hover:bg-gray-800"
               >
                 Continue with Magic Link
@@ -62,8 +75,8 @@ const Navbar = () => {
                 </div>
               </div>
               
-              <Button
-                onClick={handleGoogleLogin}
+              <a
+              href="http://localhost:3000/api/auth/google"
                 className="w-full bg-white text-black border border-gray-300 hover:bg-gray-50 flex items-center justify-center gap-2"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -85,7 +98,7 @@ const Navbar = () => {
                   />
                 </svg>
                 Continue with Google
-              </Button>
+              </a>
             </div>
           </div>
         </div>

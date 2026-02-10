@@ -1,14 +1,13 @@
   import Dashboard from "./pages/Dashboard";
  
   import { ToastContainer } from 'react-toastify';
- import HomePage from "./pages/Home";
-import Navbar from "./components/Navbar";
+ 
+import Layout from "./pages/Layout";
  const App = () => {
    return (
      <div>
       <ToastContainer/>
-      <Navbar/>
-      <HomePage/>
+      <Layout/>
      
       <Dashboard/>
      </div>
