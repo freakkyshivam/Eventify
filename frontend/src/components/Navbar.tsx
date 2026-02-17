@@ -1,83 +1,225 @@
-import { Calendar } from "lucide-react";
+import { Calendar, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { magicLinkAPI } from "@/api/axiosInstance";
-import axios from "axios";
+import { magicLinkAPI } from "@/api/magicLinkApi";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-
-    const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+ 
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  
+  const navigate = useNavigate();
 
-  const handleMagicLink = async (email : string) => {
-     try {
-      console.log(email);
-      
-      const res = await magicLinkAPI(email)
+   
+  const isAuthenticated = false;  
+  const userRole = "user";  
 
-      if(!res){
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleMagicLink = async (email: string) => {
+    try {
+      setError("");
+      setSuccess(false);
+
+      if (!email.trim()) {
+        setError("Email is required");
         return;
       }
 
-      if(res.success){
-        console.log(res);
+      if (!validateEmail(email)) {
+        setError("Please enter a valid email address");
+        return;
       }
-     } catch (error) {
-      console.log(error);
-      
-     }
+
+      setIsLoading(true);
+
+      const res = await magicLinkAPI(email);
+
+      if (!res) {
+        setError("Something went wrong. Please try again.");
+        return;
+      }
+
+      if (res.success) {
+        setSuccess(true);
+        setEmail("");
+        setTimeout(() => {
+          setShowAuthModal(false);
+          setSuccess(false);
+        }, 3000);
+      } else {
+        setError(res.msg || "Failed to send magic link");
+      }
+    } catch (error: any) {
+      console.error("Magic link error:", error);
+      setError(
+        error?.response?.data?.msg ||
+          "Failed to send magic link. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-   
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !isLoading) {
+      handleMagicLink(email);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowAuthModal(false);
+    setEmail("");
+    setError("");
+    setSuccess(false);
+  };
+
+ 
 
   return (
-    <div className="bg-black sticky">
-         {showAuthModal && (
-        <div className="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+    <div className="bg-black sticky top-0 z-40 shadow-lg">
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={handleCloseModal}
+        >
+          <div
+            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl transform transition-all"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-black">Get Started</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Get Started</h2>
               <button
-                onClick={() => setShowAuthModal(false)}
-                className="text-gray-400 hover:text-black text-2xl"
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-900 transition-colors p-1 hover:bg-gray-100 rounded-full"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-5 h-5" />
               </button>
             </div>
-            
+
+            {/* Success Message */}
+            {success && (
+              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 text-green-800">
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="font-medium">
+                    Magic link sent! Check your email.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Form */}
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-black mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Email Address
                 </label>
                 <input
+                  id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
+                  onKeyPress={handleKeyPress}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-black"
+                  disabled={isLoading || success}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-colors ${
+                    error
+                      ? "border-red-300 focus:ring-red-500 focus:border-red-500"
+                      : "border-gray-300"
+                  } disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                  autoComplete="email"
                 />
+                {error && (
+                  <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <svg
+                      className="w-4 h-4"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    {error}
+                  </p>
+                )}
               </div>
-              
-              <Button 
-                onClick={()=>handleMagicLink(email)} 
-                className="w-full bg-black text-white hover:bg-gray-800"
+
+              <Button
+                onClick={() => handleMagicLink(email)}
+                disabled={isLoading || success}
+                className="w-full bg-black text-white hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed py-6 text-base rounded-lg transition-all duration-200"
               >
-                Continue with Magic Link
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Sending Magic Link...
+                  </>
+                ) : success ? (
+                  <>
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Sent Successfully
+                  </>
+                ) : (
+                  "Continue with Magic Link"
+                )}
               </Button>
-              
-              <div className="relative">
+
+              {/* Divider */}
+              <div className="relative my-6">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or</span>
+                  <span className="px-4 bg-white text-gray-500 font-medium">
+                    Or continue with
+                  </span>
                 </div>
               </div>
-              
+
+              {/* Google Sign In */}
               <a
-              href="http://localhost:3000/api/auth/google"
-                className="w-full bg-white text-black border border-gray-300 hover:bg-gray-50 flex items-center justify-center gap-2"
+                href={`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/auth/google`}
+                className="w-full bg-white text-gray-700 border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 flex items-center justify-center gap-3 py-3 rounded-lg transition-all duration-200 font-medium"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -99,32 +241,70 @@ const Navbar = () => {
                 </svg>
                 Continue with Google
               </a>
+
+              {/* Terms */}
+              <p className="text-xs text-gray-500 text-center mt-4">
+                By continuing, you agree to our{" "}
+                <a href="#" className="underline hover:text-gray-700">
+                  Terms of Service
+                </a>{" "}
+                and{" "}
+                <a href="#" className="underline hover:text-gray-700">
+                  Privacy Policy
+                </a>
+              </p>
             </div>
           </div>
         </div>
       )}
-    <nav className="border-b bg-transparent">
+
+      {/* Navbar */}
+      <nav className="border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-2">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
               <Calendar className="h-6 w-6 text-white" />
               <span className="text-xl font-bold text-white">Eventify</span>
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                onClick={() => setShowAuthModal(true)}
-                className="bg-white text-black hover:bg-gray-400"
-              >
-                Start Today
-              </Button>
+            </Link>
+
+             
+
+            {/* Right Section */}
+            <div className="flex items-center gap-3">
+              {isAuthenticated ? (
+                <>
+                  <Button
+                    onClick={() => navigate("/dashboard")}
+                    variant="ghost"
+                    className="hidden md:flex text-white hover:bg-gray-800"
+                  >
+                    Dashboard
+                  </Button>
+                  <div className="w-10 h-10 bg-linear-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
+                    <span className="text-white font-semibold text-sm">
+                      {userRole === "admin" ? "A" : userRole === "organizer" ? "O" : "U"}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <Button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-white text-black hover:bg-gray-200 transition-all duration-200 px-6 rounded-lg font-medium"
+                >
+                  Start Today
+                </Button>
+              )}
+
+              
             </div>
           </div>
+
+         
         </div>
       </nav>
-
     </div>
-     
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

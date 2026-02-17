@@ -26,6 +26,8 @@ export const createEvent = async (req: Request, res: Response) => {
     const validationResult = eventsValidation.safeParse(req.body);
 
     if (validationResult.error) {
+      console.log(validationResult.error);
+      
       return res.status(400).json({
         success: false,
         msg: validationResult?.error?.flatten,

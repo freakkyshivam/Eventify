@@ -72,7 +72,7 @@ export const tokenRefresh = async (req: Request, res: Response) => {
         });
       }
 
-      const newAccessToken =  await generateAccessToken(user?.id, user?.email, user?.role);
+      const newAccessToken =  await generateAccessToken(user?.id,  user?.role);
       const newRefreshToken = await generateRefreshToken();
 
       const hash_refresh_token = crypto.createHmac("sha256", 

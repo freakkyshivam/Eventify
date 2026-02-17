@@ -1,199 +1,130 @@
 import { Request, Response } from "express";
-import { CustomJwtPayload } from "../../utils/customJwtPayloads";
- 
-import {
-  generateAccessToken,
-  generateMagicLinkToken,
-  generateRefreshToken
-} from "../../utils/generateToken";
- 
-import {
-  magicLinkValidation,
-} from "../../validation/validation";
+
+import { generateMagicLinkToken } from "../../utils/generateToken";
+import { magicLinkValidation } from "../../validation/validation";
 import db from "../../db/db";
-import Users, { users } from "../../db/schema/user.model";
+
 import { findUserByEmail } from "../../services/user.service";
-import { eq, type InferModel } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import {
   sendLoginMagicLink,
   sendMagicLinkMail,
-  sendWelcomeMail,
 } from "../../services/mail/sendMail.service";
 import magiclink from "../../db/schema/magicLink.schema";
 import crypto from "node:crypto";
-import sessions from '../../db/schema/session.schema';
-import {UAParser} from 'ua-parser-js';
+
+import { handleNewUserRegistration } from "../../helper/handleNewUserRegistration";
+import { handleLogin } from "../../helper/handleLoginHelper";
+
+// Constants
+const MAGIC_LINK_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
 export const magicLink = async (req: Request, res: Response): Promise<void> => {
   try {
     const validationResult = await magicLinkValidation.safeParseAsync(req.body);
 
     if (validationResult.error) {
-      res
-        .status(400)
-        .json({ success: false, msg: validationResult.error.format() });
+      res.status(400).json({
+        success: false,
+        msg: validationResult.error.format(),
+      });
       return;
     }
-    const { email } = validationResult.data;
 
+    const { email } = validationResult.data;
     const existingUser = await findUserByEmail(email);
+    const token = await generateMagicLinkToken();
+    const magicLinkUrl = `${process.env.SERVER_URL}/api/auth/verify?token=${token}`;
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     if (existingUser) {
-      const token = await generateMagicLinkToken();
-      const magicLink = `${process.env.SERVER_URL}/api/auth/verify?token=${token}`;
+      // Delete any existing magic links for this email
+      await db.delete(magiclink).where(eq(magiclink.email, email));
 
       await db.insert(magiclink).values({
-        hashed_token: token,
+        hashed_token: hashedToken,
         email,
         purpose: "login",
-        expired_at: new Date(Date.now() + 10 * 60 * 1000),
+        expired_at: new Date(Date.now() + MAGIC_LINK_EXPIRY_MS),
       });
 
-      sendLoginMagicLink(email,magicLink, existingUser.name)
-       res.status(200).json({
-        success: true,
-        msg : "Magic link send to email if exists"
-      })
-      return;
+      await sendLoginMagicLink(email, magicLinkUrl, existingUser.name);
+    } else {
+      await db.insert(magiclink).values({
+        hashed_token: hashedToken,
+        email,
+        purpose: "register",
+        expired_at: new Date(Date.now() + MAGIC_LINK_EXPIRY_MS),
+      });
+
+      await sendMagicLinkMail(email, magicLinkUrl);
     }
-
-    const token = await generateMagicLinkToken();
-    const magicLink = `${process.env.SERVER_URL}/api/auth/verify?token=${token}`;
-
-    await db.insert(magiclink).values({
-      hashed_token: token,
-      email,
-      purpose: "register",
-      expired_at: new Date(Date.now() + 10 * 60 * 1000),
-    });
-
-    await sendMagicLinkMail(email, magicLink);
 
     res.status(201).json({
       success: true,
-      msg: "Magic link send to email if exists",
+      msg: "Magic link sent to email if it exists",
     });
   } catch (error: any) {
-    console.error("Magic link  error:", error?.message ?? error);
+    console.error("Magic link error:", error?.message ?? error);
     res.status(500).json({ success: false, msg: "Server error" });
   }
 };
 
-export const verifyMagicLink = async (req: Request, res: Response) => {
+export const verifyMagicLink = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   try {
     const { token } = req.query;
 
-    if (!token) {
-      return res.status(400).json({ msg: "Token missing" });
+    if (!token || typeof token !== "string") {
+      res.status(400).json({ success: false, msg: "Token missing" });
+      return;
     }
 
-    const tokenHash = crypto
-      .createHash("sha256")
-      .update(token as string)
-      .digest("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
 
     const [data] = await db
       .select()
       .from(magiclink)
-      .where(eq(magiclink.hashed_token, token as string));
+      .where(eq(magiclink.hashed_token, tokenHash));
 
     if (!data) {
-      return res
-        .status(401)
-        .json({ success: false, msg: "Invalid or expired token" });
-    }
-
-    if (new Date(data.expired_at) < new Date()) {
-      return res
-        .status(401)
-        .json({ success: false, msg: "Magic link expired" });
-    }
-
-    // Register account
-    if(data.purpose === 'register'){
-       const name = data.email.split("@")[0];
-
-    await db.insert(users).values({
-      email: data.email,
-      name,
-      isAccountVerified: true,
-    });
-
-    await sendWelcomeMail(data.email, name);
-
-    res
-      .status(201)
-      .json({
-        success: true,
-        msg: "Registration successful",
+      res.status(401).json({
+        success: false,
+        msg: "Invalid or expired token",
       });
-
-    }
-    // Login 
-    else{
-       const user = await findUserByEmail(data.email);
-
-    if(!user){
-      return res.status(401).json({
-        success:false,
-        msg : "Unauthorized"
-      })
-    }
-        const accessToken = await generateAccessToken(user.id, user.email, user.role);
-          const refreshToken = await generateRefreshToken();
-    const sid = crypto.randomBytes(32).toString('base64');
-    
-             res
-                .cookie("access_token", accessToken,{
-                    httpOnly : true,
-                    secure : process.env.NODE_ENV === "production",
-                    sameSite : "lax",
-                    maxAge : 5 * 60 * 1000
-                })
-                .cookie("refresh_token", refreshToken,{
-                    httpOnly : true,
-                    secure : process.env.NODE_ENV === "production",
-                    sameSite : "lax",
-                    maxAge : 30* 24 * 60 * 60 * 1000
-                })
-                .cookie("sid",sid,{
-                 httpOnly : true,
-                secure : process.env.NODE_ENV === "production",
-                sameSite : "lax",
-                maxAge : 30* 24 * 60 * 60 * 1000
-            })
-        .redirect('http://localhost:5173')
-
-                const userAgent = req.headers['user-agent'];
-        
-            const parser = new UAParser(userAgent);
-        const result = parser.getResult();
-        
-            const d = {
-          device: result.device.type || "desktop",
-          os: result.os.name + " " + result.os.version,
-          browser: result.browser.name + " " + result.browser.version,
-        }
-
-         
-                const hash_refresh_token = crypto
-                    .createHmac('sha256',process.env.HASH_SECRET!)
-                    .update(refreshToken)
-                    .digest('hex')
-
-      await db.insert(sessions).values({
-            sid ,
-            user_id : user.id,
-            hash_refresh_token ,
-            device : d.device,
-            os : d.os,
-            browser : d.browser
-        })
+      return;
     }
 
-   
-      await db.delete(magiclink).where(eq(magiclink.id, data.id));
+    // Check expiration
+    if (new Date(data.expired_at) < new Date()) {
+      // Delete expired token
+      await db.delete(magiclink).where(eq(magiclink.hashed_token, tokenHash));
+      res.status(401).json({
+        success: false,
+        msg: "Magic link expired",
+      });
+      return;
+    }
 
+    // Handle registration
+    if (data.purpose === "register") {
+      await handleNewUserRegistration(data, res);
+      return;
+    }
+
+    // Handle login
+    if (data.purpose === "login") {
+      await handleLogin(data, req, res);
+      return;
+    }
+
+    // Unknown purpose
+    res.status(400).json({
+      success: false,
+      msg: "Invalid magic link purpose",
+    });
   } catch (error: any) {
     console.error("Magic link verification error:", error?.message ?? error);
     res.status(500).json({ success: false, msg: "Server error" });

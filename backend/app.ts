@@ -8,6 +8,7 @@ import eventRouter from './src/routes/event/events.route'
 import userRouter from './src/routes/user/user.route'
 import adminRouter from './src/routes/admin/main.routes';
 import paymentRouter from './src/routes/payment/payment.routes'
+import { authMiddleware } from "./src/middlewares/authMiddleware";
 const app = express();
 
 const allowedOrigins = [
@@ -33,6 +34,33 @@ app.use(cookieParser());
  app.use('/api/user',userRouter)
  app.use('/api/admin', adminRouter)
  app.use('/api/payment', paymentRouter)
+
+ app.get("/api/me", authMiddleware, (req, res) => {
+
+    const user = req.user;
+    const {access_token } = req.cookies;
+  res.json({
+    user : {
+        id : user?.id,
+        name : user?.name,
+        email : user?.email,
+        role : user?.role
+    },
+    access_token
+  });
+});
+
+app.post("/api/logout", (req, res) => {
+
+  res.clearCookie("access_token");
+  res.clearCookie("refresh_token");
+  res.clearCookie("sid");
+
+  res.json({ message: "Logged out" });
+
+});
+
+
 app.get("/",(req,res)=>{
     res.json("Server is running")
 })

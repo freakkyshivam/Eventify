@@ -2,13 +2,13 @@ import jwt from 'jsonwebtoken'
 import crypto from 'node:crypto'
  
 
-export const generateAccessToken = async (userId:string,email:string, role:string) =>{
+export const generateAccessToken = async (userId:string, role:string) =>{
     try {
         if(!process.env.JWT_SECRET){
         throw new Error("JWT SECRET is not defined in enironment variables")
     }
     const token = jwt.sign(
-      { id: userId,email, role },
+      { id: userId, role },
       process.env.JWT_SECRET as string,
       { expiresIn: "5min" }
     );

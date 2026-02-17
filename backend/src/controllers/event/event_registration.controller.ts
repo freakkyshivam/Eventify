@@ -1,154 +1,175 @@
 import { Request, Response } from "express";
-
 import { events } from "../../db/schema/event.model";
 import { event_registration_table } from "../../db/schema/event_registration.schema";
 import db from "../../db/db";
-import { eq, sql,and,gt } from "drizzle-orm";
+import { eq, sql, and, gt } from "drizzle-orm";
 import { generateTicketCode } from "../../utils/generateTicket";
 import { payment_table } from "../../db/schema/payment_schema";
 import { getRazorpay } from "../../config/razorpay";
+ 
+import { handleFreeEventRegistration } from "../../helper/handleFreeEventRegistraion";
+import { handlePaidEventRegistration } from "../../helper/handlePaidEventRegistraion";
+ 
+class EventRegistrationError extends Error {
+  constructor(
+    message: string,
+    public statusCode: number = 400
+  ) {
+    super(message);
+    this.name = "EventRegistrationError";
+  }
+}
 
-const razorpay = getRazorpay();
-
-export const event_registration = async (req: Request, res: Response) => {
+export const event_registration = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { eventId } = req.params;
     const user = req.user;
 
+    // Validate user authentication
     if (!user?.id) {
-      return res.status(401).json({
-        suceess: false,
+      res.status(401).json({
+        success: false,
         msg: "Unauthorized",
       });
+      return;
     }
 
+    if(user.role !== 'attendee'){
+       res.status(400).json({
+        success : false,
+        msg : "Only user can join in events"
+      })
+      return;
+    }
+
+    // Validate event ID
     if (!eventId) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
-        msg: "Event id is required",
+        msg: "Event ID is required",
       });
+      return;
     }
 
+    // Fetch event details
     const [event] = await db
       .select()
       .from(events)
       .where(eq(events.id, eventId));
 
     if (!event) {
-      return res.status(400).json({
+      res.status(404).json({
         success: false,
         msg: "Event not found",
       });
+      return;
     }
 
+    // Validate event availability
     if (event.capacity === 0) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
-        msg: "Seat is not availble",
+        msg: "No seats available",
       });
+      return;
     }
 
     if (event.registration_deadline < new Date()) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
-        msg: "Registration is closed for this event",
+        msg: "Registration deadline has passed",
       });
+      return;
     }
 
-    // generate ticket
-    const ticket_code = generateTicketCode();
+    // Check for existing registration
+    const [existingRegistration] = await db
+      .select()
+      .from(event_registration_table)
+      .where(
+        and(
+          eq(event_registration_table.user_id, user.id),
+          eq(event_registration_table.event_id, eventId)
+        )
+      );
 
-    // for free event 
+    // Handle existing registrations
+    if (existingRegistration) {
+      if (existingRegistration.registration_status === "registered") {
+        res.status(400).json({
+          success: false,
+          msg: "Already registered for this event",
+        });
+        return;
+      }
+
+      if (existingRegistration.registration_status === "pending") {
+        const [existingPayment] = await db
+          .select()
+          .from(payment_table)
+          .where(eq(payment_table.registration_id, existingRegistration.id));
+
+        if (existingPayment) {
+          res.status(200).json({
+            success: true,
+            msg: "Payment already pending",
+            order_id: existingPayment.razorpay_order_id,
+            amount: existingPayment.amount,
+            currency: existingPayment.currency,
+            key: process.env.RAZORPAY_KEY_ID,
+          });
+          return;
+        }
+      }
+    }
+
+    // Generate unique ticket code
+    const ticketCode = generateTicketCode();
+
+    // Handle free events
     if (event.payment_type === "free") {
-
-  const result = await db.transaction(async (tx) => {
-    // decrent event capcity if greater than 0
-    const updated = await tx
-      .update(events)
-      .set({ capacity: sql`${events.capacity} - 1` })
-      .where(and(eq(events.id, eventId), gt(events.capacity, 0)))
-      .returning({ id: events.id });
-
-    if (updated.length === 0) {
-      throw new Error("NO_SEATS");
+      await handleFreeEventRegistration(eventId, user.id, ticketCode, res);
+      return;
     }
 
-    const [registration] = await tx
-      .insert(event_registration_table)
-      .values({
-        user_id: user.id,
-        event_id: eventId,
-        registration_status: "registered",
-        ticket_code,
-      })
-      .onConflictDoNothing()
-      .returning({
-        id: event_registration_table.id,
-        ticket_code: event_registration_table.ticket_code,
+    // Handle paid events
+    await handlePaidEventRegistration(eventId, user.id, ticketCode, event.price, res);
+  } catch (error: any) {
+    console.error("Event registration error:", error?.message ?? error);
+
+    // Handle specific error cases
+    if (error.message === "NO_SEATS") {
+      res.status(400).json({
+        success: false,
+        msg: "No seats available",
       });
-
-    if (!registration) {
-      throw new Error("ALREADY_REGISTERED");
+      return;
     }
 
-    return registration;
-  });
+    if (error.message === "ALREADY_REGISTERED") {
+      res.status(400).json({
+        success: false,
+        msg: "Already registered for this event",
+      });
+      return;
+    }
 
-  return res.status(201).json({
-    success: true,
-    msg: "Successfully joined free event",
-    data: result,
-  });
-}
+    if (error instanceof EventRegistrationError) {
+      res.status(error.statusCode).json({
+        success: false,
+        msg: error.message,
+      });
+      return;
+    }
 
- 
-const [registration] = await db.transaction(async (tx) => {
-  const [r] = await tx
-    .insert(event_registration_table)
-    .values({
-      user_id: user.id,
-      event_id: eventId,
-      registration_status: "pending",
-      ticket_code,
-    })
-    .onConflictDoNothing()
-    .returning({ id: event_registration_table.id });
-
-  if (!r) throw new Error("ALREADY_REGISTERED");
-  return [r];
-});
-
- 
-const order = await razorpay.orders.create({
-  amount: event.price * 100,
-  currency: "INR",
-  receipt: `order_${Date.now()}`,
-});
-
- 
-await db.insert(payment_table).values({
-  registration_id: registration.id,
-  razorpay_order_id: order.id,
-  amount: event.price.toString(),
-  currency: "INR",
-  payment_status: "pending",
-});
-
-
-
-return res.status(201).json({
-  success: true,
-  order_id: order.id,
-  amount: order.amount,
-  currency: order.currency,
-  key: process.env.RAZORPAY_KEY_ID,
-});
-  
-  } catch (error) {
-    console.error("Event registration error ", error);
     res.status(500).json({
       success: false,
-      msg: "Event registration error",
+      msg: "Event registration failed",
     });
   }
 };
+
+ 

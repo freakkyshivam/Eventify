@@ -1,15 +1,16 @@
-import Navbar from "@/components/Navbar"
-import HomePage from "./Home"
-import Events from "./Events"
-import Footer from '@/components/Footer'
+ import HomePage from "./Home"
+ import About from "./About"
+ import OrganizerRequest from "./OrganizerRequest"
+import CTA from "./CTA"
+
 
 const Layout = () => {
   return (
     <div>
-        <Navbar/>
         <HomePage/>
-        <Events/>
-        <Footer/>
+        <About/>
+        <CTA/>
+        <OrganizerRequest/>
     </div>
   )
 }
