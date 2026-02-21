@@ -15,5 +15,12 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  token: string;
+  role : 'atendee' | 'admin' | 'organizer';
+  isAccountVerified : boolean;
+  profileImage : string;
 }
+
+export type AuthSession = {
+  user: User;
+  access_token: string;
+};

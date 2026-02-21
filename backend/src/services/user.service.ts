@@ -6,11 +6,22 @@ export const findUserByEmail = async (email : string)=>{
     try {
     const [user] = await db.select()
     .from(Users)
-    .where((table)=> eq(table.email, email))
+    .where( eq(Users.email, email))
     return user;
     } catch (error) {
         console.error(error)
     }
 }
 
+
+export const findUserById = async (id : string)=>{
+    try {
+        const [user] = await db.select()
+        .from(Users)
+        .where(eq(Users.id, id))
+        return user;
+    } catch (error) {
+        console.error(error)
+    }
+}
  

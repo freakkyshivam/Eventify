@@ -1,8 +1,11 @@
 import { Calendar, X, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { magicLinkAPI } from "@/api/magicLinkApi";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useHook";
+import { fetchUser } from "@/api/userApi";
+import { handleLogout } from "@/api/userApi";
 
 const Navbar = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -13,16 +16,30 @@ const Navbar = () => {
   const [success, setSuccess] = useState(false);
   
   const navigate = useNavigate();
-
+  const {setSession, session} = useAuth();
    
-  const isAuthenticated = false;  
-  const userRole = "user";  
+   
+  const isAuthenticated = session ? true : false;  
+  const userRole = session?.user?.role;  
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
+  useEffect( ()=>{
+
+    const ft = async()=>{
+      const response = await fetchUser();
+      setSession({
+      user: response.user,
+      access_token: response.accessToken
+      }); 
+    }
+    
+ft()
+        
+  })
   const handleMagicLink = async (email: string) => {
     try {
       setError("");
@@ -54,6 +71,9 @@ const Navbar = () => {
           setShowAuthModal(false);
           setSuccess(false);
         }, 3000);
+
+        
+        
       } else {
         setError(res.msg || "Failed to send magic link");
       }
@@ -275,11 +295,11 @@ const Navbar = () => {
               {isAuthenticated ? (
                 <>
                   <Button
-                    onClick={() => navigate("/dashboard")}
+                    onClick={handleLogout}
                     variant="ghost"
-                    className="hidden md:flex text-white hover:bg-gray-800"
+                    className="hidden md:flex text-black bg-white hover:bg-gray-400"
                   >
-                    Dashboard
+                    Logout
                   </Button>
                   <div className="w-10 h-10 bg-linear-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity">
                     <span className="text-white font-semibold text-sm">

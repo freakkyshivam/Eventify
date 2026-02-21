@@ -3,6 +3,6 @@ import { tokenRefresh } from '../../controllers/auth/token.controller';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 const router = express.Router();
 
-router.get('/token/refresh', authMiddleware, tokenRefresh);
+router.get('/token/refresh',   tokenRefresh);
 
 export default router;

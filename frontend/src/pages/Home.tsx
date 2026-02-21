@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Calendar, Sparkles, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useHook";
 const HomePage = () => {
 
   const navigate = useNavigate();
+  const {session} = useAuth();
+
+  // console.log(session);
+  
 
   return (
     <div className="min-h-screen bg-linear-to-b from-gray-50 to-white">

@@ -4,14 +4,9 @@ import { Button } from "@/components/ui/button";
 import {Loader2, Calendar, Ticket, IndianRupee, Clock, Award,MapPin } from "lucide-react";
 import { StatsCard } from "./StatsCard";
 import { getUserAllJoinedEvent } from "@/api/eventApi";
-import type { eventI } from "@/types/Event";
+import type { EventFormData } from "@/types/Event";
 
-const userStats = [
-  { label: "Registered Events", value: 0, icon: Calendar },
-  { label: "Tickets", value: 0, icon: Ticket },
-  { label: "Total Spent", value: "₹0", icon: IndianRupee },
-  { label: "Upcoming", value: 0, icon: Clock },
-];
+
 
 type UserDashboardProps = {
   activeTab: string;
@@ -19,10 +14,11 @@ type UserDashboardProps = {
 
 export function UserDashboard({ activeTab }: UserDashboardProps) {
 
-    const [events, setEvents] = useState<eventI[]>([]);
+    const [upcomingEvents, setUpcomingEvents] = useState<EventFormData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>("");
 
+    
 
      useEffect(() => {
         fetchEvents();
@@ -37,7 +33,7 @@ export function UserDashboard({ activeTab }: UserDashboardProps) {
           console.log("Fetched events:", res);
     
           if (Array.isArray(res)) {
-            setEvents(res);
+            setUpcomingEvents(res?.upcomingEvents);
           } else {
             setError("Invalid response format");
           }
@@ -49,7 +45,12 @@ export function UserDashboard({ activeTab }: UserDashboardProps) {
         }
       };
 
-  
+  const userStats = [
+  { label: "Registered Events", value: 0, icon: Calendar },
+  { label: "Tickets", value: 0, icon: Ticket },
+  { label: "Total Spent", value: "₹0", icon: IndianRupee },
+  { label: "Upcoming", value: upcomingEvents?.length, icon: Clock },
+];
 
   if (activeTab !== "Dashboard") {
     return (
@@ -91,9 +92,9 @@ export function UserDashboard({ activeTab }: UserDashboardProps) {
       </div>
           )}
 
-            {events.length === 0 && (
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
+            {upcomingEvents?.length === 0 && (
+              <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col items-center justify-center min-h-fit">
           <Calendar className="w-16 h-16 text-gray-300 mb-4" />
           <p className="text-sm text-gray-500 text-center py-8">
               No upcoming events. Browse events to register!
@@ -103,7 +104,7 @@ export function UserDashboard({ activeTab }: UserDashboardProps) {
               
             )}
 
-              {events.map((event : eventI) => (
+              {upcomingEvents?.map((event : EventFormData) => (
           <Card
             key={event.id}
             className="border border-gray-200 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] overflow-hidden group"

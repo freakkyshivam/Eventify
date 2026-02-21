@@ -46,8 +46,6 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
             })
         }
         
-       
-
         const result = await db.select(
             {
                   eventId: events.id,
@@ -55,6 +53,7 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
                 price : events.price,
                 description : events.description,
                 event_mode : events.event_mode,
+                event_status : events.event_status ,
                 registration_status : event_registration_table.registration_status
             }
         )
@@ -69,16 +68,21 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
                 
                 if(result.length === 0){
                     console.log("Not found any events");
-                    
                     return res.status(400).json({
                         success : true,
                         msg : "No events found"
                     })
                 }
             
+                const upcomingEvents = result.filter((a)=>a.event_status === 'upcoming' )
+                const completedEvents = result.filter((a)=> a.event_status === 'completed')
                 return res.status(200).json({
                     success : true,
-                    result
+                    results : {
+                        upcomingEvents,
+                        completedEvents,
+                        result
+                    }
                 })
 
     } catch (error) {

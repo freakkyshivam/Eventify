@@ -1,18 +1,12 @@
-export interface eventI {
-  id: string;
+export type EventFormData = {
   title: string;
   description: string;
-  bannerUrls: string[];
-
   start_time: string;
   end_time: string;
   registration_deadline: string;
-
-  location?: string;
-  event_mode: "online" | "offline";
-
+  location: string;
+  event_mode: "online" | "offline" | "";
   capacity: number;
-
   event_category:
     | "conference"
     | "webinar"
@@ -20,21 +14,19 @@ export interface eventI {
     | "competition"
     | "technology"
     | "coding"
-    | "other";
-
-  payment_type: "paid" | "free";
+    | "other"
+    | "";
+  payment_type: "free" | "paid" | "";
   price: number;
-
-  event_status: "upcoming" | "cancelled";
-
-  authorId: string;
-
-  createdAt: string;
-  updatedAt: string;
-}
+  bannerUrls: string[];
+};
 
 
 export interface EventApiResponse {
   success: boolean;
-  result: eventI[];
+  results: {
+    upcomingEvents: EventFormData,
+    completedEvents : EventFormData,
+    
+  };
 }

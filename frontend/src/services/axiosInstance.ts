@@ -11,6 +11,19 @@ const api = axios.create({
   timeout: 10000,
 });
 
+
+// api.interceptors.response.use((response)=>response, 
+// (error)=> {
+//   if (error.response?.status === 401) {
+//       api.get('/api/auth/token/refresh',{
+//         withCredentials : true
+//       })
+//     }
+
+//     return Promise.reject(error);
+// }
+// )
+
 export default api;
 
 

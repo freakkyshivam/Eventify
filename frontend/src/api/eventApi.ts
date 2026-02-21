@@ -1,10 +1,10 @@
 import api from "@/services/axiosInstance";
-import type { EventApiResponse, eventI } from '@/types/Event';
+import type { EventApiResponse, EventFormData } from '@/types/Event';
 
-export const getAllEvent = async (): Promise<eventI[]> => {
+export const getAllEvent = async (): Promise<EventFormData[]> => {
   try {
     const { data } = await api.get<EventApiResponse>(`/api/events`,{withCredentials:true});
-    return data.result;
+    return data.results;
   } catch (error) {
     console.error(error);
     throw error;
@@ -12,12 +12,12 @@ export const getAllEvent = async (): Promise<eventI[]> => {
 };
 
 
-export const getUserAllJoinedEvent = async (): Promise<eventI[]> =>{
+export const getUserAllJoinedEvent = async (): Promise<EventApiResponse[]> =>{
     try {
       const { data } = await api.get<EventApiResponse>(`/api/user/events`,{withCredentials:true});
       console.log(data);
       
-    return data.result
+    return data.results
     } catch (error) {
     console.error(error);
     throw error;

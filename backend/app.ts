@@ -9,6 +9,7 @@ import userRouter from './src/routes/user/user.route'
 import adminRouter from './src/routes/admin/main.routes';
 import paymentRouter from './src/routes/payment/payment.routes'
 import { authMiddleware } from "./src/middlewares/authMiddleware";
+import { findUserById } from "./src/services/user.service";
 const app = express();
 
 const allowedOrigins = [
@@ -35,30 +36,38 @@ app.use(cookieParser());
  app.use('/api/admin', adminRouter)
  app.use('/api/payment', paymentRouter)
 
- app.get("/api/me", authMiddleware, (req, res) => {
+ app.get("/api/me", authMiddleware, async (req, res) => {
 
-    const user = req.user;
+   try {
+     const user = req.user;
+
+    if(!user?.id){
+        return res.status(404).json({
+            success : false,
+            msg : "Unauthorized"
+        })
+    }
     const {access_token } = req.cookies;
+
+    const data = await findUserById(user.id);
+
   res.json({
     user : {
-        id : user?.id,
-        name : user?.name,
-        email : user?.email,
-        role : user?.role
+        id : data?.id,
+        name : data?.name,
+        email : data?.email,
+        role : data?.role,
+        isAccountVerified : data?.isAccountVerified,
+        profileImage : data?.profileImageUrl,
     },
     access_token
   });
+   } catch (error) {
+    console.error(error)
+   }
 });
 
-app.post("/api/logout", (req, res) => {
 
-  res.clearCookie("access_token");
-  res.clearCookie("refresh_token");
-  res.clearCookie("sid");
-
-  res.json({ message: "Logged out" });
-
-});
 
 
 app.get("/",(req,res)=>{

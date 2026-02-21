@@ -3,6 +3,7 @@ import db from "../../db/db";
 import events from "../../db/schema/event.model";
 import { eventsValidation,updateEventValidation } from "../../validation/validation";
 import { and, eq } from "drizzle-orm";
+import { generateSlug } from "../../utils/slug";
 
 export const createEvent = async (req: Request, res: Response) => {
   try {
@@ -10,6 +11,8 @@ export const createEvent = async (req: Request, res: Response) => {
     console.log(user);
     
     if (!user?.id) {
+      console.log("Here");
+      
       return res.status(401).json({
         success: false,
         msg: "Unoauthorized",
@@ -48,9 +51,14 @@ export const createEvent = async (req: Request, res: Response) => {
       price,
     } = validationResult.data;
 
+    // const {bannerUrls} = req.file()
+
+    const slug = await generateSlug(title)
     await db.insert(events).values({
       title,
       description,
+      slug,
+      // bannerUrls,
       start_time: new Date(start_time),
       end_time: new Date(end_time),
       registration_deadline: new Date(registration_deadline),
@@ -59,7 +67,7 @@ export const createEvent = async (req: Request, res: Response) => {
       capacity,
       event_category,
       payment_type,
-      price,
+      price: Number(price),
       authorId: req.user!.id,
     });
 
