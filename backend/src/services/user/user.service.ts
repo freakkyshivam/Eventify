@@ -1,5 +1,5 @@
-import db from '../db/db';
-import Users from '../db/schema/user.model'
+import db from '../../db/db';
+import Users from '../../db/schema/user.model'
 import {eq} from 'drizzle-orm'
 
 export const findUserByEmail = async (email : string)=>{

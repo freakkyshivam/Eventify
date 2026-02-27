@@ -9,7 +9,7 @@ import userRouter from './src/routes/user/user.route'
 import adminRouter from './src/routes/admin/main.routes';
 import paymentRouter from './src/routes/payment/payment.routes'
 import { authMiddleware } from "./src/middlewares/authMiddleware";
-import { findUserById } from "./src/services/user.service";
+import { findUserById } from "./src/services/user/user.service";
 const app = express();
 
 const allowedOrigins = [
@@ -26,7 +26,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(express.urlencoded())
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(cookieParser());
 

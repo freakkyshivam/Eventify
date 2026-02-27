@@ -4,6 +4,8 @@ import events from "../../db/schema/event.model";
 import { eventsValidation,updateEventValidation } from "../../validation/validation";
 import { and, eq } from "drizzle-orm";
 import { generateSlug } from "../../utils/slug";
+import uploadOnCloudinary from "../../services/events/fileupload.service";
+import { log } from "node:console";
 
 export const createEvent = async (req: Request, res: Response) => {
   try {
@@ -26,6 +28,10 @@ export const createEvent = async (req: Request, res: Response) => {
       });
     }
 
+    console.log("Body ", req.body);
+    console.log("Files ", req.files);
+    
+    
     const validationResult = eventsValidation.safeParse(req.body);
 
     if (validationResult.error) {
@@ -33,7 +39,7 @@ export const createEvent = async (req: Request, res: Response) => {
       
       return res.status(400).json({
         success: false,
-        msg: validationResult?.error?.flatten,
+        msg: validationResult.error,
       });
     }
 
@@ -51,20 +57,37 @@ export const createEvent = async (req: Request, res: Response) => {
       price,
     } = validationResult.data;
 
-    // const {bannerUrls} = req.file()
+    
+      const files = req.files as Express.Multer.File[];
 
-    const slug = await generateSlug(title)
+      if(!files) {
+        return res.status(400).json({
+          success : false,
+          msg : "Invalid files"
+        })
+      }
+    console.log("Files ",files);
+    
+      const uploadPromises = files?.map(file =>
+        uploadOnCloudinary(file.path)
+      );
+
+      const bannerUrls = await Promise.all(uploadPromises);
+
+        console.log("Urls ",bannerUrls);
+        
+    const slug =  generateSlug(title)
     await db.insert(events).values({
       title,
       description,
       slug,
-      // bannerUrls,
+      bannerUrls,
       start_time: new Date(start_time),
       end_time: new Date(end_time),
       registration_deadline: new Date(registration_deadline),
       location,
       event_mode,
-      capacity,
+      capacity : Number(capacity),
       event_category,
       payment_type,
       price: Number(price),

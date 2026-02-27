@@ -15,7 +15,7 @@ export const eventsValidation = z.object({
 
   event_mode: z.enum(["online", "offline"]),
 
-  capacity: z.number().int().positive(),
+  capacity: z.coerce.number().int().positive(),
 
   event_category: z.enum([
   "conference",
@@ -29,14 +29,21 @@ export const eventsValidation = z.object({
 
   payment_type: z.enum(["free", "paid"]),
 
-  price: z.number().nonnegative(),
+ price: z.coerce.number().nonnegative(),
 })
-.refine(data => data.end_time > data.start_time, {
+.refine(data => {
+  return new Date(data.end_time) > new Date(data.start_time);
+}, {
   message: "End time must be after start time",
   path: ["end_time"],
 })
-.refine(data => data.payment_type === "free" || data.price > 0, {
-  message: "Price must be greater than 0 for paid events",
+.refine(data => {
+  if (data.payment_type === "free") {
+    return data.price === 0;
+  }
+  return data.price > 0;
+}, {
+  message: "Invalid price for selected payment type",
   path: ["price"],
 });
 

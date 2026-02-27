@@ -8,7 +8,7 @@ import {
  
 import db from "../db/db";
 import Users, { users } from "../db/schema/user.model";
-import { findUserByEmail } from "../services/user.service";
+import { findUserByEmail } from "../services/user/user.service";
 import { eq, type InferModel } from "drizzle-orm";
  
 import magiclink from "../db/schema/magicLink.schema";

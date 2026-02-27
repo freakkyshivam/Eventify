@@ -1,4 +1,4 @@
-export type EventFormData = {
+  export type EventFormData = {
   title: string;
   description: string;
   start_time: string;
@@ -21,12 +21,19 @@ export type EventFormData = {
   bannerUrls: string[];
 };
 
-
-export interface EventApiResponse {
+export interface eventI extends EventFormData {
+  id : string
+}
+export interface UserEventApiResponse {
   success: boolean;
   results: {
     upcomingEvents: EventFormData,
     completedEvents : EventFormData,
     
   };
+}
+
+export interface EventApiResponse {
+  success: boolean;
+  results: EventFormData
 }

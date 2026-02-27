@@ -1,4 +1,4 @@
-// pages/CreateEvent.tsx
+ 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +26,7 @@ import {
  
 import api from "@/services/axiosInstance";
 import { type EventFormData } from "@/types/Event";
- 
+import { EventFormDataValidation } from "@/validation/eventCreationFormValidation";
 
 
 
@@ -52,27 +52,33 @@ const CreateEvent = () => {
     bannerUrls: [],
   });
 
+
   // Handle input changes
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof EventFormData]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-  };
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+) => {
+  const { name, value, type } = e.target;
+
+  setFormData((prev) => ({
+    ...prev,
+    [name]:
+      type === "number"
+        ? Number(value)
+        : value,
+  }));
+
+  if (errors[name as keyof EventFormData]) {
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+  }
+};
 
   // Handle select changes
   const handleSelectChange = (name: keyof EventFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-
-    if (name === "payment_type" && value === "free") {
-      setFormData((prev) => ({ ...prev, price: 0 }));
-    }
+    setFormData((prev) => ({
+  ...prev,
+  [name]: value,
+  ...(name === "payment_type" && value === "free" && { price: 0 }),
+}));
   };
 
   // Handle banner file upload
@@ -115,108 +121,82 @@ const CreateEvent = () => {
     setBannerPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Validate form
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof EventFormData, string>> = {};
-
-    if (!formData.title.trim()) newErrors.title = "Title is required";
-    if (!formData.description.trim()) newErrors.description = "Description is required";
-    if (!formData.start_time) newErrors.start_time = "Start time is required";
-    if (!formData.end_time) newErrors.end_time = "End time is required";
-    if (!formData.registration_deadline) newErrors.registration_deadline = "Registration deadline is required";
-    if (!formData.event_mode) newErrors.event_mode = "Event mode is required";
-    if (!formData.event_category) newErrors.event_category = "Category is required";
-    if (!formData.payment_type) newErrors.payment_type = "Payment type is required";
-    
-    if (formData.event_mode === "offline" && !formData.location?.trim()) {
-      newErrors.location = "Location is required for offline events";
-    }
-
-    if (formData.capacity < 1) {
-      newErrors.capacity = "Capacity must be at least 1";
-    }
-
-    if (formData.payment_type === "paid" && formData.price <= 0) {
-      newErrors.price = "Price must be greater than 0 for paid events";
-    }
-
-    const now = new Date();
-    const startTime = new Date(formData.start_time);
-    const endTime = new Date(formData.end_time);
-    const deadline = new Date(formData.registration_deadline);
-
-    if (startTime <= now) {
-      newErrors.start_time = "Start time must be in the future";
-    }
-
-    if (endTime <= startTime) {
-      newErrors.end_time = "End time must be after start time";
-    }
-
-    if (deadline >= startTime) {
-      newErrors.registration_deadline = "Registration deadline must be before start time";
-    }
-
-    if (bannerFiles.length === 0) {
-      newErrors.bannerUrls = "At least one banner image is required";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+ 
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+  if (!EventFormDataValidation(formData,setErrors)) return;
+   
+  
+  try {
+    setIsLoading(true);
 
-    try {
-      setIsLoading(true);
+    const formDataToSend = new FormData();
 
-      const uploadedUrls: string[] = [];
-      // for (const file of bannerFiles) {
-      //   const formDataUpload = new FormData();
-      //   formDataUpload.append("banner", file);
+    // append text fields
+    formDataToSend.append("title", formData.title);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append(
+      "start_time",
+      new Date(formData.start_time).toISOString()
+    );
+    formDataToSend.append(
+      "end_time",
+      new Date(formData.end_time).toISOString()
+    );
+    formDataToSend.append(
+      "registration_deadline",
+      new Date(formData.registration_deadline).toISOString()
+    );
 
-      //   const uploadResponse = await api.post(
-      //     `/api/upload/banner`,
-      //     formDataUpload,
-      //     {
-      //       headers: { "Content-Type": "multipart/form-data" },
-      //       withCredentials: true,
-      //     }
-      //   );
+    formDataToSend.append("capacity", String(formData.capacity));
 
-      //   uploadedUrls.push(uploadResponse.data.url);
-      // }
+    formDataToSend.append(
+      "price",
+      formData.payment_type === "free"
+        ? "0"
+        : String(formData.price)
+    );
 
-      const eventData = {
-        ...formData,
-        start_time: new Date(formData.start_time).toISOString(),
-    end_time: new Date(formData.end_time).toISOString(),
-    registration_deadline: new Date(formData.registration_deadline).toISOString(),
-        bannerUrls: uploadedUrls,
-        capacity : Number(formData.capacity),
-        price: formData.payment_type === "free" ? Number(0) : Number(formData.price),
-      };
+    formDataToSend.append("payment_type", formData.payment_type);
 
-      await api.post(`/api/events`, eventData, {
-        withCredentials: true,
-      });
+    // append banner files
+    bannerFiles.forEach((file) => {
+      formDataToSend.append("banners", file);
+    });
 
-      navigate("/dashboard");
-    } catch (error: any) {
-      console.error("Error creating event:", error);
-      setErrors({
-        title: error?.response?.data?.msg || "Failed to create event. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    formDataToSend.append("event_mode", formData.event_mode);
+formDataToSend.append("event_category", formData.event_category);
+
+if (formData.event_mode === "offline") {
+  formDataToSend.append("location", formData.location);
+}
+
+   for (const [key, value] of formDataToSend.entries()) {
+  console.log(key, value);
+}
+    
+    await api.post("/api/events", formDataToSend, {
+      withCredentials: true,
+      headers : {
+        "Content-Type" : "multipart/form-data"
+      }
+    });
+
+    navigate("/dashboard");
+
+  } catch (error) {
+
+    console.error(error);
+
+  } finally {
+
+    setIsLoading(false);
+
+  }
+};
 
   return (
     <div className="min-h-screen bg-gray-950 py-8">
@@ -573,7 +553,7 @@ const CreateEvent = () => {
               {bannerFiles.length < 3 && (
                 <div>
                   <Label
-                    htmlFor="banner-upload"
+                    htmlFor="banners"
                     className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-700 rounded-lg cursor-pointer hover:border-purple-500 transition-colors bg-gray-800/50"
                   >
                     <div className="text-center">
@@ -587,19 +567,23 @@ const CreateEvent = () => {
                     </div>
                   </Label>
                   <Input
-                    id="banner-upload"
+                    id="banners"
+                    name="banners"
                     type="file"
                     accept="image/*"
                     multiple
                     onChange={handleBannerUpload}
                     className="hidden"
                   />
+                   
                 </div>
               )}
 
               {errors.bannerUrls && (
                 <p className="text-sm text-red-400">{errors.bannerUrls}</p>
               )}
+
+               
             </CardContent>
           </Card>
 

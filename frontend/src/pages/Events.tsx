@@ -1,11 +1,12 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { type eventI } from "@/types/Event";
-import { loadRazorpay } from "@/services/loadRazorpay";
+ 
+import { handleJoin } from "@/api/eventJoin";
 import { getAllEvent } from "@/api/eventApi";
-import api from "@/services/axiosInstance";
+
 import { Calendar, MapPin, Users, Loader2, AlertCircle } from "lucide-react";
+import type { eventI } from "@/types/Event";
 
  
 
@@ -40,97 +41,7 @@ const Events = () => {
     }
   };
 
-  const handleJoin = async (eventId: string,   eventTitle: string) => {
-    try {
-      setProcessingEventId(eventId);
-
-      // Load Razorpay SDK
-      const razorpayLoaded = await loadRazorpay();
-      if (!razorpayLoaded) {
-        alert("Razorpay SDK failed to load. Please check your internet connection.");
-        return;
-      }
-
-      // Create order
-      const { data: order } = await api.post(
-        `/api/events/${eventId}`,
-        {},
-        { withCredentials: true }
-      );
-
-      if (!order || !order.order_id) {
-        alert("Failed to create order. Please try again.");
-        return;
-      }
-
-      // Razorpay options
-      const options = {
-        key: order.key,
-        amount: order.amount,
-        currency: "INR",
-        order_id: order.order_id,
-        name: "Eventify",
-        description: `Registration for ${eventTitle}`,
-        image: "/logo.png", // Optional: Add your logo
-        
-        handler: async function (response: any) {
-          try {
-            // Verify payment
-            await api.post(
-              `/api/payment/verify`,
-              {
-                eventId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-              },
-              { withCredentials: true }
-            );
-
-            // Success
-            alert("Payment successful! Registration confirmed.");
-            // Optionally redirect to ticket page or refresh events
-          } catch (verifyError: any) {
-            console.error("Payment verification failed:", verifyError);
-            alert("Payment verification failed. Please contact support.");
-          } finally {
-            setProcessingEventId(null);
-          }
-        },
-
-        prefill: {
-          name: "", // Can be populated from user context
-          email: "",
-          contact: "",
-        },
-
-        theme: {
-          color: "#000000",
-        },
-
-        modal: {
-          ondismiss: function () {
-            setProcessingEventId(null);
-            console.log("Payment cancelled by user");
-          },
-        },
-      };
-
-      // Open Razorpay
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", function (response: any) {
-        console.error("Payment failed:", response.error);
-        alert(`Payment failed: ${response.error.description}`);
-        setProcessingEventId(null);
-      });
-
-      rzp.open();
-    } catch (error: any) {
-      console.error("Join event error:", error);
-      alert(error?.response?.data?.msg || "Failed to process registration. Please try again.");
-      setProcessingEventId(null);
-    }
-  };
+  
 
   // Loading state
   if (loading) {
@@ -189,6 +100,9 @@ const Events = () => {
               {/* Event Image Placeholder */}
               <div className="bg-linear-to-br from-purple-100 to-pink-100 h-48 relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-all duration-300" />
+                {event?.bannerUrls.map((file : string)=>(
+                  <img src={file} alt="" />
+                ))}
                 <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-semibold">
                   {event.payment_type === "free" ? "Free" : `₹${event.price}`}
                 </div>
@@ -237,7 +151,7 @@ const Events = () => {
                   </Button>
 
                   <Button
-                    onClick={() => handleJoin(event.id, event.title)}
+                    onClick={() => handleJoin(event.id, event.title,setProcessingEventId)}
                     disabled={processingEventId === event.id}
                     className="flex-1 bg-black text-white hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >

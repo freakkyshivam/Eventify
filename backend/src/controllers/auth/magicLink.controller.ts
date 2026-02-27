@@ -4,7 +4,7 @@ import { generateMagicLinkToken } from "../../utils/generateToken";
 import { magicLinkValidation } from "../../validation/validation";
 import db from "../../db/db";
 
-import { findUserByEmail } from "../../services/user.service";
+import { findUserByEmail } from "../../services/user/user.service";
 import { eq } from "drizzle-orm";
 import {
   sendLoginMagicLink,

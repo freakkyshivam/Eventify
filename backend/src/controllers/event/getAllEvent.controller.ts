@@ -9,9 +9,9 @@ import { event_registration } from "./event_registration.controller";
 
 export const getAllEvent = async (req : Request, res : Response)=>{
     try {
-        const result = await db.select().from(events);
+        const results = await db.select().from(events);
 
-        if(result.length < 0){
+        if(results.length < 0){
             return res.status(400).json({
                 success :false,
                 msg : "No event found"
@@ -20,7 +20,7 @@ export const getAllEvent = async (req : Request, res : Response)=>{
 
         return res.status(200).json({
             success : true,
-             result,
+             results,
         })
     } catch (error) {
         console.error("Fetch all events failed ", error);

@@ -6,7 +6,7 @@ import {
 import axios from "axios";
 import db from "../../db/db";
 import Users, { users } from "../../db/schema/user.model";
-import { findUserByEmail } from "../../services/user.service";
+import { findUserByEmail } from "../../services/user/user.service";
 import { sendWelcomeMail } from "../../services/mail/sendMail.service";
 import crypto from "node:crypto";
 import sessions from "../../db/schema/session.schema";
