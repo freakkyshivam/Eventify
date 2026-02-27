@@ -7,6 +7,7 @@ import CTA from "./CTA"
 const Layout = () => {
   return (
     <div>
+  
         <HomePage/>
         <About/>
         <CTA/>

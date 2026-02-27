@@ -5,7 +5,7 @@
 
  
  import Events from "./pages/Events";
- import Footer from "./components/Footer";
+//  import Footer from "./components/Footer";
  import Layout from "./pages/Layout";
 import CreateEvent from "./pages/CreateEvent";
 
@@ -13,6 +13,7 @@ import CreateEvent from "./pages/CreateEvent";
    return (
      <div>
        <ToastContainer/>
+       
        <Navbar/>
       <Routes>
      
