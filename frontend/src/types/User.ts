@@ -15,7 +15,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role : 'atendee' | 'admin' | 'organizer';
+  role : 'attendee' | 'admin' | 'organizer';
   isAccountVerified : boolean;
   profileImage : string;
 }

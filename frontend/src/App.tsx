@@ -1,4 +1,4 @@
-  import Dashboard from "./components/Dashboard/Dashboard";
+  import Dashboard from "./pages/Dashboard";
  import { Route,Routes } from "react-router-dom";
   import { ToastContainer } from 'react-toastify';
   import Navbar from "./components/Navbar";

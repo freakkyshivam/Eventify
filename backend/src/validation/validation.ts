@@ -11,7 +11,7 @@ export const eventsValidation = z.object({
 
   registration_deadline: z.string().datetime(),
 
-  location: z.string().min(3),
+  location: z.string().min(3).optional(),
 
   event_mode: z.enum(["online", "offline"]),
 

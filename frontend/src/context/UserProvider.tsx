@@ -1,4 +1,3 @@
- 
 
 import { useState, useEffect, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
@@ -15,7 +14,8 @@ export const AuthProvider = ({ children }: Props) => {
   const setSession = (session: AuthSession | null) => {
 
     setSessionState(session);
-
+    
+    
     if (session) {
       localStorage.setItem("session", JSON.stringify(session));
     } else {

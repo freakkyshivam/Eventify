@@ -2,11 +2,14 @@
  
 import { Calendar, Zap, ArrowRight, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-// import { useAuth } from "@/hooks/useHook";
+import { useAuth } from "@/hooks/useHook";
+import { useState } from "react";
+import Auth from "./Auth";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  // const { session } = useAuth();
+  const { session } = useAuth();
+  const [open, setOpen]  = useState(false);
 
   return (
     <div className="min-h-screen bg-[#080810] text-white overflow-hidden">
@@ -61,7 +64,9 @@ const HomePage = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-20">
-          <button
+          {
+            session?.user.role === "attendee" ? (
+              <button
             onClick={() => navigate("/events")}
             className="group relative inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_30px_rgba(124,58,237,0.4)] hover:shadow-[0_0_45px_rgba(124,58,237,0.6)] transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
@@ -69,17 +74,51 @@ const HomePage = () => {
             Browse Events
             <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
           </button>
+            )
+            :
+            (
+              <button
+            onClick={() => navigate("/create-events")}
+            className="group relative inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_30px_rgba(124,58,237,0.4)] hover:shadow-[0_0_45px_rgba(124,58,237,0.6)] transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 w-full sm:w-auto justify-center"
+          >
+            <Calendar className="w-5 h-5" />
+            Create Event
+            <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+          </button>
+            )
+          }
+          
 
-          <button
+          {session ? (
+
+            <button
             onClick={() => navigate("/dashboard")}
             className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 w-full sm:w-auto justify-center"
           >
             <Zap className="w-5 h-5 text-amber-400" />
             Dashboard
           </button>
+
+        
+          
+          )
+          :
+          (<button
+            onClick={() => setOpen(true)}
+            className="group inline-flex items-center gap-2.5 px-8 py-4 rounded-2xl text-base font-semibold border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 w-full sm:w-auto justify-center"
+          >
+            <Zap className="w-5 h-5 text-amber-400" />
+            Start today
+          </button>
+
+          )
+        }
+          
         </div>
 
-       
+        {open &&
+        <Auth setOpen={setOpen}/>
+        }
          
       </section>
 

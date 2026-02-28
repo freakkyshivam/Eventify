@@ -3,13 +3,14 @@ import { Request, Response } from "express";
 import { events } from "../../db/schema/event.model";
 import { event_registration_table } from "../../db/schema/event_registration.schema";
 import db from "../../db/db"
-import { eq } from "drizzle-orm";
-import { log } from "node:console";
+import { desc, eq } from "drizzle-orm";
+ 
 import { event_registration } from "./event_registration.controller";
+import {payment_table} from '../../db/schema/payment_schema'
 
 export const getAllEvent = async (req : Request, res : Response)=>{
     try {
-        const results = await db.select().from(events);
+        const results = await db.select().from(events).orderBy(desc(events.createdAt));
 
         if(results.length < 0){
             return res.status(400).json({
@@ -54,7 +55,9 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
                 description : events.description,
                 event_mode : events.event_mode,
                 event_status : events.event_status ,
-                registration_status : event_registration_table.registration_status
+                registration_status : event_registration_table.registration_status,
+                registration_deadline : events.registration_deadline,
+                bannerUrls : events.bannerUrls,
             }
         )
                 .from(event_registration_table)
@@ -64,7 +67,7 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
                 ).where(
                     eq(event_registration_table.user_id, user.id)
                 )
-                
+                .orderBy(desc(event_registration_table.created_at))
                 
                 if(result.length === 0){
                     console.log("Not found any events");
@@ -81,7 +84,7 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
                     results : {
                         upcomingEvents,
                         completedEvents,
-                        result
+                        totalEvents : result
                     }
                 })
 
@@ -90,6 +93,68 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
         return res.status(500).json({
             success : false,
             msg : "User joined event fetching error"
+        })
+    }
+}
+
+
+export const getAllTickets = async (req : Request, res : Response)=>{
+    try {
+
+        const user = req.user;
+
+        if(!user?.id){
+            return res.status(401).json({
+                success : false,
+                msg : "Unauthorized"
+            })
+        }
+
+        const results = await db.select({
+            payment_status : payment_table.payment_status,
+            registration_id : payment_table.registration_id,
+            payment_id : payment_table.payment_id,
+            razorpay_order_id : payment_table.razorpay_order_id,
+            ticket_code : event_registration_table.ticket_code,
+            registration_status : event_registration_table.registration_status,
+            title : events.title,
+            description : events.description,
+            start_time : events.start_time,
+            end_time : events.end_time,
+            registration_deadline : events.registration_deadline,
+            event_status : events.event_status
+        })
+                    .from(event_registration_table)
+                    .rightJoin(
+                        payment_table,
+                        eq(payment_table.registration_id, event_registration_table.id)
+                    )
+                    .leftJoin(
+                        events,
+                        eq(events.id, event_registration_table.event_id)
+                    )
+                    .where(
+                        eq(event_registration_table.user_id, user.id)
+                    )
+                    .orderBy(desc(event_registration_table.created_at))
+                
+                    if(!results){
+                        return res.status(400).json({
+                            success : false,
+                            msg : "No events found"
+                        })
+                    }
+
+                    return res.status(200).json({
+                        success : true,
+                        results
+                    })
+        
+    } catch (error) {
+         console.error("User Ticket fetching error ", error)
+        return res.status(500).json({
+            success : false,
+            msg : "User Ticket fetching error"
         })
     }
 }

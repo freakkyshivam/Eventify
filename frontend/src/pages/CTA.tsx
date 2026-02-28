@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Sparkles } from "lucide-react"
+import { useState } from "react"
+import Auth from "./Auth";
 
 const CTA = () => {
-  return (
+
+  const [open,setOpen] = useState(false);
+   return (
      
       <section className="py-20 bg-gray-200 text-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -13,6 +17,7 @@ const CTA = () => {
             Join thousands of organizers who trust Eventify for their events
           </p>
           <Button 
+            onClick={()=> setOpen(true)}
             size="lg" 
             className="bg-purple-600 text-black hover:bg-purple-500 px-8 py-6 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
           >
@@ -20,6 +25,10 @@ const CTA = () => {
             Start for Free
           </Button>
         </div>
+
+        {open && (
+          <Auth setOpen = {setOpen}/>
+        )}
       </section>
   )
 }

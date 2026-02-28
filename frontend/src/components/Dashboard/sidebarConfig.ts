@@ -10,7 +10,7 @@ import {
   Award,
 } from "lucide-react";
 
-export const getSidebarItems = (role: "admin" | "organizer" | "user") => {
+export const getSidebarItems = (role: "admin" | "organizer" | "attendee") => {
   switch (role) {
     case "admin":
       return [
@@ -30,11 +30,11 @@ export const getSidebarItems = (role: "admin" | "organizer" | "user") => {
         { label: "Revenue", icon: IndianRupee },
         { label: "Settings", icon: Settings },
       ];
-    case "user":
+    case "attendee":
       return [
         { label: "Dashboard", icon: CalendarDays },
-        { label: "Browse Events", icon: Calendar },
-        { label: "My Registrations", icon: Ticket },
+        { label: "My Registrations", icon: Calendar },
+        { label: "My Tickets", icon: Ticket },
         { label: "Request Organizer Access", icon: Award },
         { label: "Settings", icon: Settings },
       ];

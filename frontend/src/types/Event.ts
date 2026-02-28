@@ -27,13 +27,19 @@ export interface eventI extends EventFormData {
 export interface UserEventApiResponse {
   success: boolean;
   results: {
-    upcomingEvents: EventFormData,
-    completedEvents : EventFormData,
+    upcomingEvents: eventI[],
+    completedEvents : eventI[],
+    totalEvents : eventI[]
     
   };
 }
 
 export interface EventApiResponse {
   success: boolean;
-  results: EventFormData
+  results: eventI[]
+}
+
+export interface apiResponse {
+  success : boolean,
+  results : []
 }

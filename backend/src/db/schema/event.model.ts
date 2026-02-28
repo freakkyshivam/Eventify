@@ -65,7 +65,7 @@ export const events = pgTable(
       withTimezone: true,
     }).notNull(),
 
-    location: varchar("location", { length: 200 }),
+    location: varchar("location", { length: 200 }).default("Online"),
 
     event_mode: eventModeEnum("event_mode").notNull(),
 
