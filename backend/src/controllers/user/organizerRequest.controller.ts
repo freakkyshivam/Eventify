@@ -11,13 +11,14 @@ export const change_role_request = async (req : Request, res:Response)=>{
         const user =  req.user;
 
         if(!user?.id){
+            console.log("Unauthorized")
             return res.status(401).json({
                 success : false,
                 msg :'Unauthorized'
             })
         }
 
-        if(user?.role === "attendee"){
+        if(user?.role === "organizer"){
             return res.status(400).json({
                 success : false,
                 msg : 'You are already a organizer you can not request'
@@ -26,11 +27,22 @@ export const change_role_request = async (req : Request, res:Response)=>{
 
         const [exsting] = await db.select()
         .from(role_request_table)
-        .where(eq(users.id, user?.id))
+        .where(eq(role_request_table.user_id, user?.id))
+
+        if(exsting){
+            return res.status(400).json({
+                success : false,
+                msg : "You already sent a request for organizer"
+            })
+        }
 
         await db.insert(role_request_table).values({
             user_id : user?.id,
         })
+
+        await db.update(users).set({
+            organizer_request : true
+        }).where(eq(users.id, user?.id))
 
         return res.status(200).json({
             success : true,

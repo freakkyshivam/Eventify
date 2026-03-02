@@ -21,3 +21,16 @@ export const handleLogout = async ()=>{
         console.error(error)
     }
 }
+
+export const organizerRequestApi = async ()=>{
+    try {
+       const {data} = await api.post('/api/user/orgainzer-request',{},{
+            withCredentials : true
+        })
+        console.log(data);
+        
+        return data;
+    } catch (error) {
+        console.error(error)
+    }
+}

@@ -18,6 +18,7 @@ export interface User {
   role : 'attendee' | 'admin' | 'organizer';
   isAccountVerified : boolean;
   profileImage : string;
+  organizer_request : boolean
 }
 
 export type AuthSession = {

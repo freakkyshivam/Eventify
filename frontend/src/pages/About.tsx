@@ -43,18 +43,7 @@ const About = () => {
   return (
     <section id="about" className="relative py-24 bg-[#080810] overflow-hidden">
 
-      {/* Ambient orb */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] rounded-full bg-violet-600/10 blur-[120px] pointer-events-none" />
-
-      {/* Subtle grid */}
-      <div
-        className="absolute inset-0 opacity-[0.025] pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
+       
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -70,7 +59,7 @@ const About = () => {
 
           <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-white mb-4">
             Everything You{" "}
-            <span className="bg-linear-to-r from-violet-400 via-fuchsia-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-blue-400 bg-clip-text text-transparent">
               Need
             </span>
           </h2>
@@ -84,17 +73,15 @@ const About = () => {
           {features.map((feature, i) => (
             <div
               key={i}
-              className={`group relative bg-white/3 hover:bg-white/5.5 border border-white/[0.07] hover:border-white/13 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 overflow-hidden cursor-default ${feature.glow} transition-shadow`}
+              className={`group relative bg-white/[0.03] hover:bg-white/[0.055] border border-white/[0.07] hover:border-white/[0.13] rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1.5 overflow-hidden cursor-default ${feature.glow}`}
             >
-              {/* Bottom gradient line */}
               <div
-                className={`absolute bottom-0 left-0 right-0 h-[1.5px] bg-linear-to-r from-transparent ${feature.bottomLine} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
+                className={`absolute bottom-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent ${feature.bottomLine} to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}
               />
 
-              {/* Top row */}
               <div className="flex items-center justify-between mb-5">
                 <div
-                  className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-200 ${feature.iconBg}`}
+                  className={`w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-200 ${feature.iconBg}`}
                 >
                   {feature.icon}
                 </div>

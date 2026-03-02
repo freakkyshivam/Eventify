@@ -67,8 +67,8 @@ export default function DashboardPage() {
           <div>
             <h1 className="text-base font-bold text-white leading-none">Eventify</h1>
             <div className={`inline-flex items-center gap-1 mt-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md border ${config.chipBg} ${config.color}`}>
-              {config.icon}
-              {config.label}
+              {config?.icon}
+              {config?.label}
             </div>
           </div>
         </div>
@@ -135,7 +135,7 @@ export default function DashboardPage() {
         <div className="p-8">
           {role === "admin" && <AdminDashboard activeTab={activeTab} />}
           {role === "organizer" && <OrganizerDashboard activeTab={activeTab} />}
-          {role === "attendee" && <UserDashboard activeTab={activeTab} />}
+          {role === "attendee" && <UserDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
         </div>
 
       </main>

@@ -59,6 +59,7 @@ app.use(cookieParser());
         role : data?.role,
         isAccountVerified : data?.isAccountVerified,
         profileImage : data?.profileImageUrl,
+        organizer_request : data?.organizer_request
     },
     access_token
   });

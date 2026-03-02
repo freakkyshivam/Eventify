@@ -19,14 +19,14 @@ const HomePage = () => {
         <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full bg-blue-600/15 blur-[100px] animate-pulse delay-1000" />
         <div className="absolute bottom-0 left-1/3 w-[350px] h-[350px] rounded-full bg-amber-500/10 blur-[90px] animate-pulse delay-500" />
         {/* Subtle grid */}
-        <div
+        {/* <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
           }}
-        />
+        /> */}
       </div>
      
 

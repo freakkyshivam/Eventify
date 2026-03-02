@@ -1,6 +1,7 @@
   import Dashboard from "./pages/Dashboard";
  import { Route,Routes } from "react-router-dom";
   import { ToastContainer } from 'react-toastify';
+  import { Slide } from "react-toastify";
   import Navbar from "./components/Navbar";
 
  
@@ -12,7 +13,16 @@ import CreateEvent from "./pages/CreateEvent";
  const App = () => {
    return (
      <div>
-       <ToastContainer/>
+     <ToastContainer
+  position="bottom-right"
+  autoClose={3000}
+  transition={Slide}
+  hideProgressBar
+  closeButton ={false}
+  toastClassName={() =>
+    "relative overflow-hidden backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl shadow-xl text-white py-3 px-4 flex gap-2 mb-2"
+  }
+/>
        
        <Navbar/>
       <Routes>

@@ -7,10 +7,8 @@ import {
   ChevronLeft, ChevronRight
 } from "lucide-react";
 import type { eventI } from "@/types/Event";
-
-// ────────────────────────────────────────────────
-// Event Detail Modal
-// ────────────────────────────────────────────────
+ 
+ 
 const EventModal = ({
   event,
   onClose,
@@ -413,7 +411,7 @@ const Events = () => {
                 <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1 ${
                   event?.payment_type === "free"
                     ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
-                    : "bg-amber-500/20 border border-amber-500/30 text-amber-300"
+                    : "bg-amber-500/30 border border-amber-500/30 text-amber-300"
                 }`}>
                   <Tag className="w-3 h-3" />
                   {event?.payment_type === "free" ? "Free" : `₹${event?.price}`}

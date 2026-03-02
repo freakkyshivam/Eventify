@@ -30,6 +30,7 @@ export const users = pgTable("users", {
 
   isAccountVerified: boolean("is_account_verified").notNull().default(false),
 
+ organizer_request : boolean("orgainzer_request").notNull().default(false),
  
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true })
