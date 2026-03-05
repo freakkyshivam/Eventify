@@ -1,5 +1,5 @@
 import { Users, CalendarDays, IndianRupee, Award, ChevronRight, Sparkles, Check, X, ClipboardList, ShieldCheck } from "lucide-react";
-import { StatsCard } from "./StatsCard";
+import { StatsCard } from "./utils/StatsCard";
 
 const adminStats = [
   { label: "Total Users", value: 0, icon: Users },

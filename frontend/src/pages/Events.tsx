@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { handleJoin } from "@/api/eventJoin";
-import { getAllEvent } from "@/api/eventApi";
+import { handleJoin } from "@/api/payment/eventJoin";
+import { getAllEvent } from "@/api/event/eventApi";
 import {
   Calendar, MapPin, Users, Loader2, AlertCircle, Sparkles,
   RefreshCw, Tag, X, Clock, LayoutGrid, IndianRupee, ArrowRight,
   ChevronLeft, ChevronRight
 } from "lucide-react";
 import type { eventI } from "@/types/Event";
+
+import { useNavigate, useNavigation } from "react-router-dom";
  
  
 const EventModal = ({
@@ -274,15 +276,15 @@ const EventModal = ({
 };
 
 
-// ────────────────────────────────────────────────
-// Main Events Page
-// ────────────────────────────────────────────────
+ 
 const Events = () => {
   const [events, setEvents] = useState<eventI[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [processingEventId, setProcessingEventId] = useState<string | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<eventI | null>(null);
+ 
+
+  const navigate = useNavigate();
 
   useEffect(() => { fetchEvents(); }, []);
 
@@ -359,15 +361,8 @@ const Events = () => {
         <div className="absolute top-1/3 -right-32 w-[400px] h-[400px] rounded-full bg-blue-600/10 blur-[100px]" />
       </div>
 
-      {/* Modal */}
-      {selectedEvent && (
-        <EventModal
-          event={selectedEvent}
-          onClose={() => setSelectedEvent(null)}
-          onJoin={() => handleJoin(selectedEvent.id, selectedEvent.title, setProcessingEventId)}
-          isProcessing={processingEventId === selectedEvent.id}
-        />
-      )}
+ 
+     
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
@@ -456,7 +451,7 @@ const Events = () => {
                 {/* Buttons */}
                 <div className="flex gap-2.5 mt-auto pt-2">
                   <button
-                    onClick={() => setSelectedEvent(event)}
+                    onClick={() => navigate(`/events/${event.slug}`)}
                     className="flex-1 py-2.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/4 hover:bg-white/10 hover:border-white/20 text-slate-300 hover:text-white transition-all duration-200"
                   >
                     View Details

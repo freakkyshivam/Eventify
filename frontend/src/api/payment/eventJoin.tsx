@@ -18,7 +18,7 @@ export const handleJoin = async (eventId: string,   eventTitle: string, setProce
 
       // Create order
       const { data: order } = await api.post(
-        `/api/events/${eventId}`,
+        `/events/${eventId}`,
         {},
         { withCredentials: true }
       );
@@ -43,7 +43,7 @@ export const handleJoin = async (eventId: string,   eventTitle: string, setProce
           try {
             // Verify payment
             await api.post(
-              `/api/payment/verify`,
+              `/payment/verify`,
               {
                 eventId,
                 razorpay_payment_id: response.razorpay_payment_id,

@@ -117,7 +117,7 @@ const HomePage = () => {
         </div>
 
         {open &&
-        <Auth setOpen={setOpen}/>
+        <Auth setOpen={setOpen} open={open}/>
         }
          
       </section>

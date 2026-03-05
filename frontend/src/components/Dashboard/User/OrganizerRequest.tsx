@@ -5,7 +5,7 @@ import {
 } from "lucide-react";
  
 import { useAuth } from "@/hooks/useHook";
-import { organizerRequestApi } from "@/api/userApi";
+import { organizerRequestApi } from "@/api/user/userApi";
 
 type Status = "idle" | "loading" | "sent" | "already_sent" | "error";
 

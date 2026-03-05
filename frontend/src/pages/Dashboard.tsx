@@ -1,14 +1,14 @@
 import { Calendar,   ShieldCheck, Award, User } from "lucide-react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { AdminDashboard } from "../components/Dashboard/AdminDashboard";
 import { OrganizerDashboard } from "../components/Dashboard/OrganizerDashboard";
 import { UserDashboard } from "../components/Dashboard/UserDashboard";
-import { SidebarItem } from "../components/Dashboard/SidebarItem";
-import { getSidebarItems } from "../components/Dashboard/sidebarConfig";
+import { SidebarItem } from "../components/Dashboard/utils/SidebarItem";
+import { getSidebarItems } from "../components/Dashboard/utils/sidebarConfig";
 import { useAuth } from "@/hooks/useHook";
 import Auth from "./Auth";
- 
-
+ import { fetchUser } from "@/api/user/userApi";
+import { useNavigate } from "react-router-dom";
  
 const roleConfig = {
   admin: {
@@ -38,14 +38,30 @@ const roleConfig = {
 };
 
 export default function DashboardPage() {
-   
+  
+  const navigate = useNavigate()
+
   const [activeTab, setActiveTab] = useState("Dashboard");
 
-   const {session} = useAuth();
+   const { setSession,session } = useAuth();
+    const [open, setOpen] = useState(true)
+    
+      useEffect(() => {
+        const ft = async () => {
+          const response = await fetchUser();
+          setSession({
+            user: response.user,
+            access_token: response.accessToken,
+          });
+        };
+        ft();
+      });
 
    if(!session){
+    if(open === false) navigate(-1);
+    navigate('/')
     return(
-    <Auth setOpen={true}/>
+    <Auth setOpen ={setOpen} />
     )
    }
    
@@ -134,7 +150,7 @@ export default function DashboardPage() {
         {/* Dashboard content */}
         <div className="p-8">
           {role === "admin" && <AdminDashboard activeTab={activeTab} />}
-          {role === "organizer" && <OrganizerDashboard activeTab={activeTab} />}
+          {role === "organizer" && <OrganizerDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
           {role === "attendee" && <UserDashboard activeTab={activeTab} setActiveTab={setActiveTab} />}
         </div>
 

@@ -10,6 +10,7 @@ import adminRouter from './src/routes/admin/main.routes';
 import paymentRouter from './src/routes/payment/payment.routes'
 import { authMiddleware } from "./src/middlewares/authMiddleware";
 import { findUserById } from "./src/services/user/user.service";
+import organizerRouter from './src/routes/organizer/organizer.routes'
 const app = express();
 
 const allowedOrigins = [
@@ -30,13 +31,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(cookieParser());
 
- app.use('/api/auth',authRouter);
- app.use('/api/events',eventRouter);
- app.use('/api/user',userRouter)
- app.use('/api/admin', adminRouter)
- app.use('/api/payment', paymentRouter)
+ app.use('/api/v1/auth',authRouter);
+ app.use('/api/v1/events',eventRouter);
+ app.use('/api/v1/user',userRouter)
+ app.use('/api/v1/admin', adminRouter)
+ app.use('/api/v1/payment', paymentRouter)
+app.use('/api/v1/organizer', organizerRouter);
 
- app.get("/api/me", authMiddleware, async (req, res) => {
+ app.get("/api/v1/me", authMiddleware, async (req, res) => {
 
    try {
      const user = req.user;

@@ -34,7 +34,7 @@ export const magicLink = async (req: Request, res: Response): Promise<void> => {
     const { email } = validationResult.data;
     const existingUser = await findUserByEmail(email);
     const token = await generateMagicLinkToken();
-    const magicLinkUrl = `${process.env.SERVER_URL}/api/auth/verify?token=${token}`;
+    const magicLinkUrl = `${process.env.SERVER_URL}/api/v1/auth/verify?token=${token}`;
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     if (existingUser) {

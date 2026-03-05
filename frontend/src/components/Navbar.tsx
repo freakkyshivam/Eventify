@@ -1,7 +1,7 @@
 import { Calendar  } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useHook";
-import { handleLogout } from "@/api/userApi";
+import { handleLogout } from "@/api/auth/logout";
  
 
 const Navbar = () => {

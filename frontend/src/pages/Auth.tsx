@@ -1,12 +1,14 @@
 import { X, Loader2, Sparkles } from "lucide-react";
  
-import React, { useEffect, useState } from "react";
-import { magicLinkAPI } from "@/api/magicLinkApi";
+import React, {   useState, useEffect } from "react";
+import { magicLinkAPI } from "@/api/auth/magicLinkApi";
  
-import { useAuth } from "@/hooks/useHook";
-import { fetchUser } from "@/api/userApi";
-
-const Auth = ({setOpen}) => {
+ 
+type Props = {
+   
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+};
+const Auth = ({  setOpen}: Props) => {
 
      
       const [email, setEmail] = useState("");
@@ -14,9 +16,13 @@ const Auth = ({setOpen}) => {
       const [error, setError] = useState("");
       const [success, setSuccess] = useState(false);
     
-      // const navigate = useNavigate();
-      const { setSession } = useAuth();
-    
+     
+    useEffect(() => {
+  document.body.style.overflow = "hidden";
+  return () => {
+    document.body.style.overflow = "auto";
+  };
+}, []);
       
     
       const validateEmail = (email: string): boolean => {
@@ -24,16 +30,7 @@ const Auth = ({setOpen}) => {
         return emailRegex.test(email);
       };
     
-      useEffect(() => {
-        const ft = async () => {
-          const response = await fetchUser();
-          setSession({
-            user: response.user,
-            access_token: response.accessToken,
-          });
-        };
-        ft();
-      });
+  
 
       const handleMagicLink = async (email: string) => {
         try {
@@ -173,7 +170,7 @@ const Auth = ({setOpen}) => {
 
               {/* Google Sign In */}
               <a
-                href={`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/auth/google`}
+                href={`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/v1/auth/google`}
                 className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white flex items-center justify-center gap-3 py-3 rounded-xl transition-all duration-200 text-sm font-medium"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">

@@ -2,7 +2,7 @@
 import express from 'express'
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import {change_role_request} from '../../controllers/user/organizerRequest.controller'
-import { getAllUserJoinedEvent,getAllTickets } from '../../controllers/event/getAllEvent.controller';
+import { getAllUserJoinedEvent,getAllTickets } from '../../controllers/user/getEvents&Tickets.controller';
 import { getAllPendingPaymentAndEvents } from '../../controllers/user/getPendingPayment.controller';
 const router = express.Router();
 

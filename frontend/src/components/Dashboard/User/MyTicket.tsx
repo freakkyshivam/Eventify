@@ -4,7 +4,7 @@ import {
   Sparkles, Copy, Check, BadgeCheck, CreditCard, Receipt,ChevronUp,ChevronDown
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getUserAllTickets } from "@/api/eventApi";
+import { getUserAllTickets } from "@/api/user/userApi";
 
  
 export interface TicketItem {

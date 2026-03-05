@@ -9,6 +9,8 @@
 //  import Footer from "./components/Footer";
  import Layout from "./pages/Layout";
 import CreateEvent from "./pages/CreateEvent";
+import EventDetailPage from "./pages/EventDetails";
+import EditEventPage from "./components/Dashboard/utils/EditEventPage";
 
  const App = () => {
    return (
@@ -31,7 +33,10 @@ import CreateEvent from "./pages/CreateEvent";
       <Route path="/dashboard" element={<Dashboard/>}/>
        <Route path="/events" element={<Events/>}/>
        <Route path="/create-events" element={<CreateEvent/>}/>
+       <Route path="/events/:slug" element={<EventDetailPage />} />
+       <Route path="/organizer/events/:slug/edit" element={<EditEventPage />} />
       </Routes>
+    
       {/* <Footer/> */}
      </div>
    )

@@ -110,7 +110,7 @@ export const googleAuth = async (
       });
 
       // Redirect to client with success message
-      const clientUrl = process.env.CLIENT_URL ?? "http://localhost:5173";
+      const clientUrl = `${process.env.CLIENT_URL}` || "http://localhost:5173";
       res.redirect(`${clientUrl}?registered=true`);
       return;
     }
@@ -121,7 +121,7 @@ export const googleAuth = async (
     console.error("Google authentication error:", error?.message ?? error);
 
     // Redirect to client with error
-    const clientUrl = process.env.CLIENT_URL ?? "http://localhost:5173";
+    const clientUrl = `${process.env.CLIENT_URL}` || "http://localhost:5173";
     res.redirect(`${clientUrl}?error=auth_failed`);
   }
 };
@@ -168,7 +168,7 @@ async function handleGoogleLogin(
 
     // Set cookies and redirect
     const isProduction = process.env.NODE_ENV === "production";
-    const clientUrl = process.env.CLIENT_URL ?? "http://localhost:5173";
+    const clientUrl = `${process.env.CLIENT_URL}/dashboard` || "http://localhost:5173/dashboard";
 
     res
       .cookie("access_token", accessToken, {

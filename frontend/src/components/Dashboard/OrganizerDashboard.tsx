@@ -1,24 +1,86 @@
  
 import {
   CalendarDays, Users, IndianRupee, Calendar,
-  Plus, ChevronRight, Sparkles, ClipboardList
+  Plus, ChevronRight, Sparkles
 } from "lucide-react";
-import { StatsCard } from "./StatsCard";
+import { StatsCard } from "./utils/StatsCard";
+import React, { useEffect, useState } from "react";
+import type { eventI } from "@/types/Event";
+import { getAllOrganizerEventsApi, RecentRegOrgApi } from "../../api/organizer/organizer.api";
+ 
+import RecentEvents from "./utils/RecentEvents";
+import EventsCard from "./utils/EventsCard";
+ import { useNavigate } from "react-router-dom";
+import RecentRegistrations from "./utils/RecentReg";
+import {type RegistrationI } from "@/types/Event";
+import RegistrationsCard from "./utils/RegistrationCard";
 
-const organizerStats = [
-  { label: "My Events", value: 0, icon: CalendarDays },
-  { label: "Total Registrations", value: 0, icon: Users },
-  { label: "Total Revenue", value: "₹0", icon: IndianRupee },
-  { label: "Upcoming Events", value: 0, icon: Calendar },
-];
 
 type OrganizerDashboardProps = {
   activeTab: string;
+  setActiveTab : React.Dispatch<React.SetStateAction<string>>
 };
 
-export function OrganizerDashboard({ activeTab }: OrganizerDashboardProps) {
+export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboardProps) {
 
-  // ── Create Event Tab ──
+  const [events, setEvents] = useState<eventI[]>()
+  const [loading, setLoading] = useState(false);
+  const [registrations, setRegistrations] = useState<RegistrationI[]>()
+
+  const navigate = useNavigate()
+
+  const fetchEvent = async ()=>{
+    setLoading(true)
+    try {
+      const res = await getAllOrganizerEventsApi();
+
+      if(!res) return;
+
+      if(Array.isArray(res.results)){
+        setEvents(res.results)
+      }
+    } catch (error) {
+      console.error(error);
+      
+    }finally{
+      setLoading(false)
+    }
+  }
+
+  const fetchReg = async ()=>{
+    setLoading(true)
+    try {
+      const res = await RecentRegOrgApi();
+
+      if(!res) return;
+
+      if(Array.isArray(res.results)){
+        setRegistrations(res.results)
+      }
+    } catch (error) {
+      console.error(error);
+      
+    }finally{
+      setLoading(false)
+    }
+  }
+  
+  useEffect(()=>{
+    fetchEvent();
+    fetchReg();
+  },[])
+
+  let totalAmount = 0;
+
+  registrations?.forEach(r=> totalAmount += Number(r?.payment?.amount))
+
+  const organizerStats = [
+  { label: "My Events", value: events?.length ?? 0, icon: CalendarDays },
+  { label: "Total Registrations", value: registrations?.length ?? 0, icon: Users },
+  { label: "Total Revenue", value:`₹ ${totalAmount}`, icon: IndianRupee },
+  { label: "Upcoming Events", value: events?.filter(e=> new Date(e.start_time) > new Date()).length, icon: Calendar },
+];
+
   if (activeTab === "Create Event") {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-5 text-center">
@@ -42,7 +104,29 @@ export function OrganizerDashboard({ activeTab }: OrganizerDashboardProps) {
     );
   }
 
-  
+   if(activeTab === "My Events"){
+    return <EventsCard
+    events={events}
+    title="My Events"
+    subTitle="Not Events"
+    subDescription="You have not create any events."
+    path="/create-events"
+    btnDes="Create Event"
+    onCardClick={(event)=>navigate(`/organizer/events/${event.slug}/edit`)}
+    />
+   }
+
+   if(activeTab === "Registrations"){
+    return <RegistrationsCard
+  registrations={registrations}
+  loading={loading}
+  title="My Registrations"
+  subTitle="No registrations yet"
+  subDescription="Browse events and register to see them here."
+  onCardClick={(reg) => navigate(`/events/${reg.event_slug}`)}
+/>
+   }
+
   if (activeTab !== "Dashboard") {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
@@ -56,6 +140,7 @@ export function OrganizerDashboard({ activeTab }: OrganizerDashboardProps) {
     );
   }
 
+ 
  
   return (
     <div className="space-y-6">
@@ -94,23 +179,17 @@ export function OrganizerDashboard({ activeTab }: OrganizerDashboardProps) {
               </div>
               <h3 className="text-sm font-bold text-white">My Events</h3>
             </div>
-            <button className="text-xs text-slate-500 hover:text-violet-400 flex items-center gap-1 transition-colors duration-200">
+            <button 
+            onClick={()=> setActiveTab("My Events") }
+            className="text-xs text-slate-500 hover:text-violet-400 flex items-center gap-1 transition-colors duration-200">
               View All <ChevronRight className="w-3 h-3" />
             </button>
           </div>
-
-          <div className="flex flex-col items-center justify-center py-14 px-6 gap-3 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-white/3 border border-white/[0.07] flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-slate-400 text-xs font-medium mb-0.5">No events yet</p>
-              <p className="text-slate-600 text-xs">Create your first event to get started!</p>
-            </div>
-            <button className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 font-medium transition-colors duration-200 mt-1">
-              <Plus className="w-3.5 h-3.5" /> Create Event
-            </button>
-          </div>
+        <div className="p-4 space-y-3 min-h-[200px]">
+          
+          <RecentEvents events={events} loading={loading}/>
+        
+        </div>       
         </div>
 
         {/* Recent Registrations */}
@@ -122,20 +201,17 @@ export function OrganizerDashboard({ activeTab }: OrganizerDashboardProps) {
               </div>
               <h3 className="text-sm font-bold text-white">Recent Registrations</h3>
             </div>
-            <button className="text-xs text-slate-500 hover:text-blue-400 flex items-center gap-1 transition-colors duration-200">
+            <button
+            onClick={()=>setActiveTab('Registration')}
+            className="text-xs text-slate-500 hover:text-blue-400 flex items-center gap-1 transition-colors duration-200">
               View All <ChevronRight className="w-3 h-3" />
             </button>
           </div>
-
-          <div className="flex flex-col items-center justify-center py-14 px-6 gap-3 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-white/3 border border-white/[0.07] flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-slate-600" />
-            </div>
-            <div>
-              <p className="text-slate-400 text-xs font-medium mb-0.5">No registrations yet</p>
-              <p className="text-slate-600 text-xs">Registrations will appear here once people sign up.</p>
-            </div>
-          </div>
+        <div className="p-4 space-y-3 min-h-[200px]">
+          <RecentRegistrations registrations={registrations} loading={loading}/>
+        </div>
+        
+          
         </div>
 
       </div>

@@ -112,7 +112,15 @@ export const createEvent = async (req: Request, res: Response) => {
 export const updateEvent = async(req:Request, res:Response)=>{
     try {
         
-        const {eventId} = req.params;
+        const {slug} = req.params;
+
+        if(!slug){
+          return res.status(400).json({
+            success : false,
+            msg : "Slug is required for update event"
+          })
+        }
+
          const user = req.user;
     
     if (!user?.id) {
@@ -155,7 +163,7 @@ export const updateEvent = async(req:Request, res:Response)=>{
             .set(updatedData)
             .where(
                 and(
-                    eq(events.id, eventId),
+                    eq(events.slug, slug),
                     eq(events.authorId, user?.id)
                 )
             )
