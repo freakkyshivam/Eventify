@@ -1,103 +1,56 @@
 import { type EventFormData } from "@/types/Event";
 import React from "react";
 
-type props = {
-    setErrors : React.Dispatch<
+ 
+ export const EventFormDataValidation = (
+  data: EventFormData,
+  setErrors: React.Dispatch<
     React.SetStateAction<Partial<Record<keyof EventFormData, string>>>
-    >
-}
- 
-export const EventFormDataValidation = (data : EventFormData, setErrors)=>{
-    const newErrors: Partial<Record<keyof EventFormData, string>> = {};
+  >
+) => {
+  const newErrors: Partial<Record<keyof EventFormData, string>> = {};
 
-    if(!data.title.trim()) newErrors.title = "Title is required";
-    if(!data.description.trim()) newErrors.description = "Description is required";
-    if(!data.start_time) newErrors.start_time = "Start time is required";
-    if(!data.end_time) newErrors.end_time = "End time required";
-    if(!data.registration_deadline) newErrors.registration_deadline = "Registration deadline is required";
-    if(!data.event_mode) newErrors.event_mode = "Event mode is required";
-    if(!data.event_category)  newErrors.event_category = "Event category is required";
-    if(!data.payment_type) newErrors.payment_type = "Payment type is required";
-    
-    if(data.event_mode === 'offline' && !data.location.trim()){
-        newErrors.location = "Locations is required for offline events"
-    }
+  if (!data.title.trim()) newErrors.title = "Title is required";
+  if (!data.description.trim()) newErrors.description = "Description is required";
+  if (!data.start_time) newErrors.start_time = "Start time is required";
+  if (!data.end_time) newErrors.end_time = "End time required";
+  if (!data.registration_deadline)
+    newErrors.registration_deadline = "Registration deadline is required";
+  if (!data.event_mode) newErrors.event_mode = "Event mode is required";
+  if (!data.event_category) newErrors.event_category = "Event category is required";
+  if (!data.payment_type) newErrors.payment_type = "Payment type is required";
 
-    if(data.capacity < 1){
-        newErrors.capacity = "Capacity must be at least 1"
-    }
+  if (data.event_mode === "offline" && !data.location.trim()) {
+    newErrors.location = "Location is required for offline events";
+  }
 
-    if(data.payment_type === "paid" && data.price <= 0){
-        newErrors.price = "Price must be greater than 0 for paid events"
-    }
+  if (data.capacity < 1) {
+    newErrors.capacity = "Capacity must be at least 1";
+  }
 
-    const now = new Date();
-    const startTime = new Date(data.start_time);
-    const endTime = new Date(data.end_time);
-    const deadline = new Date(data.registration_deadline);
+  if (data.payment_type === "paid" && data.price <= 0) {
+    newErrors.price = "Price must be greater than 0 for paid events";
+  }
 
-    if(startTime <= now){
-        newErrors.start_time = "Start time must be in the future"
-    }
+  const now = new Date();
+  const startTime = new Date(data.start_time);
+  const endTime = new Date(data.end_time);
+  const deadline = new Date(data.registration_deadline);
 
-    if(endTime <= startTime){
-        newErrors.end_time = "End time must be after start time"
-    }
+  if (startTime <= now) {
+    newErrors.start_time = "Start time must be in the future";
+  }
 
-    if(deadline >= startTime){
-        newErrors.registration_deadline = "Registration deadline must be before start time"
-    }
+  if (endTime <= startTime) {
+    newErrors.end_time = "End time must be after start time";
+  }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0;
-}
+  if (deadline >= startTime) {
+    newErrors.registration_deadline =
+      "Registration deadline must be before start time";
+  }
 
- 
-//   const validateForm = (): boolean => {
-//     const newErrors: Partial<Record<keyof EventFormData, string>> = {};
+  setErrors(newErrors);
 
-//     if (!formData.title.trim()) newErrors.title = "Title is required";
-//     if (!formData.description.trim()) newErrors.description = "Description is required";
-//     if (!formData.start_time) newErrors.start_time = "Start time is required";
-//     if (!formData.end_time) newErrors.end_time = "End time is required";
-//     if (!formData.registration_deadline) newErrors.registration_deadline = "Registration deadline is required";
-//     if (!formData.event_mode) newErrors.event_mode = "Event mode is required";
-//     if (!formData.event_category) newErrors.event_category = "Category is required";
-//     if (!formData.payment_type) newErrors.payment_type = "Payment type is required";
-    
-//     if (formData.event_mode === "offline" && !formData.location?.trim()) {
-//       newErrors.location = "Location is required for offline events";
-//     }
-
-//     if (formData.capacity < 1) {
-//       newErrors.capacity = "Capacity must be at least 1";
-//     }
-
-//     if (formData.payment_type === "paid" && formData.price <= 0) {
-//       newErrors.price = "Price must be greater than 0 for paid events";
-//     }
-
-//     const now = new Date();
-//     const startTime = new Date(formData.start_time);
-//     const endTime = new Date(formData.end_time);
-//     const deadline = new Date(formData.registration_deadline);
-
-//     if (startTime <= now) {
-//       newErrors.start_time = "Start time must be in the future";
-//     }
-
-//     if (endTime <= startTime) {
-//       newErrors.end_time = "End time must be after start time";
-//     }
-
-//     if (deadline >= startTime) {
-//       newErrors.registration_deadline = "Registration deadline must be before start time";
-//     }
-
-//     if (bannerFiles.length === 0) {
-//       newErrors.bannerUrls = "At least one banner image is required";
-//     }
-
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
+  return Object.keys(newErrors).length === 0;
+};

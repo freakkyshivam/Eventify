@@ -74,15 +74,46 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
     fetchReg();
   },[])
 
-  let totalAmount = 0;
+  // Revenue entry and stats
+   useEffect(() => {
+  if (!registrations) return;
 
+  const entry: RevenueEntry[] = registrations.map((d) => ({
+    event_title: d.event_title,
+    amount: d.payment.amount,
+    payment_status: d.payment.status,
+    registration_date: d.registration_date,
+    user_name: d.user_name,
+  }));
+
+  setEntries(entry);
+
+  const s: RevenueStats = {
+    total_revenue: registrations.length,
+    completed: registrations.filter(a => a.payment.status === "completed").length,
+    pending: registrations.filter(a => a.payment.status === "pending").length,
+    failed: registrations.filter(a => a.payment.status === "failed").length,
+    this_month: 0,
+    last_month: 0
+  };
+
+  setStats(s);
+
+}, [registrations]);
+
+
+  let totalAmount = 0;
   registrations?.forEach(r=> totalAmount += Number(r?.payment?.amount))
 
   const organizerStats = [
   { label: "My Events", value: events?.length ?? 0, icon: CalendarDays },
   { label: "Total Registrations", value: registrations?.length ?? 0, icon: Users },
-  { label: "Total Revenue", value:`₹ ${totalAmount}`, icon: IndianRupee },
-  { label: "Upcoming Events", value: events?.filter(e=> new Date(e.start_time) > new Date()).length, icon: Calendar },
+  { label: "Total Revenue", value: `₹ ${totalAmount}`, icon: IndianRupee },
+  { 
+    label: "Upcoming Events",
+    value: events?.filter(e => new Date(e.start_time) > new Date()).length ?? 0,
+    icon: Calendar
+  },
 ];
 
   if (activeTab === "Create Event") {
@@ -133,16 +164,7 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
 />
    }
 
-  const entry: RevenueEntry[] =
-  registrations?.map((d) => ({
-    event_title: d.event_title,
-    amount: d.payment.amount,
-    payment_status: d.payment.status,
-    registration_date: d.registration_date,
-    user_name: d.user_name,
-  })) || [];
 
-setEntries(entry);
 
       if(activeTab === "Revenue"){
     return <RevenueCard
