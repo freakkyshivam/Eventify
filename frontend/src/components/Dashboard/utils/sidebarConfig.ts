@@ -2,7 +2,6 @@
 import {
   Calendar,
   CalendarDays,
-  Plus,
   Users,
   Settings,
   Ticket,
@@ -25,7 +24,7 @@ export const getSidebarItems = (role: "admin" | "organizer" | "attendee") => {
       return [
         { label: "Dashboard", icon: CalendarDays },
         { label: "My Events", icon: Calendar },
-        { label: "Create Event", icon: Plus },
+        
         { label: "Registrations", icon: Ticket },
         { label: "Revenue", icon: IndianRupee },
         { label: "Settings", icon: Settings },

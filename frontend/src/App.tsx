@@ -11,7 +11,7 @@
 import CreateEvent from "./pages/CreateEvent";
 import EventDetailPage from "./pages/EventDetails";
 import EditEventPage from "./components/Dashboard/utils/EditEventPage";
-
+import EventRegistrationsPage from "./pages/EventRegistrationPage";
  const App = () => {
    return (
      <div>
@@ -35,6 +35,7 @@ import EditEventPage from "./components/Dashboard/utils/EditEventPage";
        <Route path="/create-events" element={<CreateEvent/>}/>
        <Route path="/events/:slug" element={<EventDetailPage />} />
        <Route path="/organizer/events/:slug/edit" element={<EditEventPage />} />
+       <Route path="/events/:slug/registrations" element={<EventRegistrationsPage />} />
       </Routes>
     
       {/* <Footer/> */}

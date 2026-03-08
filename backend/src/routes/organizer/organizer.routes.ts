@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/events', authMiddleware, getAllEventsOrg)
 router.get('/events/registration', authMiddleware, getAllReg)
-router.get('/events/:slug/registration', authMiddleware, getRegPerEvents)
+router.get('/events/:slug/registrations', authMiddleware, getRegPerEvents)
 
 
 export default router;

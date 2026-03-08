@@ -24,6 +24,24 @@
 export interface eventI extends EventFormData {
   id : string
   slug : string
+  organizer_name : string
+}
+
+export interface RevenueEntry {
+  event_title: string;
+  amount: string;
+  payment_status: "completed" | "pending" | "failed";
+  registration_date: string;
+  user_name?: string;
+}
+
+export interface RevenueStats {
+  total_revenue: number;
+  completed: number;
+  pending: number;
+  failed: number;
+  this_month: number;
+  last_month: number;
 }
 export interface UserEventApiResponse {
   success: boolean;

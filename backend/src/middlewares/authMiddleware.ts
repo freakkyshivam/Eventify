@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { IUser } from "../types/User.type";
-import { log } from "console";
+import { JwtUserPayload } from "../types/User.type";
+ 
 
 interface AuthRequest extends Request {
-  user?: IUser | JwtPayload;
+  user?: JwtUserPayload;
 }
 export const authMiddleware = (
   req: AuthRequest,
@@ -37,7 +37,7 @@ export const authMiddleware = (
     const decoded = jwt.verify(
       access_token,
       process.env.JWT_SECRET as string
-    ) as JwtPayload;
+    ) as JwtUserPayload;
 
     req.user = decoded;
     next();

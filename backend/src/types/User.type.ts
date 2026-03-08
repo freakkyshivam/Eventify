@@ -1,12 +1,11 @@
-import { Document,Types } from "mongoose";
-
-export interface IUser extends Document {
+export interface IUser {
   name: string;
-  email: string;
+  id: string;
   role:string;
-  profileImageUrl:string;
-  isAccountVerified:boolean;
-  profile_completed : boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+}
+
+export interface JwtUserPayload {
+  id: string;
+  name: string;
+  role: string;
 }

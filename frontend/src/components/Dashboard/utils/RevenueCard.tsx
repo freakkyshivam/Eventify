@@ -3,22 +3,7 @@ import {
   CheckCircle2, Clock, XCircle, BarChart3, Calendar
 } from "lucide-react";
 
-interface RevenueEntry {
-  event_title: string;
-  amount: string;
-  payment_status: "completed" | "pending" | "failed";
-  registration_date: string;
-  user_name?: string;
-}
-
-interface RevenueStats {
-  total_revenue: number;
-  completed: number;
-  pending: number;
-  failed: number;
-  this_month: number;
-  last_month: number;
-}
+import { type RevenueEntry,type RevenueStats } from "@/types/Event";
 
 interface Props {
   entries: RevenueEntry[] | undefined;

@@ -14,18 +14,22 @@ import EventsCard from "./utils/EventsCard";
 import RecentRegistrations from "./utils/RecentReg";
 import {type RegistrationI } from "@/types/Event";
 import RegistrationsCard from "./utils/RegistrationCard";
+import RevenueCard from "./utils/RevenueCard";
 
 
 type OrganizerDashboardProps = {
   activeTab: string;
   setActiveTab : React.Dispatch<React.SetStateAction<string>>
 };
+import { type RevenueEntry,type RevenueStats } from "@/types/Event";
 
 export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboardProps) {
 
   const [events, setEvents] = useState<eventI[]>()
   const [loading, setLoading] = useState(false);
   const [registrations, setRegistrations] = useState<RegistrationI[]>()
+  const [entries, setEntries] = useState<RevenueEntry[]>()
+  const [stats, setStats] = useState<RevenueStats>()
 
   const navigate = useNavigate()
 
@@ -106,13 +110,15 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
 
    if(activeTab === "My Events"){
     return <EventsCard
+    role="organizer"
     events={events}
     title="My Events"
     subTitle="Not Events"
     subDescription="You have not create any events."
     path="/create-events"
     btnDes="Create Event"
-    onCardClick={(event)=>navigate(`/organizer/events/${event.slug}/edit`)}
+    onViewRegistrations={(event)=> navigate(`/events/${event.slug}/registrations`)}
+    onEditClick={(event)=>navigate(`/organizer/events/${event.slug}/edit`)}
     />
    }
 
@@ -126,6 +132,26 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
   onCardClick={(reg) => navigate(`/events/${reg.event_slug}`)}
 />
    }
+
+  const entry: RevenueEntry[] =
+  registrations?.map((d) => ({
+    event_title: d.event_title,
+    amount: d.payment.amount,
+    payment_status: d.payment.status,
+    registration_date: d.registration_date,
+    user_name: d.user_name,
+  })) || [];
+
+setEntries(entry);
+
+      if(activeTab === "Revenue"){
+    return <RevenueCard
+    entries={entries}
+    stats={stats}
+    />
+   }
+
+
 
   if (activeTab !== "Dashboard") {
     return (
@@ -161,7 +187,9 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
           <h3 className="text-white font-bold text-base">Ready to host an event?</h3>
           <p className="text-slate-500 text-xs mt-0.5">Set up your event in minutes and start collecting registrations.</p>
         </div>
-        <button className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:scale-105 transition-all duration-200 shrink-0">
+        <button
+        onClick={()=> navigate('/create-events')}
+        className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:scale-105 transition-all duration-200 shrink-0">
           <Plus className="w-4 h-4" />
           Create New Event
         </button>
@@ -208,7 +236,10 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
             </button>
           </div>
         <div className="p-4 space-y-3 min-h-[200px]">
-          <RecentRegistrations registrations={registrations} loading={loading}/>
+          <RecentRegistrations 
+          registrations={registrations} 
+          loading={loading} 
+          />
         </div>
         
           

@@ -156,3 +156,6 @@ export const getRegPerEvents = async (req: Request, res: Response) => {
     console.log(error);
   }
 };
+
+
+//  

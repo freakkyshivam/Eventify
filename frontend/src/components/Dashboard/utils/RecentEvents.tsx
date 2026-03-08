@@ -1,15 +1,20 @@
  import {type eventI } from "@/types/Event"
  import { Calendar, Plus, Tag, MapPin, ChevronRight } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "@/hooks/useHook"
 
 interface props{
     events : eventI[] | undefined
     loading : boolean
+ 
 }
 
- const RecentEvents = ({events , loading } : props) => {
+ const RecentEvents = ({events , loading  } : props) => {
 
+      const {session} = useAuth();
       const navigate = useNavigate()
+
+      const path = session?.user?.role === "attendee" ? '/' : "/registrations"
   return (
     <div>
         {loading && (
@@ -40,7 +45,7 @@ interface props{
          {events?.slice(0,4).map((event : eventI)=>{
         return (
            <div
-            onClick={()=> navigate(`/events/${event.slug}`)}
+            onClick={()=> navigate( `/events/${event.slug}${path}`)}
                 key={event.id}
                 className="mb-2 group flex gap-3 p-3 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 hover:border-white/12 transition-all duration-200 cursor-pointer"
               >

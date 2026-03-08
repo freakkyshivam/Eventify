@@ -1,29 +1,35 @@
- 
-
 import type { eventI } from "@/types/Event";
-import { Calendar, Ticket, Clock, MapPin, Sparkles, Tag, ArrowRight } from "lucide-react";
+import { Calendar, Ticket, Clock, MapPin, Sparkles, Tag, ArrowRight, Pencil, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+type Role = "user" | "organizer" | "admin";
 
 type Props = {
   events: eventI[] | undefined;
   loading?: boolean;
+  role?: Role;
   title: string;
   subTitle: string;
   subDescription: string;
   path: string;
   btnDes: string;
-  onCardClick?: (event: eventI) => void; // optional — defaults to /events/:id
+  onCardClick?: (event: eventI) => void;
+  onEditClick?: (event: eventI) => void;
+  onViewRegistrations?: (event: eventI) => void;
 };
 
 const EventsCard = ({
   events,
   loading = false,
+  role = "user",
   title,
   subTitle,
   subDescription,
   path,
   btnDes,
   onCardClick,
+  onEditClick,
+  onViewRegistrations,
 }: Props) => {
   const navigate = useNavigate();
 
@@ -33,7 +39,7 @@ const EventsCard = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.07] overflow-hidden animate-pulse">
-            <div className="h-32 bg-white/[0.04]" />
+            <div className="h-36 bg-white/[0.04]" />
             <div className="p-4 space-y-2.5">
               <div className="h-3 w-3/4 rounded-full bg-white/[0.06]" />
               <div className="h-2.5 w-full rounded-full bg-white/[0.04]" />
@@ -71,16 +77,14 @@ const EventsCard = ({
     <div className="space-y-5">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-            <Ticket className="w-3.5 h-3.5 text-violet-400" />
-          </div>
-          <h3 className="text-sm font-bold text-white">{title}</h3>
-          <span className="px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/25 text-violet-400 text-[10px] font-bold">
-            {events.length}
-          </span>
+      <div className="flex items-center gap-2.5">
+        <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+          <Ticket className="w-3.5 h-3.5 text-violet-400" />
         </div>
+        <h3 className="text-sm font-bold text-white">{title}</h3>
+        <span className="px-2 py-0.5 rounded-full bg-violet-500/15 border border-violet-500/25 text-violet-400 text-[10px] font-bold">
+          {events.length}
+        </span>
       </div>
 
       {/* Grid */}
@@ -91,7 +95,18 @@ const EventsCard = ({
           const isExpired = deadline < new Date();
 
           const handleClick = () =>
-            onCardClick ? onCardClick(event) : navigate(`/events/${event.id}`);
+            onCardClick ? onCardClick(event) : navigate(`/events/${event.slug}`);
+        
+
+          const handleEdit = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onEditClick ? onEditClick(event) : navigate(`/organizer/events/${event.slug}/edit`);
+          };
+
+          const handleViewReg = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onViewRegistrations?.(event);
+          };
 
           return (
             <div
@@ -117,7 +132,7 @@ const EventsCard = ({
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080810]/90 via-transparent to-transparent" />
 
-                {/* Badges */}
+                {/* Price + Status badges */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                   <div className={`px-2 py-0.5 rounded-md text-[10px] font-bold flex items-center gap-1 ${
                     isFree
@@ -127,7 +142,6 @@ const EventsCard = ({
                     <Tag className="w-2.5 h-2.5" />
                     {isFree ? "Free" : `₹${event.price}`}
                   </div>
-
                   <div className={`px-2 py-0.5 rounded-md text-[10px] font-semibold border ${
                     isExpired
                       ? "bg-red-500/10 border-red-500/20 text-red-400"
@@ -137,14 +151,29 @@ const EventsCard = ({
                   </div>
                 </div>
 
-                {/* Arrow reveal on hover */}
-                <div className="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-lg bg-black/50 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <ArrowRight className="w-3 h-3 text-white" />
-                </div>
+                {/* Arrow (user only) */}
+                {role === "user" && (
+                  <div className="absolute bottom-2.5 right-2.5 w-6 h-6 rounded-lg bg-black/50 border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <ArrowRight className="w-3 h-3 text-white" />
+                  </div>
+                )}
               </div>
 
               {/* Content */}
               <div className="p-4 flex flex-col flex-1">
+
+                {/* Admin: organizer name pill */}
+                {role === "admin" && event.organizer_name && (
+                  <div className="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-md bg-fuchsia-500/10 border border-fuchsia-500/20 text-[10px] text-fuchsia-400 font-semibold mb-2">
+                    <div className="w-3 h-3 rounded-full bg-fuchsia-500/30 flex items-center justify-center">
+                      <span className="text-[8px] font-black text-fuchsia-300">
+                        {event.organizer_name?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    {event.organizer_name}
+                  </div>
+                )}
+
                 <h4 className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors duration-200 line-clamp-1 mb-1">
                   {event.title}
                 </h4>
@@ -156,21 +185,19 @@ const EventsCard = ({
                 )}
 
                 {/* Meta row */}
-                <div className="flex items-center gap-3 mt-auto flex-wrap">
+                <div className="flex items-center gap-3 mt-auto flex-wrap mb-3">
                   <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500">
                     <div className="w-4 h-4 rounded bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
                       <Clock className="w-2.5 h-2.5 text-violet-400" />
                     </div>
                     {deadline.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
-
                   <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500 capitalize">
                     <div className="w-4 h-4 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
                       <MapPin className="w-2.5 h-2.5 text-blue-400" />
                     </div>
                     {event.event_mode}
                   </span>
-
                   <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500 capitalize ml-auto">
                     <div className="w-4 h-4 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
                       <Sparkles className="w-2.5 h-2.5 text-amber-400" />
@@ -178,6 +205,26 @@ const EventsCard = ({
                     {event.event_category}
                   </span>
                 </div>
+
+                {/* Organizer / Admin action buttons */}
+                {(role === "organizer" || role === "admin") && (
+                  <div className="flex gap-2 pt-3 border-t border-white/[0.06]">
+                    <button
+                      onClick={handleViewReg}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 hover:border-blue-500/35 text-blue-400 hover:text-blue-300 text-[11px] font-semibold transition-all duration-200"
+                    >
+                      <Users className="w-3 h-3" />
+                      View Reg
+                    </button>
+                    <button
+                      onClick={handleEdit}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/35 text-violet-400 hover:text-violet-300 text-[11px] font-semibold transition-all duration-200"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      Edit
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           );
@@ -188,3 +235,26 @@ const EventsCard = ({
 };
 
 export default EventsCard;
+
+/**
+ // Attendee dashboard
+<EventsCard role="user" events={events} ... />
+
+// Organizer dashboard
+<EventsCard
+  role="organizer"
+  events={events}
+  onViewRegistrations={(event) => navigate(`/events/${event.id}/registrations`)}
+  onEditClick={(event) => navigate(`/events/${event.id}/edit`)}
+  ...
+/>
+
+// Admin dashboard
+<EventsCard
+  role="admin"
+  events={events}
+  onViewRegistrations={(event) => navigate(`/admin/events/${event.id}/registrations`)}
+  onEditClick={(event) => navigate(`/events/${event.id}/edit`)}
+  ...
+/>
+ */
