@@ -170,7 +170,7 @@ const Auth = ({  setOpen}: Props) => {
 
               {/* Google Sign In */}
               <a
-                href={`${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/v1/auth/google`}
+                href={`${import.meta.env.VITE_BACKEND_DEV_URL || "http://localhost:3000"}/api/v1/auth/google`}
                 className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white flex items-center justify-center gap-3 py-3 rounded-xl transition-all duration-200 text-sm font-medium"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
