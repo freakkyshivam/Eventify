@@ -16,8 +16,9 @@ import {
 import api from "@/services/axiosInstance";
 import { type EventFormData } from "@/types/Event";
 import { EventFormDataValidation } from "@/validation/eventCreationFormValidation";
+import { Badge } from "@/components/ui/badge";
 
-// ── Reusable field wrapper ──
+ 
 const Field = ({
   label,
   required,
@@ -161,7 +162,7 @@ const CreateEvent = () => {
       fd.append("event_category", formData.event_category);
       if (formData.event_mode === "offline") fd.append("location", formData.location);
       bannerFiles.forEach((file) => fd.append("banners", file));
-      await api.post("/api/events", fd, { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } });
+      await api.post("/events", fd, { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } });
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
@@ -459,6 +460,8 @@ const CreateEvent = () => {
               )}
             </button>
           </div>
+
+           
 
         </form>
       </div>
