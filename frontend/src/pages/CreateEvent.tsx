@@ -16,7 +16,7 @@ import {
 import api from "@/services/axiosInstance";
 import { type EventFormData } from "@/types/Event";
 import { EventFormDataValidation } from "@/validation/eventCreationFormValidation";
-import { Badge } from "@/components/ui/badge";
+ 
 
  
 const Field = ({
