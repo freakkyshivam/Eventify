@@ -8,60 +8,9 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- <button id="pay">Pay Now</button> -->
-
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   
-  <!-- <script>
-document.getElementById("pay").addEventListener('click', 
-  async function () {
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MTVmMzk5ZDE0Zjc5ODg0MzNjZjg0MiIsImVtYWlsIjoic2hpdmFtMjQzMjkwN0BnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc2NDQxNTc2NiwiZXhwIjoxNzY1MDIwNTY2fQ.mnrL-JOV5TPPt_x1Wm5P0GbgeW3K_I-QTBh8cI5Qq38"
-  const res = await fetch("http://localhost:3000/api/event/join", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify({ eventId: "69214fd632d4429b04468752" })
-  });
-  console.log(res);
-  
-  const {order} = await res.json();
-  console.log("Order:", order);
-console.log(order.key);
 
-  var options = {
-    key: order.key,
-    amount: order.amount,
-    currency: order.currency,
-    order_id: order.orderId,
-    name: "Event Payment",
-    description: "Ticket Purchase",
-   handler: function (response) {
-  fetch("http://localhost:3000/api/event/verify-payment", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`  
-    },
-    body: JSON.stringify({
-      eventId: "69214fd632d4429b04468752",  
-      razorpay_payment_id: response.razorpay_payment_id,
-      razorpay_order_id: response.razorpay_order_id,
-      razorpay_signature: response.razorpay_signature
-    })
-  })
-  .then(res => res.json())
-  .then(data => console.log("Payment Verify:", data));
-},
- 
-    theme: { color: "#3399cc" }
-  };
-
-  var razorpay = new Razorpay(options);
-  razorpay.open();
-}
-)
-
-</script> -->
-    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>   
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
