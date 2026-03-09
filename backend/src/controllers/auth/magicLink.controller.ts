@@ -50,6 +50,9 @@ export const magicLink = async (req: Request, res: Response): Promise<void> => {
 
       await sendLoginMagicLink(email, magicLinkUrl, existingUser.name);
     } else {
+  
+      await db.delete(magiclink).where(eq(magiclink.email, email));
+
       await db.insert(magiclink).values({
         hashed_token: hashedToken,
         email,
@@ -60,9 +63,9 @@ export const magicLink = async (req: Request, res: Response): Promise<void> => {
       await sendMagicLinkMail(email, magicLinkUrl);
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
-      msg: "Magic link sent to email if it exists",
+      msg: "Magic link sent to your email",
     });
   } catch (error: any) {
     console.error("Magic link error:", error?.message ?? error);
@@ -99,7 +102,6 @@ export const verifyMagicLink = async (
 
     // Check expiration
     if (new Date(data.expired_at) < new Date()) {
-      // Delete expired token
       await db.delete(magiclink).where(eq(magiclink.hashed_token, tokenHash));
       res.status(401).json({
         success: false,
@@ -107,6 +109,8 @@ export const verifyMagicLink = async (
       });
       return;
     }
+ 
+    await db.delete(magiclink).where(eq(magiclink.hashed_token, tokenHash));
 
     // Handle registration
     if (data.purpose === "register") {

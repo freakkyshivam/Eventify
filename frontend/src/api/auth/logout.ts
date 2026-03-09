@@ -1,12 +1,13 @@
 import api from "@/services/axiosInstance";
 
-export const handleLogout = async ()=>{
-    try {
-        await localStorage.clear()
-        await api.get('/auth/logout');
-        console.log("Logout successfull");
-        window.location.reload();
-    } catch (error) {
-        console.error(error)
-    }
-}
+export const handleLogout = async (): Promise<void> => {
+  try {
+    localStorage.clear();
+    await api.post("/api/auth/logout", {}, { withCredentials: true });
+    window.location.href = "/";
+  } catch (error) {
+    console.error("Logout failed:", error);
+    localStorage.clear();
+    window.location.href = "/";
+  }
+};

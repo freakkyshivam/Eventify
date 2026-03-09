@@ -7,6 +7,7 @@ export const logout = async (req:Request, res:Response)=>{
         return res.
         clearCookie('access_token')
         .clearCookie("refresh_token")
+        .clearCookie('sid')
         .json({
             success:true,
             msg : "Logout successfull"
