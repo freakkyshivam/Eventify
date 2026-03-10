@@ -47,15 +47,15 @@ export default function DashboardPage() {
     const [open, setOpen] = useState(true)
     
       useEffect(() => {
-        const ft = async () => {
-          const response = await fetchUser();
-          setSession({
-            user: response.user,
-            access_token: response.accessToken,
-          });
-        };
-        ft();
-      });
+  const ft = async () => {
+    const response = await fetchUser();
+    setSession({
+      user: response.user,
+      access_token: response.accessToken,
+    });
+  };
+  ft();
+}, []);
 
    if(!session){
     if(open === false) navigate(-1);
@@ -65,9 +65,8 @@ export default function DashboardPage() {
     )
    }
    
-   const role  = session?.user?.role;
-   
-  const config = roleConfig[role];
+  const role = session?.user?.role || "attendee";
+const config = roleConfig[role];
 
   return (
     <div className="min-h-screen bg-[#080810] flex text-white">
