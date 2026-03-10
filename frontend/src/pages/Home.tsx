@@ -364,9 +364,9 @@ const HomePage = () => {
             style={{ animation: "ticker 32s linear infinite" }}
           >
             {[...Array(4)].flatMap(() =>
-              latestEvents.map((e, i) => (
+              latestEvents.map((e) => (
                 <span
-                  key={i}
+                  key={e?.id + Date.now()}
                   onClick={() => navigate(`/events/${e.slug}`)}
                   className="inline-flex items-center gap-2 text-xs text-slate-600 hover:text-slate-400 font-medium cursor-pointer transition-colors"
                 >
