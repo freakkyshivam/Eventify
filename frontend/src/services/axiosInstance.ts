@@ -53,6 +53,7 @@ api.interceptors.response.use(
         
         processQueue(refreshError);
         window.location.href = "/";
+        localStorage.clear();
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
