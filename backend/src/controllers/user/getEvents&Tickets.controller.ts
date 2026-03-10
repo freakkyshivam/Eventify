@@ -23,9 +23,10 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
         
         const result = await db.select(
             {
-                  eventId: events.id,
+                eventId: events.id,
                 title: events.title,
                 price : events.price,
+                slug : events.slug,
                 description : events.description,
                 event_mode : events.event_mode,
                 event_status : events.event_status ,

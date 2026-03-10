@@ -79,20 +79,20 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
   if (!registrations) return;
 
   const entry: RevenueEntry[] = registrations.map((d) => ({
-    event_title: d.event_title,
-    amount: d.payment.amount,
-    payment_status: d.payment.status,
-    registration_date: d.registration_date,
-    user_name: d.user_name,
+    event_title: d?.event_title,
+    amount: d?.payment?.amount,
+    payment_status: d?.payment?.status,
+    registration_date: d?.registration_date,
+    user_name: d?.user_name,
   }));
 
   setEntries(entry);
 
   const s: RevenueStats = {
-    total_revenue: registrations.length,
-    completed: registrations.filter(a => a.payment.status === "completed").length,
-    pending: registrations.filter(a => a.payment.status === "pending").length,
-    failed: registrations.filter(a => a.payment.status === "failed").length,
+    total_revenue: registrations?.length,
+    completed: registrations?.filter(a => a?.payment?.status === "completed").length,
+    pending: registrations?.filter(a => a?.payment?.status === "pending").length,
+    failed: registrations?.filter(a => a?.payment?.status === "failed").length,
     this_month: 0,
     last_month: 0
   };

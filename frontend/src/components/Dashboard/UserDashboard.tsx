@@ -84,6 +84,7 @@ if (!setActiveTab) {
     { label: "Upcoming", value: upcomingEvents?.length ?? 0, icon: Clock },
   ];
 
+console.log(upcomingEvents);
 
   if (activeTab === "My Registrations") {
    
