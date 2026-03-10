@@ -30,7 +30,7 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/api/auth/token/refresh")
+      !originalRequest.url?.includes("/auth/token/refresh")
     ) {
      
 
