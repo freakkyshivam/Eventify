@@ -48,7 +48,7 @@ export async function handleFreeEventRegistration(
     return registration;
   });
 
-  res.status(201).json({
+   res.status(201).json({
     success: true,
     msg: "Successfully registered for free event",
     data: {
@@ -56,4 +56,5 @@ export async function handleFreeEventRegistration(
       ticket_code: result.ticket_code,
     },
   });
+  return;
 }
