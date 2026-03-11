@@ -13,6 +13,8 @@ interface props{
 
       const {session} = useAuth();
       const navigate = useNavigate()
+    
+      const user_role = session?.user?.role;
 
       const path = session?.user?.role === "attendee" ? '/' : "/registrations"
   return (
@@ -34,10 +36,12 @@ interface props{
             </div>
             <div>
               <p className="text-slate-400 text-xs font-medium mb-0.5">No events yet</p>
-              <p className="text-slate-600 text-xs">Create your first event to get started!</p>
+              <p className="text-slate-600 text-xs">
+                {user_role === "attendee" ? "Join your first event to get started!" : "Create your first event to get started!"}
+              </p>
             </div>
             <button className="inline-flex items-center gap-1.5 text-xs text-violet-400 hover:text-violet-300 font-medium transition-colors duration-200 mt-1">
-              <Plus className="w-3.5 h-3.5" /> Create Event
+              <Plus className="w-3.5 h-3.5" />{user_role === "attendee" ? "Browse Events" : "Create Event"} 
             </button>
           </div>
          )}

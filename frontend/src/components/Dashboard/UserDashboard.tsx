@@ -145,7 +145,9 @@ console.log(upcomingEvents);
               </div>
               <h3 className="text-sm font-bold text-white">My Upcoming Events</h3>
             </div>
-            <button className="text-xs text-slate-500 hover:text-violet-400 flex items-center gap-1 transition-colors duration-200">
+            <button 
+            onClick={()=> setActiveTab("My Registrations")}
+            className="text-xs text-slate-500 hover:text-violet-400 flex items-center gap-1 transition-colors duration-200">
               View All <ChevronRight className="w-3 h-3" />
             </button>
           </div>

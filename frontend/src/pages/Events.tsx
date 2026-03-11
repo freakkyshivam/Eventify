@@ -3,7 +3,7 @@ import { handleJoin } from "@/api/payment/eventJoin";
 import { getAllEvent } from "@/api/event/eventApi";
 import {
   Calendar, MapPin, Users, Loader2, AlertCircle, Sparkles,
-  RefreshCw, Tag
+  RefreshCw, Tag,Clock
 } from "lucide-react";
 import type { eventI } from "@/types/Event";
 
@@ -113,7 +113,7 @@ const Events = () => {
             {events.length} events available
           </div>
           <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-3">
-            Upcoming{" "}
+            All{" "}
             <span className="bg-linear-to-r from-violet-400 via-fuchsia-400 to-blue-400 bg-clip-text text-transparent">
               Events
             </span>
@@ -123,7 +123,9 @@ const Events = () => {
 
         {/* Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {events.map((event) => (
+          {events.map((event) => {
+            const isDeadline = new Date(event.registration_deadline) < new Date()
+          return (
             <div
               key={event?.id}
               className="group relative bg-white/3 hover:bg-white/5 border border-white/[0.07] hover:border-white/[0.14] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col"
@@ -185,6 +187,8 @@ const Events = () => {
                   </p>
                 )}
 
+               
+
                 {/* Buttons */}
                 <div className="flex gap-2.5 mt-auto pt-2">
                   <button
@@ -193,9 +197,16 @@ const Events = () => {
                   >
                     View Details
                   </button>
-                  <button
+
+                   {isDeadline ?(
+                  <div className="flex items-center justify-center gap-2 text-xs text-slate-500 bg-white/3 border border-white/6 rounded-xl px-3 py-2">
+                  <Clock className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                  Registration closed
+                </div>
+                   ):(
+                    <button
                     onClick={() => handleJoin(event?.id, event?.title, setProcessingEventId)}
-                    disabled={processingEventId === event.id}
+                    disabled={processingEventId === event.id || isDeadline}
                     className={`flex-1 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                       event?.payment_type === "free"
                         ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.25)] hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
@@ -208,10 +219,13 @@ const Events = () => {
                       event?.payment_type === "free" ? "Join Free" : `Join ₹${event?.price}`
                     )}
                   </button>
+                   )
+          }
+                  
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </div>
