@@ -32,8 +32,8 @@ const Events = () => {
       const res = await getAllEvent();
       if (Array.isArray(res)) { setEvents(res); }
       else { setError("Invalid response format"); }
-    } catch (error: any) {
-      setError(error?.response?.data?.msg || "Failed to load events. Please try again.");
+    } catch (error: unknown) {
+      setError((error as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to load events. Please try again.");
     } finally {
       setLoading(false);
     }

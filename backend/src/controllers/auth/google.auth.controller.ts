@@ -181,19 +181,19 @@ async function handleGoogleLogin(
       .cookie("access_token", accessToken, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: "none",
+        sameSite: isProduction ? "none" : "lax",
         maxAge: ACCESS_TOKEN_EXPIRY_MS,
       })
       .cookie("refresh_token", refreshToken, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: "none",
+        sameSite: isProduction ? "none" : "lax",
         maxAge: REFRESH_TOKEN_EXPIRY_MS,
       })
       .cookie("sid", sid, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: "none",
+       sameSite: isProduction ? "none" : "lax",
         maxAge: REFRESH_TOKEN_EXPIRY_MS,
       })
       .redirect(redirectTo);

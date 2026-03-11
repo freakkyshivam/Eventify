@@ -1,12 +1,8 @@
 import api from "@/services/axiosInstance";
 
 export const magicLinkAPI = async(email : string)=>{
-  try {
-    const {data} = await api.post(`/auth/magiclink`,{
-      email
-    },{withCredentials : true});
-    return data;
-  } catch (error) {
-    console.log("Magic link api error ", error );
-  }
+  const {data} = await api.post(`/auth/magiclink`,{
+    email
+  },{withCredentials : true});
+  return data;
 }

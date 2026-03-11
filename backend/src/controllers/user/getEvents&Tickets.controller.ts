@@ -73,70 +73,67 @@ export const getAllUserJoinedEvent = async(req:Request, res:Response)=>{
 }
 
 
-export const getAllTickets = async (req : Request, res : Response)=>{
-    try {
+export const getAllTickets = async (req: Request, res: Response) => {
+  try {
+    const user = req.user;
 
-        const user = req.user;
-
-        if(!user?.id){
-            return res.status(401).json({
-                success : false,
-                msg : "Unauthorized"
-            })
-        }
-
-        if(user?.role !== "attendee"){
-            return res.status(403).json({
-                success : false,
-                msg : "Forbidden"
-            })
-        }
-
-        const results = await db.select({
-            payment_status : payment_table.payment_status,
-            registration_id : payment_table.registration_id,
-            payment_id : payment_table.payment_id,
-            razorpay_order_id : payment_table.razorpay_order_id,
-            ticket_code : event_registration_table.ticket_code,
-            registration_status : event_registration_table.registration_status,
-            title : events.title,
-            description : events.description,
-            start_time : events.start_time,
-            end_time : events.end_time,
-            registration_deadline : events.registration_deadline,
-            event_status : events.event_status
-        })
-                    .from(event_registration_table)
-                    .rightJoin(
-                        payment_table,
-                        eq(payment_table.registration_id, event_registration_table.id)
-                    )
-                    .leftJoin(
-                        events,
-                        eq(events.id, event_registration_table.event_id)
-                    )
-                    .where(
-                        eq(event_registration_table.user_id, user.id)
-                    )
-                    .orderBy(desc(event_registration_table.created_at))
-                
-                    if(!results){
-                        return res.status(400).json({
-                            success : false,
-                            msg : "No events found"
-                        })
-                    }
-
-                    return res.status(200).json({
-                        success : true,
-                        results
-                    })
-        
-    } catch (error) {
-         console.error("User Ticket fetching error ", error)
-        return res.status(500).json({
-            success : false,
-            msg : "User Ticket fetching error"
-        })
+    if (!user?.id) {
+      return res.status(401).json({
+        success: false,
+        msg: "Unauthorized",
+      });
     }
-}
+
+    if (user.role !== "attendee") {
+      return res.status(403).json({
+        success: false,
+        msg: "Forbidden",
+      });
+    }
+
+    const results = await db
+      .select({
+        payment_status: payment_table.payment_status,
+        registration_id: payment_table.registration_id,
+        payment_id: payment_table.payment_id,
+        razorpay_order_id: payment_table.razorpay_order_id,
+
+        ticket_code: event_registration_table.ticket_code,
+        registration_status: event_registration_table.registration_status,
+
+        title: events.title,
+        description: events.description,
+        start_time: events.start_time,
+        end_time: events.end_time,
+        registration_deadline: events.registration_deadline,
+        event_status: events.event_status,
+      })
+      .from(event_registration_table)
+      .leftJoin(
+        payment_table,
+        eq(payment_table.registration_id, event_registration_table.id)
+      )
+      .leftJoin(events, eq(events.id, event_registration_table.event_id))
+      .where(eq(event_registration_table.user_id, user.id))
+      .orderBy(desc(event_registration_table.created_at));
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        msg: "No tickets found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      results,
+    });
+  } catch (error) {
+    console.error("User Ticket fetching error", error);
+
+    return res.status(500).json({
+      success: false,
+      msg: "User Ticket fetching error",
+    });
+  }
+};

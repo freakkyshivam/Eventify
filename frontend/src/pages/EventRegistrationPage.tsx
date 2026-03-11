@@ -59,13 +59,14 @@ const EventRegistrationsPage = () => {
             ]);
             setRegistrations(regRes.data?.results ?? []);
             setEvent(eventRes?.results ?? null);
-        } catch (err: any) {
-            setError(err?.response?.data?.msg || "Failed to load registrations.");
+        } catch (err: unknown) {
+            setError((err as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to load registrations.");
         } finally {
             setLoading(false);
         }
     };
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { fetchData(); }, [slug]);
 
     const filtered = registrations.filter((r) => {

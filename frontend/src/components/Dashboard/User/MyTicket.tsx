@@ -236,11 +236,13 @@ export function MyTicketsTab( ) {
     setLoading(true);
     try {
       const res = await getUserAllTickets();
+      console.log(res);
+      
       if(!res) return;
       if(Array.isArray(res.results)){
        setTicket(res.results)
       }
-   } catch (error: any) {
+   } catch (error: unknown) {
       console.error("Failed to fetch tickets :", error);
     } finally {
       setLoading(false);

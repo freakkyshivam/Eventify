@@ -55,11 +55,13 @@ export default function DashboardPage() {
     });
   };
   ft();
-}, []);
+}, [setSession]);
 
    if(!session){
-    if(open === false) navigate(-1);
-    navigate('/')
+    if(open === false) {
+      navigate(-1);
+      return null;
+    }
     return(
     <Auth setOpen ={setOpen} />
     )

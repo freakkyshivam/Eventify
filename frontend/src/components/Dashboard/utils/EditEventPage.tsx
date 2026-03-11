@@ -118,8 +118,8 @@ const EditEvent = () => {
           bannerUrls: [],
         });
         setExistingBanners(data?.bannerUrls ?? []);
-      } catch (err: any) {
-        setFetchError(err?.response?.data?.msg || "Failed to load event.");
+      } catch (err: unknown) {
+        setFetchError((err as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to load event.");
       } finally {
         setFetchLoading(false);
       }
@@ -195,8 +195,8 @@ const EditEvent = () => {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err: any) {
-      setSaveError(err?.response?.data?.msg || "Failed to update event.");
+    } catch (err: unknown) {
+      setSaveError((err as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to update event.");
     } finally {
       setIsLoading(false);
     }

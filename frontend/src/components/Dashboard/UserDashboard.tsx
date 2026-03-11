@@ -60,9 +60,9 @@ if (!setActiveTab) {
         setTotalEvents(res.totalEvents)
       }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to fetch events:", error);
-      setError(error?.response?.data?.msg || "Failed to load events. Please try again.");
+      setError((error as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to load events. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -84,7 +84,7 @@ if (!setActiveTab) {
     { label: "Upcoming", value: upcomingEvents?.length ?? 0, icon: Clock },
   ];
 
-console.log(upcomingEvents);
+ 
 
   if (activeTab === "My Registrations") {
    

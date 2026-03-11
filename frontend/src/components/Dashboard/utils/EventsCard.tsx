@@ -94,13 +94,15 @@ const EventsCard = ({
           const deadline  = new Date(event.registration_deadline);
           const isExpired = deadline < new Date();
 
-          const handleClick = () =>
-            onCardClick ? onCardClick(event) : navigate(`/events/${event.slug}`);
-        
+          const handleClick = () => {
+            if (onCardClick) onCardClick(event);
+            else navigate(`/events/${event.slug}`);
+          };
 
           const handleEdit = (e: React.MouseEvent) => {
             e.stopPropagation();
-            onEditClick ? onEditClick(event) : navigate(`/organizer/events/${event.slug}/edit`);
+            if (onEditClick) onEditClick(event);
+            else navigate(`/organizer/events/${event.slug}/edit`);
           };
 
           const handleViewReg = (e: React.MouseEvent) => {

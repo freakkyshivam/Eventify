@@ -39,16 +39,17 @@ export const handleJoin = async (eventId: string,   eventTitle: string, setProce
         description: `Registration for ${eventTitle}`,
         image: "/logo.png", // Optional: Add your logo
         
-        handler: async function (response: any) {
+        handler: async function (response: unknown) {
           try {
             // Verify payment
+            const res = response as { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string; };
             await api.post(
               `/payment/verify`,
               {
                 eventId,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
+                razorpay_payment_id: res.razorpay_payment_id,
+                razorpay_order_id: res.razorpay_order_id,
+                razorpay_signature: res.razorpay_signature,
               },
               { withCredentials: true }
             );
@@ -56,7 +57,7 @@ export const handleJoin = async (eventId: string,   eventTitle: string, setProce
             // Success
             toast.success("Payment successful! Registration confirmed.");
             // Optionally redirect to ticket page or refresh events
-          } catch (verifyError: any) {
+          } catch (verifyError: unknown) {
             console.error("Payment verification failed:", verifyError);
             toast.error("Payment verification failed. Please contact support.");
           } finally {
@@ -83,17 +84,17 @@ export const handleJoin = async (eventId: string,   eventTitle: string, setProce
       };
 
       // Open Razorpay
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on("payment.failed", function (response: any) {
-        console.error("Payment failed:", response.error);
-        toast.error(`Payment failed: ${response.error.description}`);
+      const rzp = new (window as unknown as { Razorpay: new (options: unknown) => { on: (event: string, callback: (response: unknown) => void) => void; open: () => void; } }).Razorpay(options);
+      rzp.on("payment.failed", function (response: unknown) {
+        console.error("Payment failed:", (response as { error?: unknown }).error);
+        toast.error(`Payment failed: ${(response as { error?: { description?: string } }).error?.description || 'Unknown error'}`);
         setProcessingEventId(null);
       });
 
       rzp.open();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Join event error:", error);
-      toast.error(error?.response?.data?.msg || "Failed to process registration. Please try again.");
+      toast.error((error as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to process registration. Please try again.");
       setProcessingEventId(null);
     }
   };

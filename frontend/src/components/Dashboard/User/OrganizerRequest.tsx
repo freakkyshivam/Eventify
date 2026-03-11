@@ -28,9 +28,9 @@ export default function RequestOrganizerTab() {
         setStatus("sent");
      }
       
-    } catch (err: any) {
-      const code = err?.response?.status;
-      const msg  = err?.response?.data?.msg ?? "";
+    } catch (err: unknown) {
+      const code = (err as { response?: { status?: number } })?.response?.status;
+      const msg  = (err as { response?: { data?: { msg?: string } } })?.response?.data?.msg ?? "";
       if (code === 409 || msg.toLowerCase().includes("already")) {
         setStatus("already_sent");
       } else {

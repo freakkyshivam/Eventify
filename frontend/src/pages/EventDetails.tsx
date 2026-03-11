@@ -28,8 +28,8 @@ const EventDetailPage = () => {
         const res = await getEventBySlugApi(slug);
         if(!res) return;
         setEvent(res.results);
-      } catch (err: any) {
-        setError(err?.response?.data?.msg || "Failed to load event.");
+      } catch (err: unknown) {
+        setError((err as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to load event.");
       } finally {
         setLoading(false);
       }

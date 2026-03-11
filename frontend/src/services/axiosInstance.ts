@@ -14,9 +14,9 @@ const api = axios.create({
 
 let isRefreshing = false;
  
-let failedQueue: { resolve: (value?: any) => void; reject: (reason?: any) => void }[] = [];
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
 
-const processQueue = (error: any) => {
+const processQueue = (error: unknown) => {
   failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve()));
   failedQueue = [];
 };
