@@ -39,9 +39,9 @@ const Field = ({
 
 // ── Input class helper ──
 const inputCls = (error?: string) =>
-  `w-full px-4 py-3 bg-white/[0.04] border rounded-xl text-white placeholder-slate-600 text-sm transition-all duration-200 outline-none focus:ring-2 [color-scheme:dark] ${error
+  `w-full px-4 py-3 bg-[#161f2e] border rounded-xl text-[#f0f4f8] placeholder-[#4b6480] text-sm transition-all duration-200 outline-none focus:ring-2 [color-scheme:dark] ${error
     ? "border-red-500/50 focus:ring-red-500/20 focus:border-red-500/60"
-    : "border-white/[0.08] hover:border-white/[0.14] focus:ring-violet-500/20 focus:border-violet-500/40"
+    : "border-[#1e2d3d] hover:border-[#243447] focus:ring-violet-600/20 focus:border-violet-600/40"
   }`;
 
 // ── Section card ──
@@ -50,12 +50,12 @@ const Section = ({
 }: {
   title: string; icon: React.ReactNode; iconColor: string; children: React.ReactNode;
 }) => (
-  <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
-    <div className="flex items-center gap-3 px-6 py-4 border-b border-white/6">
+  <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
+    <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e2d3d]">
       <div className={`w-7 h-7 rounded-lg border flex items-center justify-center ${iconColor}`}>
         {icon}
       </div>
-      <h2 className="text-sm font-bold text-white">{title}</h2>
+      <h2 className="text-sm font-bold text-[#f0f4f8]">{title}</h2>
     </div>
     <div className="p-6 space-y-5">{children}</div>
   </div>
@@ -63,9 +63,9 @@ const Section = ({
 
 // ── Select trigger class ──
 const selectTriggerCls = (error?: string) =>
-  `w-full px-4 py-3 h-auto bg-white/[0.04] border rounded-xl text-white text-sm transition-all duration-200 outline-none focus:ring-2 ${error
+  `w-full px-4 py-3 h-auto bg-[#161f2e] border rounded-xl text-[#f0f4f8] text-sm transition-all duration-200 outline-none focus:ring-2 ${error
     ? "border-red-500/50 focus:ring-red-500/20"
-    : "border-white/[0.08] hover:border-white/[0.14] focus:ring-violet-500/20 focus:border-violet-500/40"
+    : "border-[#1e2d3d] hover:border-[#243447] focus:ring-violet-600/20 focus:border-violet-600/40"
   }`;
 
 const EditEvent = () => {
@@ -204,34 +204,34 @@ const EditEvent = () => {
 
   // ── Loading ──
   if (fetchLoading) return (
-    <div className="min-h-screen bg-[#080810] flex items-center justify-center">
+    <div className="min-h-screen bg-[#080c12] flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
         <div className="relative w-14 h-14">
-          <div className="absolute inset-0 rounded-full border-2 border-violet-500/20" />
-          <div className="absolute inset-0 rounded-full border-t-2 border-violet-500 animate-spin" />
+          <div className="absolute inset-0 rounded-full border-2 border-violet-600/20" />
+          <div className="absolute inset-0 rounded-full border-t-2 border-violet-600 animate-spin" />
           <Sparkles className="absolute inset-0 m-auto w-5 h-5 text-violet-400" />
         </div>
-        <p className="text-slate-500 text-sm font-medium">Loading event...</p>
+        <p className="text-[#4b6480] text-sm font-medium">Loading event...</p>
       </div>
     </div>
   );
 
   // ── Fetch error ──
   if (fetchError) return (
-    <div className="min-h-screen bg-[#080810] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#080c12] flex items-center justify-center px-4">
       <div className="flex flex-col items-center gap-5 text-center">
         <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
           <AlertCircle className="w-7 h-7 text-red-400" />
         </div>
         <div>
-          <h3 className="text-white font-semibold mb-1">Failed to load event</h3>
-          <p className="text-slate-500 text-sm max-w-xs">{fetchError}</p>
+          <h3 className="text-[#f0f4f8] font-semibold mb-1">Failed to load event</h3>
+          <p className="text-[#4b6480] text-sm max-w-xs">{fetchError}</p>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-white/10 bg-white/3 text-slate-300 hover:text-white transition-all">
+          <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-[#1e2d3d] bg-[#161f2e] text-[#94a3b8] hover:text-[#f0f4f8] hover:border-[#243447] transition-all">
             <ArrowLeft className="w-4 h-4" /> Go Back
           </button>
-          <button onClick={() => window.location.reload()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-all">
+          <button onClick={() => window.location.reload()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-700 text-white transition-all">
             <RefreshCw className="w-4 h-4" /> Retry
           </button>
         </div>
@@ -240,7 +240,7 @@ const EditEvent = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#080810] py-10">
+    <div className="min-h-screen bg-[#080c12] py-10">
 
       {/* Ambient orb */}
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] rounded-full bg-violet-600/10 blur-[120px] pointer-events-none z-0" />
@@ -251,19 +251,19 @@ const EditEvent = () => {
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-white text-sm font-medium transition-colors duration-200 mb-5"
+            className="inline-flex items-center gap-2 text-[#4b6480] hover:text-[#f0f4f8] text-sm font-medium transition-colors duration-200 mb-5"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </button>
 
           <div className="flex items-center gap-3 mb-1">
-            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-violet-600/10 border border-violet-600/20 flex items-center justify-center">
               <Sparkles className="w-5 h-5 text-violet-400" />
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Edit Event</h1>
+            <h1 className="text-2xl font-display font-bold text-[#f0f4f8] tracking-tight">Edit Event</h1>
           </div>
-          <p className="text-slate-500 text-sm ml-[52px]">Update the details below and save your changes</p>
+          <p className="text-[#94a3b8] text-sm ml-[52px]">Update the details below and save your changes</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -300,9 +300,9 @@ const EditEvent = () => {
                 <SelectTrigger className={selectTriggerCls(errors.event_category)}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f1a] border-white/10 text-white">
+                <SelectContent className="bg-[#0d1117] border-[#1e2d3d] text-[#f0f4f8]">
                   {["conference", "webinar", "workshop", "competition", "technology", "coding", "other"].map((c) => (
-                    <SelectItem key={c} value={c} className="capitalize hover:bg-white/5 focus:bg-white/5">
+                    <SelectItem key={c} value={c} className="capitalize hover:bg-[#161f2e] focus:bg-[#161f2e]">
                       {c.charAt(0).toUpperCase() + c.slice(1)}
                     </SelectItem>
                   ))}
@@ -322,9 +322,9 @@ const EditEvent = () => {
                 <SelectTrigger className={selectTriggerCls(errors.event_mode)}>
                   <SelectValue placeholder="Select event mode" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f1a] border-white/10 text-white">
-                  <SelectItem value="online" className="hover:bg-white/5 focus:bg-white/5">Online</SelectItem>
-                  <SelectItem value="offline" className="hover:bg-white/5 focus:bg-white/5">Offline</SelectItem>
+                <SelectContent className="bg-[#0d1117] border-[#1e2d3d] text-[#f0f4f8]">
+                  <SelectItem value="online" className="hover:bg-[#161f2e] focus:bg-[#161f2e]">Online</SelectItem>
+                  <SelectItem value="offline" className="hover:bg-[#161f2e] focus:bg-[#161f2e]">Offline</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -411,9 +411,9 @@ const EditEvent = () => {
                 <SelectTrigger className={selectTriggerCls(errors.payment_type)}>
                   <SelectValue placeholder="Select payment type" />
                 </SelectTrigger>
-                <SelectContent className="bg-[#0f0f1a] border-white/10 text-white">
-                  <SelectItem value="free" className="hover:bg-white/5 focus:bg-white/5">Free</SelectItem>
-                  <SelectItem value="paid" className="hover:bg-white/5 focus:bg-white/5">Paid</SelectItem>
+                <SelectContent className="bg-[#0d1117] border-[#1e2d3d] text-[#f0f4f8]">
+                  <SelectItem value="free" className="hover:bg-[#161f2e] focus:bg-[#161f2e]">Free</SelectItem>
+                  <SelectItem value="paid" className="hover:bg-[#161f2e] focus:bg-[#161f2e]">Paid</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
@@ -461,10 +461,10 @@ const EditEvent = () => {
             {/* Existing banners (from backend) */}
             {existingBanners.length > 0 && (
               <div>
-                <p className="text-[11px] text-slate-600 uppercase tracking-wider font-semibold mb-2">Current Banners</p>
+                <p className="text-[11px] text-[#4b6480] uppercase tracking-wider font-semibold mb-2">Current Banners</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {existingBanners.map((url, i) => (
-                    <div key={i} className="group relative rounded-xl overflow-hidden border border-white/[0.07]">
+                    <div key={i} className="group relative rounded-xl overflow-hidden border border-[#1e2d3d]">
                       <img src={url} alt={`Banner ${i + 1}`} className="w-full h-40 object-cover" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       <button
@@ -486,10 +486,10 @@ const EditEvent = () => {
             {/* New banner previews */}
             {bannerPreviews.length > 0 && (
               <div>
-                <p className="text-[11px] text-slate-600 uppercase tracking-wider font-semibold mb-2">New Banners</p>
+                <p className="text-[11px] text-[#4b6480] uppercase tracking-wider font-semibold mb-2">New Banners</p>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   {bannerPreviews.map((preview, i) => (
-                    <div key={i} className="group relative rounded-xl overflow-hidden border border-violet-500/20">
+                    <div key={i} className="group relative rounded-xl overflow-hidden border border-violet-600/20">
                       <img src={preview} alt={`New banner ${i + 1}`} className="w-full h-40 object-cover" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                       <button
@@ -512,13 +512,13 @@ const EditEvent = () => {
             {totalBanners < 3 && (
               <label
                 htmlFor="edit-banners"
-                className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/8 hover:border-violet-500/40 rounded-xl cursor-pointer bg-white/2 hover:bg-violet-500/4 transition-all duration-200 group"
+                className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-[#1e2d3d] hover:border-violet-600/40 rounded-xl cursor-pointer bg-[#161f2e] hover:bg-violet-600/5 transition-all duration-200 group"
               >
-                <Upload className="w-6 h-6 text-slate-600 group-hover:text-violet-400 mb-2 transition-colors duration-200" />
-                <p className="text-xs text-slate-500 group-hover:text-slate-400 font-medium transition-colors">
+                <Upload className="w-6 h-6 text-[#4b6480] group-hover:text-violet-400 mb-2 transition-colors duration-200" />
+                <p className="text-xs text-[#94a3b8] group-hover:text-[#f0f4f8] font-medium transition-colors">
                   Click to upload banner images
                 </p>
-                <p className="text-[11px] text-slate-700 mt-0.5">
+                <p className="text-[11px] text-[#4b6480] mt-0.5">
                   {3 - totalBanners} more image{3 - totalBanners !== 1 ? "s" : ""} can be added
                 </p>
                 <input id="edit-banners" type="file" accept="image/*" multiple onChange={handleBannerUpload} className="hidden" />
@@ -553,7 +553,7 @@ const EditEvent = () => {
               type="button"
               onClick={() => navigate(-1)}
               disabled={isLoading}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold border border-white/10 bg-white/3 hover:bg-white/[0.07] hover:border-white/20 text-slate-300 hover:text-white transition-all duration-200 disabled:opacity-50"
+              className="px-5 py-2.5 rounded-xl text-sm font-semibold border border-[#1e2d3d] bg-[#161f2e] hover:bg-[#1e2d3d] hover:border-[#243447] text-[#94a3b8] hover:text-[#f0f4f8] transition-all duration-200 disabled:opacity-50"
             >
               Cancel
             </button>

@@ -32,22 +32,22 @@ const RecentRegistrations = ({ registrations, loading }: Props) => {
       {loading && (
         <div className="flex flex-col items-center justify-center py-12 gap-3">
           <div className="relative w-10 h-10">
-            <div className="absolute inset-0 rounded-full border-2 border-violet-500/20" />
-            <div className="absolute inset-0 rounded-full border-t-2 border-violet-500 animate-spin" />
+            <div className="absolute inset-0 rounded-full border-2 border-violet-600/20" />
+            <div className="absolute inset-0 rounded-full border-t-2 border-violet-600 animate-spin" />
           </div>
-          <p className="text-slate-600 text-xs">Loading registrations...</p>
+          <p className="text-[#4b6480] text-xs">Loading registrations...</p>
         </div>
       )}
 
       {/* Empty */}
       {!loading && (!registrations || registrations.length === 0) && (
         <div className="flex flex-col items-center justify-center py-14 px-6 gap-3 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.07] flex items-center justify-center">
-            <ClipboardList className="w-5 h-5 text-slate-600" />
+          <div className="w-12 h-12 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
+            <ClipboardList className="w-5 h-5 text-[#4b6480]" />
           </div>
           <div>
-            <p className="text-slate-400 text-xs font-medium mb-0.5">No registrations yet</p>
-            <p className="text-slate-600 text-xs">Registrations will appear here once people sign up.</p>
+            <p className="text-[#94a3b8] text-xs font-medium mb-0.5">No registrations yet</p>
+            <p className="text-[#4b6480] text-xs">Registrations will appear here once people sign up.</p>
           </div>
         </div>
       )}
@@ -63,20 +63,20 @@ const RecentRegistrations = ({ registrations, loading }: Props) => {
         return (
           <div
             key={i}
-            className="mb-2 group flex gap-3 p-3 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 hover:border-white/12 transition-all duration-200 cursor-pointer"
+            className="mb-2 group flex gap-3 p-3 rounded-xl bg-[#161f2e] hover:bg-[#111827] border border-[#1e2d3d] hover:border-[#243447] transition-all duration-200 cursor-pointer"
           >
             {/* Color dot */}
-            <div className="w-1 rounded-full bg-gradient-to-b from-blue-500 to-violet-500 flex-shrink-0 self-stretch" />
+            <div className="w-1 rounded-full bg-gradient-to-b from-blue-600 to-violet-600 flex-shrink-0 self-stretch" />
 
             <div className="flex-1 min-w-0">
               {/* User + event */}
               <div className="flex items-start justify-between gap-2 mb-1">
                 <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-white group-hover:text-violet-300 transition-colors line-clamp-1">
+                  <h4 className="text-xs font-bold text-[#f0f4f8] group-hover:text-blue-400 transition-colors line-clamp-1">
                     {reg.event_title}
                   </h4>
-                  <span className="inline-flex items-center gap-1 text-[10px] text-slate-500 mt-0.5">
-                    <User className="w-2.5 h-2.5 text-slate-600" />
+                  <span className="inline-flex items-center gap-1 text-[10px] text-[#4b6480] mt-0.5">
+                    <User className="w-2.5 h-2.5 text-[#4b6480]" />
                     {reg.user_name}
                   </span>
                 </div>
@@ -90,7 +90,7 @@ const RecentRegistrations = ({ registrations, loading }: Props) => {
               {/* Meta row */}
               <div className="flex items-center gap-3 mt-1.5">
                 {/* Date */}
-                <span className="inline-flex items-center gap-1 text-[10px] text-slate-500">
+                <span className="inline-flex items-center gap-1 text-[10px] text-[#4b6480]">
                   <Clock className="w-2.5 h-2.5 text-violet-400" />
                   {date}
                 </span>

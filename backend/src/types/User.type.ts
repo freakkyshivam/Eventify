@@ -1,11 +1,11 @@
 export interface IUser {
   name: string;
   id: string;
-  role:string;
+  role: "admin" | "organizer" | "attendee";
 }
 
 export interface JwtUserPayload {
   id: string;
   name: string;
-  role: string;
+   role: "admin" | "organizer" | "attendee";
 }

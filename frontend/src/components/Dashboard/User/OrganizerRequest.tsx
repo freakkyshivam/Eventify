@@ -45,15 +45,15 @@ export default function RequestOrganizerTab() {
       {/* ── IDLE / LOADING / ERROR ── */}
       {(status === "idle" || status === "loading" || status === "error") && (
         <>
-          <div className="w-20 h-20 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shadow-[0_0_30px_rgba(124,58,237,0.15)]">
+          <div className="w-20 h-20 rounded-2xl bg-violet-600/10 border border-violet-600/20 flex items-center justify-center shadow-[0_0_30px_rgba(124,58,237,0.15)]">
             <Award className="w-9 h-9 text-violet-400" />
           </div>
 
           <div>
-            <h3 className="text-lg font-bold text-white mb-2">Request Organizer Access</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <h3 className="text-lg font-bold text-[#f0f4f8] mb-2 font-display">Request Organizer Access</h3>
+            <p className="text-[#94a3b8] text-sm leading-relaxed">
               No forms. No fuss. Click the button and our team will review your request within{" "}
-              <span className="text-slate-300 font-medium">24 hours</span>.
+              <span className="text-[#f0f4f8] font-medium">24 hours</span>.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export default function RequestOrganizerTab() {
           <button
             onClick={handleRequest}
             disabled={status === "loading"}
-            className="group w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_35px_rgba(124,58,237,0.5)] hover:scale-[1.02] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none transition-all duration-200"
+            className="group w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-700 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_35px_rgba(124,58,237,0.5)] hover:scale-[1.02] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none transition-all duration-200"
           >
             {status === "loading" ? (
               <>
@@ -86,7 +86,7 @@ export default function RequestOrganizerTab() {
             )}
           </button>
 
-          <p className="text-[11px] text-slate-600">Only one request allowed per account.</p>
+          <p className="text-[11px] text-[#4b6480]">Only one request allowed per account.</p>
         </>
       )}
 
@@ -103,10 +103,10 @@ export default function RequestOrganizerTab() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-3">
               <Sparkles className="w-3 h-3" /> Request Submitted
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">You're on the list!</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <h3 className="text-lg font-bold text-[#f0f4f8] mb-2 font-display">You're on the list!</h3>
+            <p className="text-[#94a3b8] text-sm leading-relaxed">
               Our team will review your request and notify you by email within{" "}
-              <span className="text-slate-300 font-medium">24 hours</span>.
+              <span className="text-[#f0f4f8] font-medium">24 hours</span>.
             </p>
           </div>
 
@@ -116,7 +116,7 @@ export default function RequestOrganizerTab() {
               { icon: <Clock className="w-3.5 h-3.5 text-amber-400" />,          text: "Review within 24 hours" },
               { icon: <Sparkles className="w-3.5 h-3.5 text-violet-400" />,      text: "Email notification on approval" },
             ].map((step, i) => (
-              <div key={i} className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-xs text-slate-400">
+              <div key={i} className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#161f2e] border border-[#1e2d3d] text-xs text-[#94a3b8]">
                 {step.icon} {step.text}
               </div>
             ))}
@@ -137,8 +137,8 @@ export default function RequestOrganizerTab() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold mb-3">
               <Clock className="w-3 h-3" /> Under Review
             </div>
-            <h3 className="text-lg font-bold text-white mb-2">Already Requested</h3>
-            <p className="text-slate-500 text-sm leading-relaxed">
+            <h3 className="text-lg font-bold text-[#f0f4f8] mb-2 font-display">Already Requested</h3>
+            <p className="text-[#94a3b8] text-sm leading-relaxed">
               You've already submitted a request. We're reviewing it and will notify you by email once approved.
             </p>
           </div>

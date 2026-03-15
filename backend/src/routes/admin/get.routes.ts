@@ -1,12 +1,10 @@
 import express from 'express'
 import { authMiddleware } from '../../middlewares/authMiddleware';
-import { updateRole } from '../../controllers/admin/update_role.controller';
- 
+ import { getAllUsersAD } from '../../controllers/admin/getAllUsers.controller';
 
 
 const router  = express.Router();
 
-router.patch('/update-role/:userId', authMiddleware, updateRole)
- 
+ router.get('/users', authMiddleware, getAllUsersAD)
 
 export default router;

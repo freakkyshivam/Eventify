@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 type SidebarItemProps = {
@@ -11,34 +12,26 @@ export function SidebarItem({ label, active, icon: Icon, onClick }: SidebarItemP
   return (
     <button
       onClick={onClick}
-      className={`group w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 relative overflow-hidden ${
+      className={`group w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 relative ${
         active
-          ? "bg-violet-600/15 border border-violet-500/25 text-violet-300"
-          : "border border-transparent text-slate-500 hover:text-white hover:bg-white/5 hover:border-white/8"
+          ? "bg-violet-600/10 text-violet-400 border border-violet-600/20"
+          : "border border-transparent text-[#4b6480] hover:text-[#94a3b8] hover:bg-[#161f2e]"
       }`}
     >
-      {/* Active left accent bar */}
-      {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
-      )}
-
       {/* Icon */}
       {Icon && (
         <Icon
-          className={`w-4 h-4 shrink-0 transition-colors duration-200 ${
-            active ? "text-violet-400" : "text-slate-600 group-hover:text-slate-300"
+          className={`w-4 h-4 shrink-0 transition-colors duration-150 ${
+            active ? "text-violet-400" : "text-[#4b6480] group-hover:text-[#94a3b8]"
           }`}
         />
       )}
 
-      <span className="truncate">{label}</span>
+      <span className="flex-1 text-left truncate">{label}</span>
 
-      {/* Active glow dot */}
+      {/* Active indicator */}
       {active && (
-        <span className="ml-auto shrink-0 relative flex h-1.5 w-1.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-60" />
-          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-400" />
-        </span>
+        <ChevronRight className="w-3 h-3 text-violet-400/60 shrink-0" />
       )}
     </button>
   );

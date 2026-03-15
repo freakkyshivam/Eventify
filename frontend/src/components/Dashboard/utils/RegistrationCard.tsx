@@ -43,12 +43,12 @@ const RegistrationsCard = ({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="rounded-2xl bg-white/[0.03] border border-white/[0.07] overflow-hidden animate-pulse">
-            <div className="h-28 bg-white/[0.04]" />
+          <div key={i} className="rounded-2xl bg-[#0d1117] border border-[#1e2d3d] overflow-hidden animate-pulse">
+            <div className="h-28 bg-[#161f2e]" />
             <div className="p-4 space-y-2.5">
-              <div className="h-3 w-3/4 rounded-full bg-white/[0.06]" />
-              <div className="h-2.5 w-full rounded-full bg-white/[0.04]" />
-              <div className="h-2.5 w-2/3 rounded-full bg-white/[0.04]" />
+              <div className="h-3 w-3/4 rounded-full bg-[#1e2d3d]" />
+              <div className="h-2.5 w-full rounded-full bg-[#161f2e]" />
+              <div className="h-2.5 w-2/3 rounded-full bg-[#161f2e]" />
             </div>
           </div>
         ))}
@@ -60,12 +60,12 @@ const RegistrationsCard = ({
   if (!registrations || registrations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.07] flex items-center justify-center">
-          <ClipboardList className="w-7 h-7 text-slate-600" />
+        <div className="w-16 h-16 rounded-2xl bg-[#0d1117] border border-[#1e2d3d] flex items-center justify-center">
+          <ClipboardList className="w-7 h-7 text-[#4b6480]" />
         </div>
         <div>
-          <h3 className="text-white font-semibold mb-1">{subTitle}</h3>
-          <p className="text-slate-500 text-sm max-w-xs leading-relaxed">{subDescription}</p>
+          <h3 className="text-[#f0f4f8] font-semibold mb-1">{subTitle}</h3>
+          <p className="text-[#4b6480] text-sm max-w-xs leading-relaxed">{subDescription}</p>
         </div>
         <button
           onClick={() => navigate("/events")}
@@ -86,7 +86,7 @@ const RegistrationsCard = ({
         <div className="w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
           <ClipboardList className="w-3.5 h-3.5 text-blue-400" />
         </div>
-        <h3 className="text-sm font-bold text-white">{title}</h3>
+        <h3 className="text-sm font-bold text-[#f0f4f8]">{title}</h3>
         <span className="px-2 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/25 text-blue-400 text-[10px] font-bold">
           {registrations.length}
         </span>
@@ -113,13 +113,13 @@ const RegistrationsCard = ({
             <div
               key={i}
               onClick={handleClick}
-              className="group relative bg-white/[0.03] hover:bg-white/[0.055] border border-white/[0.07] hover:border-white/[0.13] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col cursor-pointer"
+              className="group relative bg-[#0d1117] hover:bg-[#161f2e] border border-[#1e2d3d] hover:border-[#243447] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 flex flex-col cursor-pointer"
             >
               {/* Bottom glow */}
               <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
               {/* Banner / header strip */}
-              <div className="relative h-28 bg-gradient-to-br from-blue-900/40 to-violet-900/30 overflow-hidden flex-shrink-0">
+              <div className="relative h-28 bg-gradient-to-br from-blue-900/40 to-violet-900/30 overflow-hidden flex-shrink-0 border-b border-[#1e2d3d]">
                 {reg.bannerUrls && reg.bannerUrls.length > 0 ? (
                   <img
                     src={reg.bannerUrls[0]}
@@ -131,7 +131,7 @@ const RegistrationsCard = ({
                     <Calendar className="w-8 h-8 text-white/10" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080810]/90 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117]/90 via-transparent to-transparent" />
 
                 {/* Badges */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
@@ -162,21 +162,21 @@ const RegistrationsCard = ({
               {/* Content */}
               <div className="p-4 flex flex-col flex-1">
                 {/* Event title */}
-                <h4 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors duration-200 line-clamp-1 mb-1">
+                <h4 className="text-sm font-bold text-[#f0f4f8] group-hover:text-blue-300 transition-colors duration-200 line-clamp-1 mb-1">
                   {reg.event_title}
                 </h4>
 
                 {/* User */}
-                <div className="inline-flex items-center gap-1.5 text-[11px] text-slate-500 mb-3">
-                  <User className="w-3 h-3 text-slate-600" />
+                <div className="inline-flex items-center gap-1.5 text-[11px] text-[#4b6480] mb-3">
+                  <User className="w-3 h-3 text-[#4b6480]" />
                   <span className="truncate">{reg.user_name}</span>
-                  <span className="text-slate-700">·</span>
-                  <span className="truncate text-slate-600">{reg.email}</span>
+                  <span className="text-[#1e2d3d]">·</span>
+                  <span className="truncate text-[#4b6480]">{reg.email}</span>
                 </div>
 
                 {/* Meta row */}
                 <div className="flex items-center gap-3 mt-auto flex-wrap">
-                  <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] text-[#4b6480]">
                     <div className="w-4 h-4 rounded bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
                       <Clock className="w-2.5 h-2.5 text-violet-400" />
                     </div>
@@ -184,7 +184,7 @@ const RegistrationsCard = ({
                   </span>
 
                   {reg.event_mode && (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500 capitalize">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] text-[#4b6480] capitalize">
                       <div className="w-4 h-4 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
                         <MapPin className="w-2.5 h-2.5 text-blue-400" />
                       </div>
@@ -193,7 +193,7 @@ const RegistrationsCard = ({
                   )}
 
                   {reg.event_category && (
-                    <span className="inline-flex items-center gap-1.5 text-[10px] text-slate-500 capitalize ml-auto">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] text-[#4b6480] capitalize ml-auto">
                       <div className="w-4 h-4 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
                         <Sparkles className="w-2.5 h-2.5 text-amber-400" />
                       </div>

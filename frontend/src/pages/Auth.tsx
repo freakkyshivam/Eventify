@@ -21,7 +21,6 @@ const Auth = ({ setOpen }: Props) => {
     setSuccess(false);
   }, [setOpen]);
 
-  // Lock body scroll when modal is open
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -29,7 +28,6 @@ const Auth = ({ setOpen }: Props) => {
     };
   }, []);
 
-  // Close on ESC key
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") handleCloseModal();
@@ -74,25 +72,25 @@ const Auth = ({ setOpen }: Props) => {
   return (
     <div>
       <div
-        className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         onClick={handleCloseModal}
       >
         <div
-          className="relative bg-[#0f0f1a] border border-white/10 rounded-2xl p-8 max-w-md w-full shadow-[0_0_80px_rgba(124,58,237,0.15)] overflow-hidden"
+          className="relative bg-[#0d1117] border border-[#1e2d3d] rounded-xl p-8 max-w-md w-full shadow-[0_16px_64px_rgba(0,0,0,0.5)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Modal glow top */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-1 bg-linear-to-r from-transparent via-violet-500 to-transparent rounded-full" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-[2px] bg-gradient-to-r from-transparent via-violet-600 to-transparent rounded-full" />
 
           {/* Header */}
           <div className="flex justify-between items-start mb-7">
             <div>
-              <h2 className="text-2xl font-bold text-white mb-1">Welcome back</h2>
-              <p className="text-sm text-slate-500">Sign in or create your account</p>
+              <h2 className="font-display text-xl font-bold text-[#f0f4f8] mb-1">Welcome back</h2>
+              <p className="text-sm text-[#4b6480]">Sign in or create your account</p>
             </div>
             <button
               onClick={handleCloseModal}
-              className="text-slate-600 hover:text-white transition-colors p-1.5 hover:bg-white/10 rounded-lg"
+              className="text-[#4b6480] hover:text-[#f0f4f8] transition-colors p-1.5 hover:bg-[#161f2e] rounded-lg"
               aria-label="Close modal"
             >
               <X className="w-4 h-4" />
@@ -101,7 +99,7 @@ const Auth = ({ setOpen }: Props) => {
 
           {/* Success Message */}
           {success && (
-            <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+            <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
               <div className="flex items-center gap-2.5 text-emerald-400">
                 <div className="shrink-0 w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -119,7 +117,7 @@ const Auth = ({ setOpen }: Props) => {
           <div className="space-y-4">
             {/* Email input */}
             <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+              <label htmlFor="email" className="block text-xs font-semibold text-[#94a3b8] uppercase tracking-wider mb-2">
                 Email Address
               </label>
               <input
@@ -130,10 +128,10 @@ const Auth = ({ setOpen }: Props) => {
                 onKeyDown={handleKeyDown}
                 placeholder="you@example.com"
                 disabled={isLoading || success}
-                className={`w-full px-4 py-3 bg-white/5 border rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`w-full px-4 py-3 bg-[#161f2e] border rounded-lg text-[#f0f4f8] placeholder-[#4b6480] focus:outline-none focus:ring-2 transition-all duration-150 text-sm disabled:opacity-50 disabled:cursor-not-allowed ${
                   error
-                    ? "border-red-500/50 focus:ring-red-500/30"
-                    : "border-white/10 focus:ring-violet-500/30 focus:border-violet-500/40"
+                    ? "border-red-500/50 focus:ring-red-500/20"
+                    : "border-[#1e2d3d] focus:ring-violet-600/20 focus:border-violet-600/40"
                 }`}
                 autoComplete="email"
               />
@@ -151,7 +149,7 @@ const Auth = ({ setOpen }: Props) => {
             <button
               onClick={() => handleMagicLink(email)}
               disabled={isLoading || success}
-              className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-semibold text-sm bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-200"
+              className="w-full flex items-center justify-center gap-2.5 h-11 rounded-lg font-medium text-sm bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_10px_rgba(124,58,237,0.2)] hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-150"
             >
               {isLoading ? (
                 <><Loader2 className="w-4 h-4 animate-spin" /> Sending Magic Link...</>
@@ -165,17 +163,17 @@ const Auth = ({ setOpen }: Props) => {
             {/* Divider */}
             <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/[0.07]" />
+                <div className="w-full border-t border-[#1e2d3d]" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="px-3 bg-[#0f0f1a] text-slate-600 font-medium">or continue with</span>
+                <span className="px-3 bg-[#0d1117] text-[#4b6480] font-medium">or continue with</span>
               </div>
             </div>
 
             {/* Google Sign In */}
             <a
               href={`${import.meta.env.VITE_BACKEND_DEV_URL || "http://localhost:3000/api/v1"}/auth/google`}
-              className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white flex items-center justify-center gap-3 py-3 rounded-xl transition-all duration-200 text-sm font-medium"
+              className="w-full bg-[#161f2e] hover:bg-[#111827] border border-[#1e2d3d] hover:border-[#243447] text-[#f0f4f8] flex items-center justify-center gap-3 h-11 rounded-lg transition-all duration-150 text-sm font-medium"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -187,11 +185,11 @@ const Auth = ({ setOpen }: Props) => {
             </a>
 
             {/* Terms */}
-            <p className="text-[11px] text-slate-600 text-center pt-1">
+            <p className="text-[11px] text-[#4b6480] text-center pt-1">
               By continuing, you agree to our{" "}
-              <a href="#" className="text-slate-400 hover:text-white underline underline-offset-2 transition-colors">Terms</a>
+              <a href="#" className="text-[#94a3b8] hover:text-[#f0f4f8] underline underline-offset-2 transition-colors">Terms</a>
               {" "}and{" "}
-              <a href="#" className="text-slate-400 hover:text-white underline underline-offset-2 transition-colors">Privacy Policy</a>
+              <a href="#" className="text-[#94a3b8] hover:text-[#f0f4f8] underline underline-offset-2 transition-colors">Privacy Policy</a>
             </p>
           </div>
         </div>

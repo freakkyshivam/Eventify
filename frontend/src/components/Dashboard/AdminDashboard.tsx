@@ -15,6 +15,7 @@ const pendingRequests = [
 
 type AdminDashboardProps = {
   activeTab: string;
+  setActiveTab: (tab: string) => void;
 };
 
 export function AdminDashboard({ activeTab }: AdminDashboardProps) {
@@ -23,11 +24,11 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
   if (activeTab !== "Dashboard") {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center gap-3">
-        <div className="w-14 h-14 rounded-2xl bg-white/3 border border-white/10 flex items-center justify-center">
-          <Sparkles className="w-6 h-6 text-slate-600" />
+        <div className="w-14 h-14 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
+          <Sparkles className="w-6 h-6 text-[#94a3b8]" />
         </div>
-        <p className="text-slate-500 text-sm">
-          Content for <span className="text-slate-300 font-medium">"{activeTab}"</span> coming soon...
+        <p className="text-[#4b6480] text-sm">
+          Content for <span className="text-[#f0f4f8] font-medium">"{activeTab}"</span> coming soon...
         </p>
       </div>
     );
@@ -51,7 +52,7 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
         </div>
         <div>
           <p className="text-xs font-semibold text-amber-300">Admin Panel</p>
-          <p className="text-xs text-slate-500">You have full access to manage users, events, and platform settings.</p>
+          <p className="text-xs text-[#4b6480]">You have full access to manage users, events, and platform settings.</p>
         </div>
       </div>
 
@@ -59,13 +60,13 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         {/* Pending Organizer Requests */}
-        <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/6">
+        <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e2d3d]">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
                 <Award className="w-3.5 h-3.5 text-amber-400" />
               </div>
-              <h3 className="text-sm font-bold text-white">Organizer Requests</h3>
+              <h3 className="text-sm font-bold text-[#f0f4f8]">Organizer Requests</h3>
             </div>
             {pendingRequests.length > 0 && (
               <span className="px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-400 text-[10px] font-bold">
@@ -79,17 +80,17 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
               pendingRequests.map((req, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-white/2 border border-white/5 hover:border-white/10 transition-all duration-200"
+                  className="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-[#161f2e] border border-[#1e2d3d] hover:border-[#243447] transition-all duration-200"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {/* Avatar */}
-                    <div className="w-9 h-9 rounded-xl bg-linear-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shrink-0 text-white font-bold text-xs border border-violet-500/30">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center shrink-0 text-white font-bold text-xs border border-violet-500/30">
                       {req.name.charAt(0)}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{req.name}</p>
-                      <p className="text-[11px] text-slate-500 truncate">{req.email}</p>
-                      <p className="text-[10px] text-slate-600 mt-0.5">{req.timeAgo}</p>
+                      <p className="text-xs font-semibold text-[#f0f4f8] truncate">{req.name}</p>
+                      <p className="text-[11px] text-[#4b6480] truncate">{req.email}</p>
+                      <p className="text-[10px] text-[#4b6480] mt-0.5">{req.timeAgo}</p>
                     </div>
                   </div>
 
@@ -105,12 +106,12 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-white/3 border border-white/[0.07] flex items-center justify-center">
-                  <Award className="w-5 h-5 text-slate-600" />
+                <div className="w-12 h-12 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
+                  <Award className="w-5 h-5 text-[#94a3b8]" />
                 </div>
                 <div>
-                  <p className="text-slate-400 text-xs font-medium mb-0.5">All clear</p>
-                  <p className="text-slate-600 text-xs">No pending organizer requests.</p>
+                  <p className="text-[#94a3b8] text-xs font-medium mb-0.5">All clear</p>
+                  <p className="text-[#4b6480] text-xs">No pending organizer requests.</p>
                 </div>
               </div>
             )}
@@ -118,26 +119,26 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
         </div>
 
         {/* Recent Payments */}
-        <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/6">
+        <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e2d3d]">
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
                 <IndianRupee className="w-3.5 h-3.5 text-emerald-400" />
               </div>
-              <h3 className="text-sm font-bold text-white">Recent Payments</h3>
+              <h3 className="text-sm font-bold text-[#f0f4f8]">Recent Payments</h3>
             </div>
-            <button className="text-xs text-slate-500 hover:text-emerald-400 flex items-center gap-1 transition-colors duration-200">
+            <button className="text-xs text-[#4b6480] hover:text-emerald-400 flex items-center gap-1 transition-colors duration-200">
               View All <ChevronRight className="w-3 h-3" />
             </button>
           </div>
 
           <div className="flex flex-col items-center justify-center py-14 px-6 gap-3 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-white/3 border border-white/[0.07] flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-slate-600" />
+            <div className="w-12 h-12 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
+              <ClipboardList className="w-5 h-5 text-[#94a3b8]" />
             </div>
             <div>
-              <p className="text-slate-400 text-xs font-medium mb-0.5">No payments yet</p>
-              <p className="text-slate-600 text-xs">Payment transactions will appear here.</p>
+              <p className="text-[#94a3b8] text-xs font-medium mb-0.5">No payments yet</p>
+              <p className="text-[#4b6480] text-xs">Payment transactions will appear here.</p>
             </div>
           </div>
         </div>

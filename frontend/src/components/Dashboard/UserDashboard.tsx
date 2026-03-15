@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Calendar, Ticket, IndianRupee, Clock,
@@ -20,7 +20,7 @@ import RecentEvents from "./utils/RecentEvents";
 
 type UserDashboardProps = {
   activeTab: string;
-  setActiveTab: React.Dispatch<React.SetStateAction<string>>;
+  setActiveTab: (tab: string) => void;
 };
 
 export function UserDashboard({ activeTab, setActiveTab }: UserDashboardProps) {
@@ -110,10 +110,10 @@ if (!setActiveTab) {
   if (activeTab !== "Dashboard") {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-white/3 border border-white/10 flex items-center justify-center mb-4">
-          <Sparkles className="w-6 h-6 text-slate-600" />
+        <div className="w-14 h-14 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center mb-4">
+          <Sparkles className="w-6 h-6 text-[#94a3b8]" />
         </div>
-        <p className="text-slate-500 text-sm">Content for <span className="text-slate-300 font-medium">"{activeTab}"</span> coming soon...</p>
+        <p className="text-[#4b6480] text-sm">Content for <span className="text-[#f0f4f8] font-medium">"{activeTab}"</span> coming soon...</p>
       </div>
     );
   }
@@ -136,18 +136,18 @@ if (!setActiveTab) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         {/* My Upcoming Events */}
-        <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
+        <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
           {/* Card header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/6">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e2d3d]">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+              <div className="w-7 h-7 rounded-lg bg-violet-600/10 border border-violet-600/20 flex items-center justify-center">
                 <Calendar className="w-3.5 h-3.5 text-violet-400" />
               </div>
-              <h3 className="text-sm font-bold text-white">My Upcoming Events</h3>
+              <h3 className="text-sm font-bold text-[#f0f4f8]">My Upcoming Events</h3>
             </div>
             <button 
             onClick={()=> setActiveTab("My Registrations")}
-            className="text-xs text-slate-500 hover:text-violet-400 flex items-center gap-1 transition-colors duration-200">
+            className="text-xs text-[#4b6480] hover:text-violet-400 flex items-center gap-1 transition-colors duration-200">
               View All <ChevronRight className="w-3 h-3" />
             </button>
           </div>
@@ -158,12 +158,12 @@ if (!setActiveTab) {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-white/6">
+        <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[#1e2d3d]">
             <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
               <Zap className="w-3.5 h-3.5 text-amber-400" />
             </div>
-            <h3 className="text-sm font-bold text-white">Quick Actions</h3>
+            <h3 className="text-sm font-bold text-[#f0f4f8]">Quick Actions</h3>
           </div>
 
           <div className="p-4 space-y-3">
@@ -202,18 +202,18 @@ if (!setActiveTab) {
                     setActiveTab(action.tab);
                   }
                 }}
-                className="group w-full flex items-center gap-3 p-3.5 rounded-xl bg-white/2 hover:bg-white/5 border border-white/5 hover:border-white/12 transition-all duration-200 text-left"
+                className="group w-full flex items-center gap-3 p-3.5 rounded-xl bg-[#161f2e] hover:bg-[#111827] border border-[#1e2d3d] hover:border-[#243447] transition-all duration-200 text-left"
               >
                 <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${action.iconBg}`}>
                   {action.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-semibold text-white transition-colors duration-200 ${action.accent}`}>
+                  <p className={`text-xs font-semibold text-[#f0f4f8] transition-colors duration-200 ${action.accent}`}>
                     {action.label}
                   </p>
-                  <p className="text-[11px] text-slate-600">{action.desc}</p>
+                  <p className="text-[11px] text-[#4b6480]">{action.desc}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-700 group-hover:text-slate-400 shrink-0 transition-all duration-200 group-hover:translate-x-0.5" />
+                <ArrowRight className="w-4 h-4 text-[#4b6480] group-hover:text-[#94a3b8] shrink-0 transition-all duration-200 group-hover:translate-x-0.5" />
               </button>
             ))}
           </div>

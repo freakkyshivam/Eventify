@@ -13,10 +13,10 @@ const EventDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  const [event, setEvent]           = useState<eventI | null>(null);
-  const [loading, setLoading]       = useState(true);
-  const [error, setError]           = useState("");
-  const [activeImg, setActiveImg]   = useState(0);
+  const [event, setEvent] = useState<eventI | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeImg, setActiveImg] = useState(0);
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ const EventDetailPage = () => {
         setLoading(true);
         setError("");
         const res = await getEventBySlugApi(slug);
-        if(!res) return;
+        if (!res) return;
         setEvent(res.results);
       } catch (err: unknown) {
         setError((err as { response?: { data?: { msg?: string } } })?.response?.data?.msg || "Failed to load event.");
@@ -40,14 +40,14 @@ const EventDetailPage = () => {
   // ── Loading ──
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#080810] flex items-center justify-center">
+      <div className="min-h-screen bg-[#080c12] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="relative w-14 h-14">
-            <div className="absolute inset-0 rounded-full border-2 border-violet-500/20" />
-            <div className="absolute inset-0 rounded-full border-t-2 border-violet-500 animate-spin" />
+            <div className="absolute inset-0 rounded-full border-2 border-violet-600/20" />
+            <div className="absolute inset-0 rounded-full border-t-2 border-violet-600 animate-spin" />
             <Sparkles className="absolute inset-0 m-auto w-5 h-5 text-violet-400" />
           </div>
-          <p className="text-slate-500 text-sm font-medium">Loading event...</p>
+          <p className="text-[#4b6480] text-sm font-medium">Loading event...</p>
         </div>
       </div>
     );
@@ -56,25 +56,25 @@ const EventDetailPage = () => {
   // ── Error ──
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-[#080810] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[#080c12] flex items-center justify-center px-4">
         <div className="flex flex-col items-center gap-5 text-center">
           <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
             <AlertCircle className="w-7 h-7 text-red-400" />
           </div>
           <div>
-            <h3 className="text-white font-semibold mb-1">Event not found</h3>
-            <p className="text-slate-500 text-sm max-w-xs">{error}</p>
+            <h3 className="text-[#f0f4f8] font-semibold mb-1">Event not found</h3>
+            <p className="text-[#4b6480] text-sm max-w-xs">{error}</p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-white/10 bg-white/4 hover:bg-white/8 text-slate-300 hover:text-white transition-all duration-200"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-[#243447] bg-[#161f2e] hover:bg-[#111827] text-[#94a3b8] hover:text-[#f0f4f8] transition-all duration-200"
             >
               <ArrowLeft className="w-4 h-4" /> Go Back
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white transition-all duration-200"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_10px_rgba(124,58,237,0.2)] transition-all duration-200"
             >
               <RefreshCw className="w-4 h-4" /> Retry
             </button>
@@ -146,12 +146,12 @@ const EventDetailPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#080810] text-white">
+    <div className="min-h-screen bg-[#080c12] text-[#f0f4f8]">
 
       {/* Ambient orbs */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-[130px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] rounded-full bg-blue-600/8 blur-[110px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-[radial-gradient(ellipse_at_center,rgba(124,58,237,0.15)_0%,transparent_70%)]" />
+        <div className="absolute top-20 right-1/4 w-[400px] h-[400px] bg-[radial-gradient(ellipse_at_center,rgba(6,182,212,0.1)_0%,transparent_70%)]" />
       </div>
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -159,24 +159,24 @@ const EventDetailPage = () => {
         {/* Back button */}
         <button
           onClick={() => navigate(-1)}
-          className="group inline-flex items-center gap-2 text-sm text-slate-500 hover:text-white font-medium mb-8 transition-colors duration-200"
+          className="group inline-flex items-center gap-2 text-sm text-[#4b6480] hover:text-[#f0f4f8] font-medium mb-8 transition-colors duration-200"
         >
-          <div className="w-7 h-7 rounded-lg bg-white/4 border border-white/8 group-hover:bg-white/8 group-hover:border-white/15 flex items-center justify-center transition-all duration-200">
+          <div className="w-7 h-7 rounded-lg bg-[#161f2e] border border-[#1e2d3d] group-hover:bg-[#111827] group-hover:border-[#243447] flex items-center justify-center transition-all duration-200">
             <ArrowLeft className="w-3.5 h-3.5" />
           </div>
           Back
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start animate-fade-in">
 
           {/* ── Left column ── */}
           <div className="space-y-5">
 
             {/* Image Carousel */}
-            <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
+            <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
 
               {/* Main image */}
-              <div className="relative h-72 sm:h-96 bg-linear-to-br from-violet-900/40 to-blue-900/30">
+              <div className="relative h-72 sm:h-96 bg-gradient-to-br from-violet-900/40 to-blue-900/30">
                 {images.length > 0 ? (
                   <img
                     key={activeImg}
@@ -189,7 +189,7 @@ const EventDetailPage = () => {
                     <Calendar className="w-16 h-16 text-white/10" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-linear-to-t from-[#080810]/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#080c12]/80 via-transparent to-transparent" />
 
                 {/* Arrows */}
                 {images.length > 1 && (
@@ -216,40 +216,37 @@ const EventDetailPage = () => {
                       <button
                         key={i}
                         onClick={() => setActiveImg(i)}
-                        className={`rounded-full transition-all duration-200 ${
-                          i === activeImg ? "w-6 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"
-                        }`}
+                        className={`rounded-full transition-all duration-200 ${i === activeImg ? "w-6 h-1.5 bg-white" : "w-1.5 h-1.5 bg-white/30 hover:bg-white/60"
+                          }`}
                       />
                     ))}
                   </div>
                 )}
 
                 {/* Badges */}
-                <div className={`absolute top-4 left-4 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 ${
-                  isFree
-                    ? "bg-emerald-500/20 border border-emerald-500/30 text-emerald-300"
-                    : "bg-amber-500/20 border border-amber-500/30 text-amber-300"
-                }`}>
+                <div className={`absolute top-4 left-4 px-3 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 border ${isFree
+                    ? "bg-emerald-500/20 border-emerald-500/30 text-emerald-300"
+                    : "bg-amber-500/20 border-amber-500/30 text-amber-300"
+                  }`}>
                   <Tag className="w-3 h-3" />
                   {isFree ? "Free" : `₹${event.price}`}
                 </div>
-                <div className="absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-medium bg-white/10 border border-white/15 text-slate-300 capitalize">
+                <div className="absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-medium bg-black/40 border border-white/15 text-[#f0f4f8] capitalize backdrop-blur-md">
                   {event.event_category}
                 </div>
               </div>
 
               {/* Thumbnail strip */}
               {images.length > 1 && (
-                <div className="flex gap-2 px-4 py-3 bg-black/20 overflow-x-auto scrollbar-none border-t border-white/5">
+                <div className="flex gap-2 px-4 py-3 bg-[#080c12]/50 overflow-x-auto scrollbar-none border-t border-[#1e2d3d]">
                   {images.map((src, i) => (
                     <button
                       key={i}
                       onClick={() => setActiveImg(i)}
-                      className={`relative shrink-0 w-16 h-11 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                        i === activeImg
+                      className={`relative shrink-0 w-16 h-11 rounded-lg overflow-hidden border-2 transition-all duration-200 ${i === activeImg
                           ? "border-violet-500 opacity-100 scale-105"
-                          : "border-white/10 opacity-40 hover:opacity-80 hover:border-white/30"
-                      }`}
+                          : "border-[#1e2d3d] opacity-50 hover:opacity-80 hover:border-[#243447]"
+                        }`}
                     >
                       <img src={src} alt={`thumb ${i + 1}`} className="w-full h-full object-cover" />
                     </button>
@@ -259,31 +256,31 @@ const EventDetailPage = () => {
             </div>
 
             {/* Title + description */}
-            <div className="bg-white/3 border border-white/[0.07] rounded-2xl p-6 space-y-3">
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
+            <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl p-6 space-y-3">
+              <h1 className="text-2xl sm:text-3xl font-display font-bold text-[#f0f4f8] tracking-tight leading-snug">
                 {event.title}
               </h1>
               {event.description && (
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <p className="text-[#4b6480] text-sm leading-relaxed whitespace-pre-line">
                   {event.description}
                 </p>
               )}
             </div>
 
             {/* Meta grid */}
-            <div className="bg-white/3 border border-white/[0.07] rounded-2xl p-5">
-              <p className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider mb-4">Event Details</p>
+            <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl p-5">
+              <p className="text-[11px] font-semibold text-[#4b6480] uppercase tracking-wider mb-4">Event Details</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {metaItems.map((item, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/3 border border-white/6">
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-[#161f2e] border border-[#1e2d3d] hover:border-[#243447] transition-colors">
                     <div className={`w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 ${item.bg}`}>
                       {item.icon}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider mb-0.5">
+                      <p className="text-[10px] font-semibold text-[#4b6480] uppercase tracking-wider mb-0.5">
                         {item.label}
                       </p>
-                      <p className="text-xs text-slate-300 font-medium leading-snug">{item.value}</p>
+                      <p className="text-xs text-[#f0f4f8] font-medium leading-snug">{item.value}</p>
                     </div>
                   </div>
                 ))}
@@ -292,30 +289,29 @@ const EventDetailPage = () => {
           </div>
 
           {/* ── Right column: sticky CTA card ── */}
-          <div className="lg:sticky lg:top-6">
-            <div className="bg-white/3 border border-white/[0.07] rounded-2xl overflow-hidden">
+          <div className="lg:sticky lg:top-24">
+            <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden relative">
               {/* Top accent */}
-              <div className="h-0.5 bg-linear-to-r from-transparent via-violet-500/60 to-transparent" />
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-violet-500/60 to-transparent" />
 
               <div className="p-6 space-y-5">
                 {/* Price display */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] text-slate-600 uppercase tracking-wider mb-0.5">Price</p>
-                    <p className={`text-2xl font-black ${isFree ? "text-emerald-400" : "text-white"}`}>
+                    <p className="text-[10px] text-[#4b6480] uppercase tracking-wider mb-0.5">Price</p>
+                    <p className={`font-display text-2xl font-bold ${isFree ? "text-emerald-400" : "text-[#f0f4f8]"}`}>
                       {isFree ? "Free" : `₹${event.price}`}
                     </p>
                   </div>
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${
-                    isFree
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${isFree
                       ? "bg-emerald-500/10 border-emerald-500/20"
                       : "bg-amber-500/10 border-amber-500/20"
-                  }`}>
+                    }`}>
                     <Tag className={`w-5 h-5 ${isFree ? "text-emerald-400" : "text-amber-400"}`} />
                   </div>
                 </div>
 
-                <div className="h-px bg-white/6" />
+                <div className="h-px bg-[#1e2d3d]" />
 
                 {/* Quick info */}
                 <div className="space-y-2.5">
@@ -325,41 +321,39 @@ const EventDetailPage = () => {
                     { icon: <MapPin className="w-3.5 h-3.5 text-emerald-400" />, text: event.event_mode === "offline" && event.location ? event.location : event.event_mode, className: "capitalize" },
                     ...(event.capacity ? [{ icon: <Users className="w-3.5 h-3.5 text-amber-400" />, text: `${event.capacity} spots available` }] : []),
                   ].map((row, i) => (
-                    <div key={i} className={`flex items-center gap-2.5 text-sm text-slate-400 ${row.className ?? ""}`}>
+                    <div key={i} className={`flex items-center gap-2.5 text-sm text-[#94a3b8] ${row.className ?? ""}`}>
                       {row.icon}
                       {row.text}
                     </div>
                   ))}
                 </div>
 
-                <div className="h-px bg-white/6" />
+                <div className="h-px bg-[#1e2d3d]" />
 
                 {/* Deadline warning */}
                 {isDeadline ? (
-                  <div className="flex items-center justify-center gap-2 text-xs text-slate-500 bg-white/3 border border-white/6 rounded-xl px-3 py-2">
-                  <Clock className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                  Registration closed
-                </div>
-                ):(
-                  <div className="flex items-center gap-2 text-xs text-slate-500 bg-white/3 border border-white/6 rounded-xl px-3 py-2">
-                  <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  Registration closes{" "}
-                  <span className="text-amber-400 font-medium ml-auto shrink-0">
-                    {new Date(event.registration_deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
-                  </span>
-                </div>
+                  <div className="flex items-center justify-center gap-2 text-xs text-[#4b6480] bg-[#161f2e] border border-[#1e2d3d] rounded-xl px-3 py-2">
+                    <Clock className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                    Registration closed
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-xs text-[#4b6480] bg-[#161f2e] border border-[#1e2d3d] rounded-xl px-3 py-2">
+                    <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                    Registration closes{" "}
+                    <span className="text-amber-400 font-medium ml-auto shrink-0">
+                      {new Date(event.registration_deadline).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                    </span>
+                  </div>
                 )}
-                
 
                 {/* Join button */}
                 <button
                   onClick={() => handleJoin(event.id, event.title, (id) => setProcessing(!!id))}
                   disabled={processing || isDeadline}
-                  className={`w-full py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    isFree
-                      ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:scale-[1.02]"
-                      : "bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_20px_rgba(124,58,237,0.35)] hover:shadow-[0_0_35px_rgba(124,58,237,0.55)] hover:scale-[1.02]"
-                  }`}
+                  className={`w-full py-3.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed ${isFree
+                      ? "bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.2)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                      : "bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_10px_rgba(124,58,237,0.2)] hover:shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+                    }`}
                 >
                   {processing ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
@@ -368,7 +362,7 @@ const EventDetailPage = () => {
                   )}
                 </button>
 
-                <p className="text-[11px] text-slate-600 text-center">
+                <p className="text-[11px] text-[#4b6480] text-center">
                   {isFree ? "No payment required" : "Secure payment via Razorpay"}
                 </p>
               </div>

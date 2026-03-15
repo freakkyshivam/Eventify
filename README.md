@@ -1,141 +1,102 @@
-# 🗓️ Event Management App
+# 🗓️ Event Management App (Eventify)
 
-A full-stack **Event Management Application** built with modern web technologies.  
-This project helps users create, manage, and track events efficiently with a clean UI and fast performance.
+A full-stack **Event Management Platform** built with modern web technologies, featuring a premium dark-theme UI inspired by modern design systems. This platform allows users to discover, register for, and manage events, while providing organizers with powerful tools to host events and track revenue.
+
+---
+
+## ✨ Key Features
+
+- **Passwordless Authentication & RBAC**: Seamless and secure login using **Google OAuth** and **Magic Links**, eliminating the need for passwords. Access is protected by JWT sessions with strict Role-Based Access Control (Admin, Organizer, Attendee).
+- **Premium User Interface**: A cohesive, responsive dark theme utilizing Tailwind CSS, featuring glassmorphism, gradient text, and micro-animations.
+- **Dynamic Dashboards**: Route-based nested dashboards (`/dashboard/:tab`) tailored to each user role for managing events, registrations, and revenue.
+- **Event Discovery & Management**: Users can browse and filter events, while organizers can create, edit, and safely manage event capacities and deadlines.
+- **Automated Payments**: Seamless integration with Razorpay for secure paid event registrations.
+- **Organizer Requests**: Attendees can request organizer privileges, which admins can review and approve directly from their dashboard.
 
 ---
 
 ## 🚀 Tech Stack
 
 ### Frontend
-| Tool / Package                         | Purpose                                                                                  |
-|---------------------------------------|------------------------------------------------------------------------------------------|
-| [React](https://react.dev/)             | Build interactive, component-based UI                                                   |
-| [Vite](https://vitejs.dev/)             | Fast development server and bundler                                                     |
-| [Tailwind CSS](https://tailwindcss.com/)| Utility-first CSS framework for responsive and fast styling                              |
-| [@tailwindcss/vite](https://tailwindcss.com/docs/installation/using-vite) | Tailwind integration plugin for Vite                                                   |
-| [TypeScript](https://www.typescriptlang.org/)| Adds static typing to JavaScript for safer and maintainable code                         |
-| [React Router DOM](https://reactrouter.com/en/main) | Client-side routing for navigation                                                  |
-| [Axios](https://axios-http.com/)        | HTTP client for API calls                                                                |
-| [React Hook Form](https://react-hook-form.com/)| Form management and validation                                                      |
-| [Zod](https://zod.dev/)                | Schema validation for form inputs and type safety                                       |
-| [Lucide React](https://lucide.dev/)     | Lightweight icons for UI components                                                     |
+| Tool / Package | Purpose |
+| :--- | :--- |
+| **React 19** | Interactive, component-based UI |
+| **Vite** | Fast development server and bundler |
+| **Tailwind CSS v4** | Utility-first CSS framework for styling the premium dark theme |
+| **TypeScript** | Static typing for safer and maintainable code |
+| **React Router v7** | Client-side routing for navigation and nested dashboards |
+| **Axios** | HTTP client for all API interactions |
+| **React Hook Form & Zod** | Form management and schema validation |
+| **Lucide React** | Lightweight, consistent iconography |
 
 ### Backend
-| Tool / Package          | Purpose / Use                                                                 |
-|-------------------------|-------------------------------------------------------------------------------|
-| [Node.js](https://nodejs.org/) | JavaScript runtime for backend development                                  |
-| [Express](https://expressjs.com/) | Web framework to handle routes, middleware, and APIs                        |
-| [MongoDB](https://www.mongodb.com/) | NoSQL database to store events, users, and registrations                  |
-| [Mongoose](https://mongoosejs.com/) | ODM to define schemas and interact with MongoDB                            |
-| [dotenv](https://www.npmjs.com/package/dotenv) | Load environment variables from `.env` file                       |
-| [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken) | JWT authentication for secure routes                           |
-| [bcryptjs](https://www.npmjs.com/package/bcryptjs) | Password hashing for secure storage                                   |
-| [cors](https://www.npmjs.com/package/cors) | Handle cross-origin requests from frontend                                  |
-| [helmet](https://www.npmjs.com/package/helmet)  | Security headers for Express                                  |
-| [morgan](https://www.npmjs.com/package/morgan)  | HTTP request logging during development                          |
-| [TypeScript](https://www.typescriptlang.org/) | Adds static typing to backend code                                        |
-| [ts-node-dev](https://www.npmjs.com/package/ts-node-dev) | Hot reload for backend during development                                |
-| `@types/*` packages      | Type definitions for TypeScript (Express, Node, JWT, etc.)                     |
+| Tool / Package | Purpose |
+| :--- | :--- |
+| **Node.js & Express** | JavaScript runtime and web framework for the RESTful API |
+| **PostgreSQL & Drizzle ORM** | Relational database and type-safe ORM for flexible data modeling |
+| **Razorpay** | Payment gateway integration for event ticketing |
+| **TypeScript** | Static typing extending to the backend |
+| **Multer / Cloudinary** | Handling event banner image uploads (if configured) |
+| **Zod** | Runtime schema validation for API inputs |
 
 ---
 
 ## 📂 Project Structure
 
-```
+```text
 event-management/
 ├── backend/
-│ ├
-│ │── config/
-│ │  └── db.ts
-│ │── controllers/
-│ │  ├── eventController.ts
-│ │  └── userController.ts
-│ │── middlewares/
-│ │  └── authMiddleware.ts
-│ │── models/
-│ │  ├── Event.ts
-│ │  └── User.ts
-│ │── routes/
-│ │  ├── eventRoutes.ts
-│ │  └── userRoutes.ts
-│ │── utils/
-│ │  └── generateToken.ts
-│ │── app.ts
-│ │── server.ts
-│ ├── tsconfig.json
-│ └── package.json
+│   ├── src/
+│   │   ├── config/          # DB, Cloudinary, and environment configuration
+│   │   ├── controllers/     # API route handlers (auth, events, users, payments)
+│   │   ├── db/              # Drizzle ORM connection and schema definitions
+│   │   ├── middlewares/     # Auth, RBAC, and error handling middleware
+│   │   ├── routes/          # Express route definitions
+│   │   ├── services/        # Business logic abstraction
+│   │   ├── utils/           # Helpers (JWT generation, formatters)
+│   │   ├── validation/      # Zod validation schemas
+│   │   └── server.ts        # Entry point
+│   ├── drizzle.config.ts    # Drizzle ORM configuration
+│   └── package.json
 │
 ├── frontend/
-│ ├── src/
-│ │ ├── assets/
-│ │ ├── components/
-│ │ ├── pages/
-│ │ ├── hooks/
-│ │ ├── utils/
-│ │ ├── types/
-│ │ ├── App.tsx
-│ │ ├── main.tsx
-│ │ └── index.css
-│ ├── tailwind.config.js
-│ ├── tsconfig.json
-│ ├── package.json
-│ └── vite.config.ts
-│
-├── docs/
-│ └── tools-usage.md
-├── .env
+│   ├── src/
+│   │   ├── api/             # Axios API client instances and services
+│   │   ├── components/      # Reusable UI components and nested dashboards
+│   │   ├── hooks/           # Custom React hooks (e.g., useAuth)
+│   │   ├── pages/           # Top-level route components (Home, Events, EventDetails)
+│   │   ├── types/           # TypeScript interfaces for API responses
+│   │   ├── App.tsx          # Main application router
+│   │   └── index.css        # Tailwind directives and global styles
+│   └── package.json
 └── README.md
 ```
 
+---
+
+ 
+## 🔐 Role-Based Access Control (RBAC)
+
+- **Attendee (Default):** Can view public events, register/pay for events, and view their digital tickets.
+- **Organizer:** Can create events, edit their own events, track registrations, and view revenue analytics. Requires Admin approval.
+- **Admin:** Has full system oversight. Can manage all users, approve organizer requests, view platform-wide revenue, and delete any event.
 
 ---
 
-## 🛠️ Installation & Setup
+## 📝 API Overview
 
-### Backend
-```bash
-# Navigate to backend
-cd backend
+| Method | Endpoint | Description | Access |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/auth/google` | Google OAuth login/signup | Public |
+| `POST` | `/api/v1/auth/magiclink` | Request magic link login email | Public |
+| `GET` | `/api/v1/auth/verify`| Verify magic link token | Public |
+| `POST` | `/api/v1/auth/logout` | User logout | Authenticated |
+| `GET` | `/api/v1/events` | List all events | Public |
+| `GET` | `/api/v1/events/:slug` | Get event details by slug | Public |
+| `POST` | `/api/v1/events` | Create a new event | Organizer / Admin |
+| `POST` | `/api/v1/events/:eventId` | Register for event (Creates Razorpay Order) | Authenticated |
+| `POST` | `/api/v1/payment/verify`| Verify payment & confirm registration | Authenticated |
 
-# Install dependencies
-npm install
+---
 
-# Run development server
-npm run dev
-
-
-# Navigate to frontend
-cd frontend
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-```
-
-# Important installation guide
-
-    ```bash
-    # Install TypeScript and ts-node-dev
-    npm install -D typescript ts-node-dev
-
-    # Initialize TypeScript configuration
-    npx tsc --init
-
-    npm install -D @types/node @types/express @types/jsonwebtoken @types/bcryptjs @types/cors @types/morgan
-
-    ```
-
-
-| Method | Endpoint             | Description      | Access |
-| ------ | -------------------- | ---------------- | ------ |
-| POST   | `/api/auth/register` | User signup      | Public |
-| POST   | `/api/auth/login`    | User login       | Public |
-| GET    | `/api/events`        | Get all events   | Public |
-| GET    | `/api/events/:id`    | Get single event | Public |
-| POST   | `/api/events`        | Create event     | Admin  |
-| PUT    | `/api/events/:id`    | Update event     | Admin  |
-| DELETE | `/api/events/:id`    | Delete event     | Admin  |
+*Built to demonstrate full-stack capabilities, secure payment flows, and mastery of modern UI design.*
