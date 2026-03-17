@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   Ticket, CheckCircle2, Calendar,Clock,  AlertCircle,
-  Sparkles, Copy, Check, BadgeCheck, CreditCard, Receipt,ChevronUp,ChevronDown
+  Sparkles, Copy, Check, BadgeCheck, CreditCard, Receipt,ChevronUp,ChevronDown, Search
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getUserAllTickets } from "@/api/user/userApi";
@@ -231,6 +231,7 @@ export function MyTicketsTab( ) {
   const navigate = useNavigate();
    const [tickets, setTicket] = useState<TicketItem[]>()
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
    const fetchTickets = async ()=>{
     setLoading(true);
@@ -255,52 +256,121 @@ export function MyTicketsTab( ) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <div className="relative w-12 h-12">
-          <div className="absolute inset-0 rounded-full border-2 border-violet-600/20" />
-          <div className="absolute inset-0 rounded-full border-t-2 border-violet-600 animate-spin" />
-          <Ticket className="absolute inset-0 m-auto w-4 h-4 text-violet-400" />
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-[#f0f4f8] flex items-center gap-2">
+              <Ticket className="w-5 h-5 text-violet-400" />
+              My Tickets
+            </h2>
+            <p className="text-[#4b6480] text-sm mt-1">
+              Manage your event tickets and registrations.
+            </p>
+          </div>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4b6480]" />
+            <input
+              type="text"
+              placeholder="Search tickets..."
+              disabled
+              className="w-full pl-9 pr-4 py-2 bg-[#0d1117] border border-[#1e2d3d] rounded-xl text-sm text-[#f0f4f8] placeholder:text-[#4b6480] focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all opacity-50 cursor-not-allowed"
+            />
+          </div>
         </div>
-        <p className="text-[#4b6480] text-sm">Loading tickets...</p>
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="relative w-12 h-12">
+            <div className="absolute inset-0 rounded-full border-2 border-violet-600/20" />
+            <div className="absolute inset-0 rounded-full border-t-2 border-violet-600 animate-spin" />
+            <Ticket className="absolute inset-0 m-auto w-4 h-4 text-violet-400" />
+          </div>
+          <p className="text-[#4b6480] text-sm">Loading tickets...</p>
+        </div>
       </div>
     );
   }
 
   if (!tickets || tickets.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
-          <Ticket className="w-7 h-7 text-[#4b6480]" />
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-[#f0f4f8] flex items-center gap-2">
+              <Ticket className="w-5 h-5 text-violet-400" />
+              My Tickets
+            </h2>
+            <p className="text-[#4b6480] text-sm mt-1">
+              Manage your event tickets and registrations.
+            </p>
+          </div>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4b6480]" />
+            <input
+              type="text"
+              placeholder="Search tickets..."
+              disabled
+              className="w-full pl-9 pr-4 py-2 bg-[#0d1117] border border-[#1e2d3d] rounded-xl text-sm text-[#f0f4f8] placeholder:text-[#4b6480] focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all opacity-50 cursor-not-allowed"
+            />
+          </div>
         </div>
-        <div>
-          <h3 className="text-[#f0f4f8] font-bold mb-1">No Tickets Yet</h3>
-          <p className="text-[#4b6480] text-sm max-w-xs">Tickets for events you register for will appear here.</p>
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center border border-[#1e2d3d] rounded-2xl bg-[#0d1117]">
+          <div className="w-16 h-16 rounded-2xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
+            <Ticket className="w-7 h-7 text-[#4b6480]" />
+          </div>
+          <div>
+            <h3 className="text-[#f0f4f8] font-bold mb-1">No Tickets Yet</h3>
+            <p className="text-[#4b6480] text-sm max-w-xs">Tickets for events you register for will appear here.</p>
+          </div>
+          <button
+            onClick={() => navigate("/events")}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-700 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:scale-105 transition-all duration-200 mt-2"
+          >
+            <Sparkles className="w-4 h-4" /> Browse Events
+          </button>
         </div>
-        <button
-          onClick={() => navigate("/events")}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-700 text-white shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:scale-105 transition-all duration-200 mt-2"
-        >
-          <Sparkles className="w-4 h-4" /> Browse Events
-        </button>
       </div>
     );
   }
 
-  const upcoming  = tickets.filter((t) => t.event_status === "upcoming");
-  const ongoing   = tickets.filter((t) => t.event_status === "ongoing");
-  const completed = tickets.filter((t) => t.event_status === "completed");
+  const filteredTickets = tickets.filter((t) =>
+    t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.ticket_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.event_status.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const upcoming  = filteredTickets.filter((t) => t.event_status === "upcoming");
+  const ongoing   = filteredTickets.filter((t) => t.event_status === "ongoing");
+  const completed = filteredTickets.filter((t) => t.event_status === "completed");
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
 
       {/* Header */}
-      <div className="flex items-center gap-2.5 flex-wrap">
-        <div className="w-7 h-7 rounded-lg bg-violet-600/10 border border-violet-600/20 flex items-center justify-center">
-          <Ticket className="w-3.5 h-3.5 text-violet-400" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-[#f0f4f8] flex items-center gap-2">
+            <Ticket className="w-5 h-5 text-violet-400" />
+            My Tickets
+          </h2>
+          <p className="text-[#4b6480] text-sm mt-1">
+            Manage your event tickets and registrations.
+          </p>
         </div>
-        <h3 className="text-sm font-bold text-[#f0f4f8]">My Tickets</h3>
+
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4b6480]" />
+          <input
+            type="text"
+            placeholder="Search tickets..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-[#0d1117] border border-[#1e2d3d] rounded-xl text-sm text-[#f0f4f8] placeholder:text-[#4b6480] focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all"
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2.5 flex-wrap">
         <span className="px-2 py-0.5 rounded-full bg-violet-600/15 border border-violet-600/25 text-violet-400 text-[10px] font-bold">
-          {tickets.length}
+          {filteredTickets.length} Total
         </span>
 
         <div className="ml-auto flex items-center gap-1.5 flex-wrap">
@@ -328,7 +398,7 @@ export function MyTicketsTab( ) {
 
       {/* Tickets grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {tickets.map((ticket, i) => (
+        {filteredTickets.map((ticket, i) => (
           <TicketCard key={ticket.registration_id} ticket={ticket} index={i} />
         ))}
       </div>

@@ -164,7 +164,7 @@ export const updateEvent = async(req:Request, res:Response)=>{
             .where(
                 and(
                     eq(events.slug, slug),
-                    eq(events.authorId, user?.id)
+                    user?.role === "admin" ? undefined : eq(events.authorId, user?.id)
                 )
             )
 

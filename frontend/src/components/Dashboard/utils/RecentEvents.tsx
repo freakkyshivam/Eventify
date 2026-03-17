@@ -51,7 +51,7 @@ interface props{
            <div
             onClick={()=> navigate( `/events/${event.slug}${path}`)}
                 key={event.id}
-                className="mb-2 group flex gap-3 p-3 rounded-xl bg-[#161f2e] hover:bg-[#111827] border border-[#1e2d3d] hover:border-[#243447] transition-all duration-200 cursor-pointer"
+                className="mb-2 group flex gap-3 p-3 rounded-xl bg-[#080c12] hover:bg-[#161f2e] border border-[#1e2d3d]/50 hover:border-[#1e2d3d] transition-all duration-200 cursor-pointer"
               >
                 {/* Color dot */}
                 <div className="w-1 rounded-full bg-gradient-to-b from-violet-600 to-fuchsia-600 shrink-0 self-stretch" />

@@ -1,7 +1,7 @@
  
 import {
   CalendarDays, Users, IndianRupee, Calendar,
-  Plus, ChevronRight, Sparkles
+  Plus, ChevronRight, Sparkles, Award
 } from "lucide-react";
 import { StatsCard } from "./utils/StatsCard";
 import { useEffect, useState } from "react";
@@ -15,7 +15,7 @@ import RecentRegistrations from "./utils/RecentReg";
 import {type RegistrationI } from "@/types/Event";
 import RegistrationsCard from "./utils/RegistrationCard";
 import RevenueCard from "./utils/RevenueCard";
-
+import { SettingsTab } from "./utils/SettingsTab";
 
 type OrganizerDashboardProps = {
   activeTab: string;
@@ -177,6 +177,10 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
     />
    }
 
+  if (activeTab === "Settings") {
+    return <SettingsTab />;
+  }
+
 
 
   if (activeTab !== "Dashboard") {
@@ -200,24 +204,28 @@ export function OrganizerDashboard({ activeTab, setActiveTab }: OrganizerDashboa
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {organizerStats.map((stat, idx) => (
-          <StatsCard key={idx} {...stat} />
+          <StatsCard key={idx} {...stat} theme="amber" />
         ))}
       </div>
 
-      {/* Create Event CTA */}
-      <div className="relative overflow-hidden rounded-2xl border border-violet-500/20 bg-gradient-to-r from-violet-600/10 via-fuchsia-600/5 to-blue-600/10 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        {/* Glow */}
-        <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-violet-600/15 blur-3xl pointer-events-none" />
-        <div className="relative">
-          <p className="text-xs text-violet-400 font-semibold uppercase tracking-wider mb-1">Get Started</p>
-          <h3 className="text-[#f0f4f8] font-bold text-base">Ready to host an event?</h3>
-          <p className="text-[#4b6480] text-xs mt-0.5">Set up your event in minutes and start collecting registrations.</p>
+      {/* ── Organizer notice banner ── */}
+      <div className="relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/5 px-5 py-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-amber-500/10 blur-2xl pointer-events-none" />
+          <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+            <Award className="w-4 h-4 text-amber-400" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-amber-300">Organizer Panel</p>
+            <p className="text-xs text-[#4b6480]">Manage your events, track registrations, and view revenue.</p>
+          </div>
         </div>
         <button
-        onClick={()=> navigate('/create-events')}
-        className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-violet-600 hover:bg-violet-500 text-white shadow-[0_0_10px_rgba(124,58,237,0.2)] hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all duration-150 shrink-0">
-          <Plus className="w-4 h-4" />
-          Create New Event
+          onClick={() => navigate('/create-events')}
+          className="relative inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 hover:text-amber-300 transition-all duration-200 shrink-0 z-10"
+        >
+          <Plus className="w-3.5 h-3.5" />
+          Create Event
         </button>
       </div>
 

@@ -15,7 +15,8 @@ import { UAParser } from "ua-parser-js";
 // Constants
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
-const ACCESS_TOKEN_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+// const ACCESS_TOKEN_EXPIRY_MS = 5 * 60 * 1000; // 5 minutes
+const ACCESS_TOKEN_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 5 minutes
 const REFRESH_TOKEN_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 // Google OAuth redirect

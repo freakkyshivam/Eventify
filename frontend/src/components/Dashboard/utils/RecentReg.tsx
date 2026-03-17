@@ -63,7 +63,7 @@ const RecentRegistrations = ({ registrations, loading }: Props) => {
         return (
           <div
             key={i}
-            className="mb-2 group flex gap-3 p-3 rounded-xl bg-[#161f2e] hover:bg-[#111827] border border-[#1e2d3d] hover:border-[#243447] transition-all duration-200 cursor-pointer"
+            className="mb-2 group flex gap-3 p-3 rounded-xl bg-[#080c12] hover:bg-[#161f2e] border border-[#1e2d3d]/50 hover:border-[#1e2d3d] transition-all duration-200 cursor-pointer"
           >
             {/* Color dot */}
             <div className="w-1 rounded-full bg-gradient-to-b from-blue-600 to-violet-600 flex-shrink-0 self-stretch" />

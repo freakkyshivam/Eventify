@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 
 import {
   Calendar, Ticket, IndianRupee, Clock,
-  Award, ArrowRight, Sparkles,  ChevronRight,
-
+  Award, ArrowRight, Sparkles, ChevronRight, User
 } from "lucide-react";
 import { StatsCard } from "./utils/StatsCard";
 import { getUserAllJoinedEvent } from "@/api/user/userApi";
@@ -16,6 +15,7 @@ import Alerts from "@/utils/Alerts";
 import { useNavigate } from "react-router-dom";
 import OrganizerRequest from "./User/OrganizerRequest";
 import RecentEvents from "./utils/RecentEvents";
+import { SettingsTab } from "./utils/SettingsTab";
 
 
 type UserDashboardProps = {
@@ -107,6 +107,10 @@ if (!setActiveTab) {
     return <OrganizerRequest/>
   }
 
+  if (activeTab === "Settings") {
+    return <SettingsTab />;
+  }
+
   if (activeTab !== "Dashboard") {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -126,10 +130,22 @@ if (!setActiveTab) {
       )}
 
       {/* ── Stats Grid ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {userStats.map((stat, idx) => (
-          <StatsCard key={idx} {...stat} />
+          <StatsCard key={idx} {...stat} theme="violet" />
         ))}
+      </div>
+
+      {/* ── Attendee notice banner ── */}
+      <div className="relative overflow-hidden rounded-2xl border border-violet-500/20 bg-violet-500/5 px-5 py-4 flex items-center gap-4 mb-6">
+        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-violet-500/10 blur-2xl pointer-events-none" />
+        <div className="w-9 h-9 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shrink-0">
+          <User className="w-4 h-4 text-violet-400" />
+        </div>
+        <div>
+          <p className="text-xs font-semibold text-violet-300">Attendee Dashboard</p>
+          <p className="text-xs text-[#4b6480]">Browse upcoming events, manage registrations, and access your tickets.</p>
+        </div>
       </div>
 
       {/* ── Content Grid ── */}
@@ -160,8 +176,8 @@ if (!setActiveTab) {
         {/* Quick Actions */}
         <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden">
           <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[#1e2d3d]">
-            <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <Zap className="w-3.5 h-3.5 text-amber-400" />
+            <div className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 text-violet-400" />
             </div>
             <h3 className="text-sm font-bold text-[#f0f4f8]">Quick Actions</h3>
           </div>
@@ -202,7 +218,7 @@ if (!setActiveTab) {
                     setActiveTab(action.tab);
                   }
                 }}
-                className="group w-full flex items-center gap-3 p-3.5 rounded-xl bg-[#161f2e] hover:bg-[#111827] border border-[#1e2d3d] hover:border-[#243447] transition-all duration-200 text-left"
+                className="group w-full flex items-center gap-3 p-3.5 rounded-xl bg-[#080c12] hover:bg-[#161f2e] border border-[#1e2d3d]/50 hover:border-[#1e2d3d] transition-all duration-200 text-left"
               >
                 <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${action.iconBg}`}>
                   {action.icon}

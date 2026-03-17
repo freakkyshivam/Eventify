@@ -29,3 +29,15 @@ export const getEventBySlugApi = async (slug : string)=>{
   }
 }
 
+
+export const updateEventApi = async (slug: string, eventData: any) => {
+  try {
+    const { data } = await api.patch<Response>(`/events/${slug}`, eventData, {
+      withCredentials: true,
+    });
+    return data;
+  } catch (error: any) {
+    console.error(error);
+    return error.response?.data || { success: false, msg: "Failed to update event" };
+  }
+};

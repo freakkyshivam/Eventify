@@ -81,4 +81,5 @@ export interface RegistrationI {
   event_category?: string;
   bannerUrls?: string[];
   payment: Payment;
+  ticket_code?: string;
 }

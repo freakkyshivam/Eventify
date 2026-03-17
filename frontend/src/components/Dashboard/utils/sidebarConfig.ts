@@ -15,6 +15,7 @@ export const getSidebarItems = (role: "admin" | "organizer" | "attendee") => {
       return [
         { label: "Dashboard", icon: CalendarDays },
         { label: "All Events", icon: Calendar },
+        { label: "Registrations", icon: Ticket },
         { label: "Users", icon: Users },
         { label: "Organizer Requests", icon: Award },
         { label: "Payments", icon: IndianRupee },

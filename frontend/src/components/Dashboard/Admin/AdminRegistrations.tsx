@@ -1,29 +1,49 @@
-import { Ticket, Search, IndianRupee, Calendar, Activity, ClipboardList } from "lucide-react";
-import { useState } from "react";
-import { type RegistrationI } from "@/types/Event";
-import { useNavigate } from "react-router-dom";
+import { Ticket, Search, IndianRupee, Calendar, Activity } from "lucide-react";
+import { useEffect, useState } from "react";
+import { fetchAllRegistrations } from "@/api/admin/admin.api";
 
-type Props = {
-  registrations: RegistrationI[] | undefined;
-  loading?: boolean;
-  title: string;
-  subTitle: string;
-  subDescription: string;
-  onCardClick?: (reg: RegistrationI) => void;
+type PaymentInfo = {
+  amount: string;
+  status: "completed" | "pending" | "failed";
 };
 
-const RegistrationsCard = ({
-  registrations = [],
-  loading = false,
-  title,
-  subTitle,
-  subDescription,
-  onCardClick,
-}: Props) => {
-  const navigate = useNavigate();
+type RegistrationI = {
+  user_name: string;
+  email: string;
+  event_title: string;
+  registration_date: string;
+  registration_status: "registered" | "pending" | "cancelled";
+  payment: PaymentInfo | null;
+  ticket_code: string;
+};
+
+export function AdminRegistrations() {
+  const [registrations, setRegistrations] = useState<RegistrationI[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredRegistrations = registrations?.filter(
+  useEffect(() => {
+    async function loadRegistrations() {
+      try {
+        setLoading(true);
+        const res = await fetchAllRegistrations();
+        if (res?.success && res.results) {
+          setRegistrations(res.results);
+        } else {
+          setError("Failed to fetch registrations");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("An error occurred while fetching registrations");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadRegistrations();
+  }, []);
+
+  const filteredRegistrations = registrations.filter(
     (reg) =>
       reg.user_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       reg.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -36,11 +56,11 @@ const RegistrationsCard = ({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-[#f0f4f8] flex items-center gap-2">
-            <ClipboardList className="w-5 h-5 text-indigo-400" />
-            {title}
+            <Ticket className="w-5 h-5 text-indigo-400" />
+            Global Registrations
           </h2>
           <p className="text-[#4b6480] text-sm mt-1">
-            Browse to view and track registrations.
+            Monitor all ticket sales and event registrations platform-wide.
           </p>
         </div>
 
@@ -56,16 +76,32 @@ const RegistrationsCard = ({
         </div>
       </div>
 
+      {error && (
+        <div className="w-full p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm flex items-center gap-2">
+          {error}
+        </div>
+      )}
+
       <div className="bg-[#0d1117] border border-[#1e2d3d] rounded-2xl overflow-hidden shadow-2xl shadow-black/20">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="border-b border-[#1e2d3d] bg-[#161f2e]/80">
-                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">Attendee</th>
-                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">Event</th>
-                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">Ticket Code</th>
-                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">Payment</th>
-                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">Date</th>
+                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">
+                  Attendee
+                </th>
+                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">
+                  Event
+                </th>
+                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">
+                  Ticket
+                </th>
+                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">
+                  Payment
+                </th>
+                <th className="px-6 py-4 text-xs font-semibold text-[#8a9fb1] uppercase tracking-wider">
+                  Date
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1e2d3d]">
@@ -78,23 +114,16 @@ const RegistrationsCard = ({
                     </div>
                   </td>
                 </tr>
-              ) : registrations.length === 0 ? (
+              ) : filteredRegistrations.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-16 text-center text-[#4b6480] text-sm">
                     <div className="flex flex-col items-center justify-center gap-3">
                       <div className="w-16 h-16 rounded-3xl bg-[#161f2e] border border-[#1e2d3d] flex items-center justify-center">
-                        <ClipboardList className="w-8 h-8 text-[#4b6480]" />
+                        <Ticket className="w-8 h-8 text-[#4b6480]" />
                       </div>
-                      <p className="text-[#f0f4f8] font-medium text-lg mt-2">{subTitle}</p>
-                      <p>{subDescription}</p>
+                      <p className="text-[#f0f4f8] font-medium text-lg mt-2">No registrations found</p>
+                      <p>Try adjusting your search query.</p>
                     </div>
-                  </td>
-                </tr>
-              ) : filteredRegistrations.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-16 text-center text-[#4b6480] text-sm">
-                    <p className="text-[#f0f4f8] font-medium text-lg">No matches found</p>
-                    <p>Try adjusting your search query.</p>
                   </td>
                 </tr>
               ) : (
@@ -103,18 +132,10 @@ const RegistrationsCard = ({
                   const isPending = reg.payment?.status === "pending";
                   const isFree = !reg.payment || Number(reg.payment.amount) === 0;
 
-                  const handleClick = () =>
-                    onCardClick
-                      ? onCardClick(reg)
-                      : reg.event_slug
-                      ? navigate(`/events/${reg.event_slug}`)
-                      : undefined;
-
                   return (
                     <tr
                       key={idx}
-                      onClick={handleClick}
-                      className="hover:bg-[#161f2e] transition-colors duration-200 cursor-pointer"
+                      className="hover:bg-[#161f2e] transition-colors duration-200"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -184,6 +205,4 @@ const RegistrationsCard = ({
       </div>
     </div>
   );
-};
-
-export default RegistrationsCard;
+}

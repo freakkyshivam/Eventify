@@ -38,33 +38,50 @@ export const approveRoleRequest = async (req: Request, res: Response) => {
     }
 
     if (!existingReq.user_id) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid organizer request: user not found",
-      });
-    }
+  return res.status(400).json({
+    success: false,
+    msg: "Invalid organizer request: user not found",
+  });
+}
 
-    await db
-      .update(role_request_table)
-      .set({ status: "approved" })
-      .where(eq(role_request_table.id, id));
+if(existingReq.used){
+  return res.status(400).json({
+    success : false,
+    msg : "Request is expired"
+  })
+}
 
-    await db
-      .update(users)
-      .set({
-        role: "organizer",
-        organizer_request: false,
-        updatedAt: new Date(),
+    if(existingReq.status === "approved"){
+      return res.status(409).json({
+        msg : "Organizer request already approved",
+        success : false
       })
-      .where(eq(users.id, existingReq.user_id));
+    }
+      const userId = existingReq.user_id as string
+    await db.transaction( async (tx)=>{
+           await tx
+                .update(role_request_table)
+                .set({ status: "approved", used : true })
+                .where(eq(role_request_table.id, id));
+
+              await tx
+                .update(users)
+                .set({
+                  role: "organizer",
+                  organizer_request: false,
+                  updatedAt: new Date(),
+                })
+                .where(eq(users.id, userId));
+    })
+    
 
     return res.status(200).json({
       success: true,
       msg: "Organizer request approved",
     });
   } catch (error) {
-    console.error("Organizer approve error", error);
-    return res.status(500).json({ success: false });
+    console.error("Organizer request approve error", error);
+    return res.status(500).json({ success: false, msg : "Organizer request approve error" });
   }
 };
 
@@ -75,14 +92,15 @@ export const rejectRoleRequest = async (req: Request, res: Response) => {
     if (!user?.id || user?.role !== "admin") {
       return res.status(401).json({
         success: false,
-        msg: "You can not approve this request",
+        msg: "You are not authorized to reject this request",
       });
     }
+
     const { id } = req.params;
 
     if (!id) {
       return res.status(400).json({
-        sucess: false,
+        success: false,
         msg: "Organizer request id is required",
       });
     }
@@ -93,9 +111,9 @@ export const rejectRoleRequest = async (req: Request, res: Response) => {
       .where(eq(role_request_table.id, id));
 
     if (!existingReq) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        msg: "Organizer request is not found, may be request is expired",
+        msg: "Organizer request not found or expired",
       });
     }
 
@@ -106,27 +124,42 @@ export const rejectRoleRequest = async (req: Request, res: Response) => {
       });
     }
 
-    await db
-      .update(role_request_table)
-      .set({
-        status: "rejected",
-      })
-      .where(eq(role_request_table.id, id));
+    if(existingReq.used){
+  return res.status(400).json({
+    success : false,
+    msg : "Request is expired"
+  })
+}
 
-    await db
-      .update(users)
-      .set({
-        organizer_request: false,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, existingReq.user_id));
+    if (existingReq.status === "rejected") {
+      return res.status(409).json({
+        success: false,
+        msg: "Organizer request already rejected",
+      });
+    }
+      const userId = existingReq.user_id as string
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(role_request_table)
+        .set({ status: "rejected", used : true })
+        .where(eq(role_request_table.id, id));
+
+      await tx
+        .update(users)
+        .set({ organizer_request: false, updatedAt: new Date() })
+        .where(eq(users.id, userId));
+    });
 
     return res.status(200).json({
       success: true,
-      msg: "Organizer request rejected sucessfully ",
+      msg: "Organizer request rejected successfully",
     });
   } catch (error) {
-    console.error("Organizer request reject error ", error);
-    return res.status(500);
+    console.error("Organizer request reject error", error);
+    return res.status(500).json({
+      success: false,
+      msg: "Organizer request reject error",
+    });
   }
 };
