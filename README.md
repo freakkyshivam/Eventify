@@ -7,11 +7,11 @@ A full-stack **Event Management Platform** built with modern web technologies, f
 ## ✨ Key Features
 
 - **Passwordless Authentication & RBAC**: Seamless and secure login using **Google OAuth** and **Magic Links**, eliminating the need for passwords. Access is protected by JWT sessions with strict Role-Based Access Control (Admin, Organizer, Attendee).
-- **Premium User Interface**: A cohesive, responsive dark theme utilizing Tailwind CSS, featuring glassmorphism, gradient text, and micro-animations.
-- **Dynamic Dashboards**: Route-based nested dashboards (`/dashboard/:tab`) tailored to each user role for managing events, registrations, and revenue.
+- **Premium User Interface**: A cohesive, responsive dark theme utilizing Tailwind CSS v4, Radix UI primitives, featuring glassmorphism, gradient text, and micro-animations.
+- **Dynamic Dashboards**: Route-based nested dashboards (`/dashboard`) tailored to each user role (Admin, Organizer, User) for managing events, registrations, user roles, and revenue.
 - **Event Discovery & Management**: Users can browse and filter events, while organizers can create, edit, and safely manage event capacities and deadlines.
 - **Automated Payments**: Seamless integration with Razorpay for secure paid event registrations.
-- **Organizer Requests**: Attendees can request organizer privileges, which admins can review and approve directly from their dashboard.
+- **Organizer Requests**: Attendees can request organizer privileges, which admins can review and approve directly from their customized dashboard.
 
 ---
 
@@ -26,18 +26,20 @@ A full-stack **Event Management Platform** built with modern web technologies, f
 | **TypeScript** | Static typing for safer and maintainable code |
 | **React Router v7** | Client-side routing for navigation and nested dashboards |
 | **Axios** | HTTP client for all API interactions |
-| **React Hook Form & Zod** | Form management and schema validation |
-| **Lucide React** | Lightweight, consistent iconography |
+| **React Hook Form & Zod** | Form management and UI schema validation |
+| **Lucide React & Radix UI** | Lightweight icons and accessible unstyled UI primitives |
 
 ### Backend
 | Tool / Package | Purpose |
 | :--- | :--- |
 | **Node.js & Express** | JavaScript runtime and web framework for the RESTful API |
 | **PostgreSQL & Drizzle ORM** | Relational database and type-safe ORM for flexible data modeling |
-| **Razorpay** | Payment gateway integration for event ticketing |
+| **Razorpay** | Payment gateway integration for secure event ticketing |
 | **TypeScript** | Static typing extending to the backend |
-| **Multer / Cloudinary** | Handling event banner image uploads (if configured) |
+| **Argon2 & JSONWebToken** | Security handling and authenticated session management |
+| **Nodemailer** | Transporter for dispatching SMTP magic-link authentication emails |
 | **Zod** | Runtime schema validation for API inputs |
+| **Multer / Cloudinary** | Handling event banner image uploads (if configured) |
 
 ---
 
@@ -47,13 +49,13 @@ A full-stack **Event Management Platform** built with modern web technologies, f
 event-management/
 ├── backend/
 │   ├── src/
-│   │   ├── config/          # DB, Cloudinary, and environment configuration
-│   │   ├── controllers/     # API route handlers (auth, events, users, payments)
+│   │   ├── config/          # DB, Cloudinary, Razorpay, and environment configuration
+│   │   ├── controllers/     # API route handlers (auth, events, users, admin, payments)
 │   │   ├── db/              # Drizzle ORM connection and schema definitions
 │   │   ├── middlewares/     # Auth, RBAC, and error handling middleware
 │   │   ├── routes/          # Express route definitions
 │   │   ├── services/        # Business logic abstraction
-│   │   ├── utils/           # Helpers (JWT generation, formatters)
+│   │   ├── utils/           # Helpers (JWT generation, formatters, Nodemailer)
 │   │   ├── validation/      # Zod validation schemas
 │   │   └── server.ts        # Entry point
 │   ├── drizzle.config.ts    # Drizzle ORM configuration
@@ -61,41 +63,31 @@ event-management/
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── api/             # Axios API client instances and services
+│   │   ├── api/             # Axios API client instances and services organized by route
 │   │   ├── components/      # Reusable UI components and nested dashboards
-│   │   ├── hooks/           # Custom React hooks (e.g., useAuth)
+│   │   ├── hooks/           # Custom React hooks (e.g., Auth)
 │   │   ├── pages/           # Top-level route components (Home, Events, EventDetails)
 │   │   ├── types/           # TypeScript interfaces for API responses
 │   │   ├── App.tsx          # Main application router
 │   │   └── index.css        # Tailwind directives and global styles
 │   └── package.json
+├── DOCUMENTATION.md         # Comprehensive system documentation
 └── README.md
 ```
 
 ---
 
- 
 ## 🔐 Role-Based Access Control (RBAC)
 
-- **Attendee (Default):** Can view public events, register/pay for events, and view their digital tickets.
-- **Organizer:** Can create events, edit their own events, track registrations, and view revenue analytics. Requires Admin approval.
-- **Admin:** Has full system oversight. Can manage all users, approve organizer requests, view platform-wide revenue, and delete any event.
+- **User / Attendee (Default):** Can view public events, register/pay for events, and view their dashboard including payment history and tickets.
+- **Organizer:** Can create events, edit their own events, track registrations, and view revenue analytics. Requires Admin approval via the `/dashboard` panel.
+- **Admin:** Has full system oversight. Can manage all users, approve organizer requests, view platform-wide revenue, see all created events globally, and delete any event.
 
 ---
 
-## 📝 API Overview
+## 📝 Documentations
 
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/auth/google` | Google OAuth login/signup | Public |
-| `POST` | `/api/v1/auth/magiclink` | Request magic link login email | Public |
-| `GET` | `/api/v1/auth/verify`| Verify magic link token | Public |
-| `POST` | `/api/v1/auth/logout` | User logout | Authenticated |
-| `GET` | `/api/v1/events` | List all events | Public |
-| `GET` | `/api/v1/events/:slug` | Get event details by slug | Public |
-| `POST` | `/api/v1/events` | Create a new event | Organizer / Admin |
-| `POST` | `/api/v1/events/:eventId` | Register for event (Creates Razorpay Order) | Authenticated |
-| `POST` | `/api/v1/payment/verify`| Verify payment & confirm registration | Authenticated |
+For detailed API guides, Database schema explanations, Payment flow Mermaid diagrams, and Environment prerequisites, please check the **[DOCUMENTATION.md](./DOCUMENTATION.md)** file!
 
 ---
 
