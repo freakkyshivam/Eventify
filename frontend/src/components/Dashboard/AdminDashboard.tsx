@@ -1,13 +1,11 @@
 import { Users, CalendarDays, IndianRupee, Award, ChevronRight, Sparkles, Check, X, ClipboardList, ShieldCheck } from "lucide-react";
 import { StatsCard } from "./utils/StatsCard";
 import { useEffect, useState } from "react";
-import { approveOrganizerRequest, fetchAllOrganizerRequest, fetchAllUser, rejectOrganizerRequest } from "@/api/admin/admin.api";
+import { approveOrganizerRequest, fetchAllOrganizerRequest, fetchAllUser, rejectOrganizerRequest, fetchAllRegistrations } from "@/api/admin/admin.api";
+import { getAllEvent } from "@/api/event/eventApi";
 
 
-// Sample data — replace with real API data
-// const pendingRequests = [
-//   { name: "John Doe", email: "john@example.com", timeAgo: "2 hours ago" },
-// ];
+ 
 
 import { AdminUsers } from "./Admin/AdminUsers";
 import { AdminAllEvents } from "./Admin/AdminAllEvents";
@@ -15,6 +13,7 @@ import { AdminRegistrations } from "./Admin/AdminRegistrations";
 import { AdminOrganizerRequests } from "./Admin/AdminOrganizerRequests";
 import { AdminPayments } from "./Admin/AdminPayments";
 import { SettingsTab } from "./utils/SettingsTab";
+import { type eventI } from "@/types/Event";
 
 type pendingRequestsI = {
   id: string,
@@ -35,6 +34,9 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
   const [pendingRequests, setpendingRequests] = useState<pendingRequestsI[]>();
   const [errors, setError] = useState<string>();
   const [success, setSuccess] = useState<string>();
+  const [allEvents, setAllEvents] = useState<eventI[]>([]);
+  const [recentPayments, setRecentPayments] = useState<[]>([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);
 
   useEffect(() => {
     async function ft1() {
@@ -67,14 +69,46 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
 
     }
 
+    async function fetchEvents() {
+      try {
+        const res = await getAllEvent();
+        if (res) {
+          setAllEvents(res);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function fetchRegistrations() {
+      try {
+        const res = await fetchAllRegistrations();
+        if (res?.success) {
+          const regs = res.results;
+          let revenue = 0;
+          for (const reg of regs) {
+            if (reg.payment && reg.payment.status === 'completed') {
+               revenue += Number(reg.payment.amount || 0);
+            }
+          }
+          setTotalRevenue(revenue);
+          setRecentPayments(regs.slice(0, 5));
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     ft1();
-    ft2()
+    ft2();
+    fetchEvents();
+    fetchRegistrations();
   }, [])
 
   const adminStats = [
     { label: "Total Users", value: allUsers ? allUsers.length : 0, icon: Users },
-    { label: "Total Events", value: 0, icon: CalendarDays },
-    { label: "Total Revenue", value: "₹0", icon: IndianRupee },
+    { label: "Total Events", value: allEvents ? allEvents.length : 0, icon: CalendarDays },
+    { label: "Total Revenue", value: `₹${totalRevenue.toLocaleString()}`, icon: IndianRupee },
     { label: "Pending Requests", value: pendingRequests ? pendingRequests.length : 0, icon: Award },
   ];
 
@@ -269,14 +303,46 @@ export function AdminDashboard({ activeTab }: AdminDashboardProps) {
             </button>
           </div>
 
-          <div className="flex flex-col items-center justify-center py-14 px-6 gap-3 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-[#080c12] border border-[#1e2d3d]/50 flex items-center justify-center">
-              <ClipboardList className="w-5 h-5 text-[#94a3b8]" />
-            </div>
-            <div>
-              <p className="text-[#94a3b8] text-xs font-medium mb-0.5">No payments yet</p>
-              <p className="text-[#4b6480] text-xs">Payment transactions will appear here.</p>
-            </div>
+          <div className="p-4 space-y-3">
+            {recentPayments && recentPayments.length > 0 ? (
+              recentPayments.map((payment: any, i: number) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-[#080c12] hover:bg-[#161f2e] border border-[#1e2d3d]/50 hover:border-[#1e2d3d] transition-all duration-200"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 flex items-center justify-center shrink-0 text-white font-bold text-xs border border-emerald-500/30">
+                      {payment.user_name?.charAt(0) || "U"}
+                    </div>
+                    <div className="min-w-0">
+                       <p className="text-xs font-semibold text-[#f0f4f8] truncate">{payment.user_name}</p>
+                       <p className="text-[11px] text-[#4b6480] truncate">{payment.event_title}</p>
+                       <p className="text-[10px] text-[#4b6480] mt-0.5">{new Date(payment.registration_date).toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                     <span className="text-sm font-bold text-emerald-400">₹{payment.payment?.amount || 0}</span>
+                     <span className={`text-[10px] px-1.5 py-0.5 rounded uppercase font-bold tracking-wider ${
+                        payment.payment?.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400' :
+                        payment.payment?.status === 'pending' ? 'bg-amber-500/10 text-amber-400' :
+                        'bg-red-500/10 text-red-400'
+                     }`}>
+                        {payment.payment?.status || 'Free'}
+                     </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-[#080c12] border border-[#1e2d3d]/50 flex items-center justify-center">
+                  <ClipboardList className="w-5 h-5 text-[#94a3b8]" />
+                </div>
+                <div>
+                  <p className="text-[#94a3b8] text-xs font-medium mb-0.5">No payments yet</p>
+                  <p className="text-[#4b6480] text-xs">Payment transactions will appear here.</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
