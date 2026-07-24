@@ -170,7 +170,7 @@ const EditEvent = () => {
   const totalBanners = existingBanners.length + bannerFiles.length;
 
   // ── Submit PATCH ──
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => { 
     e.preventDefault();
     if (!EventFormDataValidation(formData, setErrors)) return;
     try {
@@ -191,7 +191,6 @@ const EditEvent = () => {
       bannerFiles.forEach((f) => fd.append("banners", f));
       await api.patch(`/events/${slug}`, fd, {
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);

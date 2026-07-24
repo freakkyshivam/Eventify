@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.post('/',authMiddleware, upload.array('banners',3), createEvent);
 router.post('/:eventId',authMiddleware, event_registration);
-router.patch('/:slug',authMiddleware, updateEvent);
+router.patch('/:slug',authMiddleware, upload.array('banners',3), updateEvent);
 router.get('/', getAllEvent)
 router.get('/:slug',getEventBySlug)
 

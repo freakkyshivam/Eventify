@@ -157,7 +157,7 @@ const CreateEvent = () => {
       fd.append("event_category", formData.event_category);
       if (formData.event_mode === "offline") fd.append("location", formData.location);
       bannerFiles.forEach((file) => fd.append("banners", file));
-      await api.post("/events", fd, { withCredentials: true, headers: { "Content-Type": "multipart/form-data" } });
+      await api.post("/events", fd, { withCredentials: true });
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
